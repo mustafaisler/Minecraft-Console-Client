@@ -722,7 +722,7 @@ namespace MinecraftClient
                     if (--RemainingDiggingTime == 0 && LastDigPosition is not null)
                     {
                         handler.SendPlayerDigging(2, LastDigPosition.Item1, LastDigPosition.Item2, sequenceId++);
-                        Log.Info(string.Format(Translations.cmd_dig_end, LastDigPosition.Item1));
+                        Log.Debug(string.Format(Translations.cmd_dig_end, LastDigPosition.Item1));
                     }
                     else
                     {
@@ -2782,7 +2782,7 @@ namespace MinecraftClient
                 if (RemainingDiggingTime > 0 && LastDigPosition is not null)
                 {
                     handler.SendPlayerDigging(1, LastDigPosition.Item1, LastDigPosition.Item2, sequenceId++);
-                    Log.Info(string.Format(Translations.cmd_dig_cancel, LastDigPosition.Item1));
+                    Log.Debug(string.Format(Translations.cmd_dig_cancel, LastDigPosition.Item1));
                 }
 
                 // Look at block before attempting to break it
