@@ -378,7 +378,7 @@ namespace MinecraftClient.ChatBots
         {
             if (Config.Mode == Configs.ModeType.lookat || Config.Mode == Configs.ModeType.both)
             {
-                (bool hasBlock, Location blockLoc, Block block) = GetLookingBlock(4.5, false);
+                (bool hasBlock, Location blockLoc, Block block) = GetLookingBlock(6.0, false);
                 if (!hasBlock)
                 {
                     if (!AlreadyWaitting)
