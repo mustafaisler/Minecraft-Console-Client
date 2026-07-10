@@ -125,6 +125,7 @@ namespace MinecraftClient.Protocol.Handlers
         Tuple<Thread, CancellationTokenSource>? netMain = null; // main thread
         Tuple<Thread, CancellationTokenSource>? netReader = null; // reader thread
         readonly ILogger log;
+        int badChunkWarnCount;
         readonly RandomNumberGenerator randomGen;
         private bool legacyAchievementsInitialized;
 
@@ -1655,9 +1656,20 @@ namespace MinecraftClient.Protocol.Handlers
 
                             var dataSize = dataTypes.ReadNextVarInt(packetData); // Size
 
-                            pTerrain.ProcessChunkColumnData(chunkX, chunkZ, verticalStripBitmask, packetData);
-                            ProcessChunkBlockEntityData(chunkX, chunkZ, packetData);
-                            Interlocked.Decrement(ref handler.GetWorld().chunkLoadNotCompleted);
+                            try
+                            {
+                                pTerrain.ProcessChunkColumnData(chunkX, chunkZ, verticalStripBitmask, packetData);
+                                ProcessChunkBlockEntityData(chunkX, chunkZ, packetData);
+                            }
+                            catch (Exception chunkEx)
+                            {
+                                if (Interlocked.Increment(ref badChunkWarnCount) <= 5)
+                                    log.Warn($"[Terrain] Bozuk chunk verisi atlandi ({chunkX},{chunkZ}): {chunkEx.GetType().Name}");
+                            }
+                            finally
+                            {
+                                Interlocked.Decrement(ref handler.GetWorld().chunkLoadNotCompleted);
+                            }
 
                             // Block Entity data: ignored
                             // Trust edges: ignored (Removed in 1.20)
