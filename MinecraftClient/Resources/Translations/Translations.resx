@@ -130,7 +130,7 @@
     <value>Weather change: It is a thunderstorm.</value>
   </data>
   <data name="bot.antiafk.invalid_walk_range" xml:space="preserve">
-    <value>Invalid walk range provided, must be a positive integer greater than 0, using default value of 5!</value>
+    <value>Geçersiz yürüme mesafesi; 0'dan büyük pozitif tam sayı olmalı, varsayılan 5 kullanılıyor!</value>
   </data>
   <data name="bot.antiafk.not_using_terrain_handling" xml:space="preserve">
     <value>The terrain handling is not enabled in the settings of the client, enable it if you want to use it with this bot. Using alternative (command) method.</value>
@@ -139,10 +139,10 @@
     <value>The time range begins with a bigger value, swapped them around.</value>
   </data>
   <data name="bot.autoAttack.invalidcooldown" xml:space="preserve">
-    <value>Attack cooldown value cannot be smaller than 0.</value>
+    <value>Saldırı bekleme süresi 0'dan küçük olamaz.</value>
   </data>
   <data name="bot.autoCraft.aborted" xml:space="preserve">
-    <value>Crafting aborted! Check your available materials.</value>
+    <value>Üretim iptal edildi! Malzemelerini kontrol et.</value>
   </data>
   <data name="bot.autoCraft.alias" xml:space="preserve">
     <value>Auto-crafting ChatBot command alias</value>
@@ -151,7 +151,7 @@
     <value>Available commands: {0}. Use /autocraft help &lt;cmd name&gt; for more information.</value>
   </data>
   <data name="bot.autoCraft.close_inventory" xml:space="preserve">
-    <value>Inventory #{0} was closed by AutoCraft</value>
+    <value>Envanter #{0} Otomatik Üretim tarafından kapatıldı.</value>
   </data>
   <data name="bot.autoCraft.cmd" xml:space="preserve">
     <value>Auto-crafting ChatBot command</value>
@@ -160,13 +160,13 @@
     <value>Total {0} recipes loaded: {1}</value>
   </data>
   <data name="bot.autoCraft.craft_fail" xml:space="preserve">
-    <value>Crafting failed! Waiting for more materials</value>
+    <value>Üretim başarısız! Daha fazla malzeme bekleniyor.</value>
   </data>
   <data name="bot.autoCraft.exception.duplicate" xml:space="preserve">
-    <value>Duplicate recipe name specified: {0}</value>
+    <value>Yinelenen tarif adı: {0}</value>
   </data>
   <data name="bot.autoCraft.exception.name_miss" xml:space="preserve">
-    <value>Missing recipe name while parsing a recipe</value>
+    <value>Tarif ayrıştırılırken tarif adı eksik.</value>
   </data>
   <data name="bot.autoCraft.help.help" xml:space="preserve">
     <value>Get the command description. Usage: /autocraft help &lt;command name&gt;</value>
@@ -190,13 +190,13 @@
     <value>Stop the current running crafting process</value>
   </data>
   <data name="bot.autocraft.invaild_result" xml:space="preserve">
-    <value>Invalid result item!</value>
+    <value>Geçersiz sonuç eşyası!</value>
   </data>
   <data name="bot.autocraft.invaild_slots" xml:space="preserve">
-    <value>The number of slots does not match and has been adjusted automatically.</value>
+    <value>Yuva sayısı eşleşmiyor, otomatik olarak ayarlandı.</value>
   </data>
   <data name="bot.autoCraft.missing_material" xml:space="preserve">
-    <value>Missing material: {0}</value>
+    <value>Eksik malzeme: {0}</value>
   </data>
   <data name="bot.autoCraft.no_recipe_name" xml:space="preserve">
     <value>Please specify the recipe name you want to craft.</value>
@@ -205,7 +205,7 @@
     <value>Specified recipe name does not exist. Check your config file.</value>
   </data>
   <data name="bot.autoCraft.start" xml:space="preserve">
-    <value>Starting AutoCraft: {0}</value>
+    <value>Otomatik Üretim başlıyor: {0}</value>
   </data>
   <data name="bot.autoCraft.start_fail" xml:space="preserve">
     <value>AutoCraft cannot be started. Check your available materials for crafting {0}</value>
@@ -226,7 +226,7 @@
     <value>Auto-digging ChatBot command</value>
   </data>
   <data name="bot.autodig.dig_timeout" xml:space="preserve">
-    <value>Digging block timeout, retry.</value>
+    <value>Kazı zaman aşımına uğradı, yeniden deneniyor.</value>
   </data>
   <data name="bot.autodig.help.help" xml:space="preserve">
     <value>Get the command description. Usage: /autodig help &lt;command name&gt;</value>
@@ -241,25 +241,25 @@
     <value>The block currently pointed to is not in the allowed list.</value>
   </data>
   <data name="bot.autodig.no_inv_handle" xml:space="preserve">
-    <value>Inventory handling is not enabled. Unable to switch tools automatically.</value>
+    <value>Envanter İşleme kapalı. Araçlar otomatik değiştirilemez.</value>
   </data>
   <data name="bot.autodig.drop_low_durability" xml:space="preserve">
     <value>Dropped low durability {0} from slot {1}.</value>
   </data>
   <data name="bot.autodig.start" xml:space="preserve">
-    <value>Automatic digging has started.</value>
+    <value>Kazı başladı.</value>
   </data>
   <data name="bot.autodig.start_delay" xml:space="preserve">
-    <value>Digging will start in {0:0.0} second(s).</value>
+    <value>Kazı {0:0.0} saniye içinde başlayacak.</value>
   </data>
   <data name="bot.autodig.stop" xml:space="preserve">
     <value>Auto-digging has been stopped.</value>
   </data>
   <data name="bot.autodig.switch" xml:space="preserve">
-    <value>Switch to {0} from slot {1}.</value>
+    <value>{1}. yuvadaki {0} aracına geçildi.</value>
   </data>
   <data name="bot.autoDrop.added" xml:space="preserve">
-    <value>Added item {0}</value>
+    <value>Eşya eklendi: {0}</value>
   </data>
   <data name="bot.autoDrop.alias" xml:space="preserve">
     <value>AutoDrop ChatBot command alias</value>
@@ -268,50 +268,50 @@
     <value>AutoDrop ChatBot command</value>
   </data>
   <data name="bot.autoDrop.incorrect_name" xml:space="preserve">
-    <value>Incorrect item name {0}. Please try again.</value>
+    <value>Hatalı eşya adı {0}. Lütfen tekrar dene.</value>
   </data>
   <data name="bot.autoDrop.list" xml:space="preserve">
-    <value>Total {0} in the list:
+    <value>Listede toplam {0}:
  {1}</value>
   </data>
   <data name="bot.autoDrop.not_in_list" xml:space="preserve">
-    <value>Item not in the list</value>
+    <value>Eşya listede değil.</value>
   </data>
   <data name="bot.autoDrop.no_inventory" xml:space="preserve">
-    <value>Cannot find inventory {0}!</value>
+    <value>Envanter {0} bulunamadı!</value>
   </data>
   <data name="bot.autoDrop.no_item" xml:space="preserve">
-    <value>No item in the list</value>
+    <value>Listede eşya yok.</value>
   </data>
   <data name="bot.autoDrop.no_mode" xml:space="preserve">
-    <value>Cannot read drop mode from config. Using include mode.</value>
+    <value>Atma modu okunamadı. Dahil et (include) modu kullanılıyor.</value>
   </data>
   <data name="bot.autoDrop.off" xml:space="preserve">
-    <value>AutoDrop disabled</value>
+    <value>Otomatik Atma kapalı.</value>
   </data>
   <data name="bot.autoDrop.on" xml:space="preserve">
-    <value>AutoDrop enabled</value>
+    <value>Otomatik Atma açık.</value>
   </data>
   <data name="bot.autoDrop.removed" xml:space="preserve">
-    <value>Removed item {0}</value>
+    <value>Eşya çıkarıldı: {0}</value>
   </data>
   <data name="bot.autoDrop.switched" xml:space="preserve">
-    <value>Switched to {0} mode.</value>
+    <value>{0} moduna geçildi.</value>
   </data>
   <data name="bot.autoDrop.unknown_mode" xml:space="preserve">
-    <value>Unknwon mode. Available modes: Include, Exclude, Everything</value>
+    <value>Bilinmeyen mod. Geçerli modlar: Include, Exclude, Everything</value>
   </data>
   <data name="bot.autoFish.available_cmd" xml:space="preserve">
     <value>Available commands: {0}. Use /fish help &lt;cmd name&gt; for more information.</value>
   </data>
   <data name="bot.autoFish.cast_timeout" xml:space="preserve">
-    <value>Casting timeout and will soon retry. (Timeout increased to {0:0.0} sec).</value>
+    <value>Atış zaman aşımı, kısa süre içinde yeniden denenecek. (Zaman aşımı {0:0.0} sn'ye çıkarıldı).</value>
   </data>
   <data name="bot.autoFish.caught" xml:space="preserve">
-    <value>Retract the fishing rod. (Count: {0})</value>
+    <value>Olta çekiliyor. (Sayı: {0})</value>
   </data>
   <data name="bot.autoFish.caught_at" xml:space="preserve">
-    <value>Retract the fishing rod at ({0:0.0},{1:0.0},{2:0.0})! (Count: {3})</value>
+    <value>({0:0.0},{1:0.0},{2:0.0}) konumunda olta çekiliyor! (Sayı: {3})</value>
   </data>
   <data name="bot.autoFish.cmd" xml:space="preserve">
     <value>Auto-Fishing ChatBot command</value>
@@ -338,28 +338,28 @@
     <value>Stop auto-fishing.</value>
   </data>
   <data name="bot.autoFish.no_inv_handle" xml:space="preserve">
-    <value>Inventory handling is not enabled. Cannot check rod durability and switch rods.</value>
+    <value>Envanter İşleme kapalı. Olta dayanıklılığı kontrol edilemez ve olta değiştirilemez.</value>
   </data>
   <data name="bot.autoFish.no_rod" xml:space="preserve">
-    <value>Current fishing rod is not available. Maybe broken or low durability?</value>
+    <value>Mevcut olta kullanılamıyor. Kırık veya düşük dayanıklılıkta olabilir mi?</value>
   </data>
   <data name="bot.autoFish.start" xml:space="preserve">
-    <value>Start auto-fishing.</value>
+    <value>Balık tutma başladı.</value>
   </data>
   <data name="bot.autoFish.start_at" xml:space="preserve">
-    <value>Fishing will start in {0:0.0} second(s).</value>
+    <value>Balık tutma {0:0.0} saniye içinde başlayacak.</value>
   </data>
   <data name="bot.autoFish.status_clear" xml:space="preserve">
-    <value>The record of the obtained items has been cleared.</value>
+    <value>Elde edilen eşyaların kaydı temizlendi.</value>
   </data>
   <data name="bot.autoFish.status_info" xml:space="preserve">
-    <value>All items obtained from fishing (not entirely accurate):</value>
+    <value>Balık tutmadan elde edilen tüm eşyalar (tam olarak doğru değil):</value>
   </data>
   <data name="bot.autoFish.stop" xml:space="preserve">
-    <value>Stop auto-fishing.</value>
+    <value>Balık tutma durduruldu.</value>
   </data>
   <data name="bot.autoFish.switch" xml:space="preserve">
-    <value>Switch to the rod in slot {0}, durability {1}/64.</value>
+    <value>{0}. yuvadaki oltaya geçildi, dayanıklılık {1}/64.</value>
   </data>
   <data name="bot.autoFish.throw" xml:space="preserve">
     <value>Casting successfully.</value>
@@ -368,47 +368,47 @@
     <value>Update yaw = {0:0.00}, pitch = {1:0.00}.</value>
   </data>
   <data name="bot.autoRelog.curr_dir" xml:space="preserve">
-    <value>Current directory was: {0}</value>
+    <value>Geçerli dizin: {0}</value>
   </data>
   <data name="bot.autoRelog.disconnect_msg" xml:space="preserve">
-    <value>Got disconnected with message: {0}</value>
+    <value>Bağlantı kesme mesajı: {0}</value>
   </data>
   <data name="bot.autoRelog.ignore_user_logout" xml:space="preserve">
-    <value>Disconnection initiated by User or MCC bot. Ignoring.</value>
+    <value>Bağlantı kesme kullanıcı veya MCC botu kaynaklı. Yok sayılıyor.</value>
   </data>
   <data name="bot.autoRelog.launch" xml:space="preserve">
-    <value>Launching with {0} reconnection attempts</value>
+    <value>{0} yeniden bağlanma denemesiyle başlatılıyor</value>
   </data>
   <data name="bot.autoRelog.no_kick_msg" xml:space="preserve">
-    <value>Initializing without a kick message file</value>
+    <value>Atılma mesajı dosyası olmadan başlatılıyor</value>
   </data>
   <data name="bot.autoRelog.reconnect" xml:space="preserve">
-    <value>Message contains '{0}'. Reconnecting.</value>
+    <value>Mesaj '{0}' içeriyor. Yeniden bağlanılıyor.</value>
   </data>
   <data name="bot.autoRelog.reconnect_always" xml:space="preserve">
-    <value>Ignoring kick message, reconnecting anyway.</value>
+    <value>Atılma mesajı yok sayılıyor, yine de yeniden bağlanılıyor.</value>
   </data>
   <data name="bot.autoRelog.reconnect_ignore" xml:space="preserve">
-    <value>Message not containing any defined keywords. Ignoring.</value>
+    <value>Mesaj tanımlı anahtar kelime içermiyor. Yok sayılıyor.</value>
   </data>
   <data name="bot.autoRelog.wait" xml:space="preserve">
-    <value>Waiting {0:0.000} seconds before reconnecting...</value>
+    <value>{0:0.000} saniye sonra yeniden bağlanılıyor...</value>
   </data>
   <data name="bot.autoRelog.wait_with_retries" xml:space="preserve">
-    <value>Waiting {0:0.000} seconds before reconnecting... ({1} retries left)</value>
+    <value>{0:0.000} saniye sonra yeniden bağlanılıyor... ({1} deneme kaldı)</value>
   </data>
   <data name="bot.autoRelog.retries_unlimited" xml:space="preserve">
-    <value>unlimited</value>
+    <value>sınırsız</value>
   </data>
   <data name="bot.autoRespond.file_not_found" xml:space="preserve">
-    <value>File not found: '{0}'</value>
+    <value>Dosya bulunamadı: '{0}'</value>
   </data>
   <data name="bot.autoRespond.loaded_match" xml:space="preserve">
     <value>Loaded match:
 {0}</value>
   </data>
   <data name="bot.autoRespond.loading" xml:space="preserve">
-    <value>Loading matches from '{0}'</value>
+    <value>Kurallar '{0}' dosyasından yükleniyor</value>
   </data>
   <data name="bot.autoRespond.match" xml:space="preserve">
     <value>match: {0}
@@ -682,13 +682,13 @@ cooldown: {6}</value>
     <value>Record stopped.</value>
   </data>
   <data name="bot.script.fail" xml:space="preserve">
-    <value>Script '{0}' failed to run ({1}).</value>
+    <value>'{0}' betiği çalıştırılamadı ({1}).</value>
   </data>
   <data name="bot.script.file_not_found" xml:space="preserve">
-    <value>File not found: '{0}'</value>
+    <value>Dosya bulunamadı: '{0}'</value>
   </data>
   <data name="bot.script.not_found" xml:space="preserve">
-    <value>[MCC] [{0}] Cannot find script file: {1}</value>
+    <value>[MCC] [{0}] Betik dosyası bulunamadı: {1}</value>
   </data>
   <data name="bot.script.pm.loaded" xml:space="preserve">
     <value>Script '{0}' loaded.</value>
@@ -906,86 +906,85 @@ Add the ID of this chat to "Authorized_Chat_Ids" field in the configuration file
     <value>Server reported protocol {0} ({1}), upgraded to {2} ({3}) for best compatibility</value>
   </data>
   <data name="cache.converting" xml:space="preserve">
-    <value>Converting session cache from disk: {0}</value>
+    <value>Oturum önbelleği diskten dönüştürülüyor: {0}</value>
   </data>
   <data name="cache.ignore_line" xml:space="preserve">
-    <value>Ignoring invalid session token line: {0}</value>
+    <value>Geçersiz oturum jetonu satırı yok sayılıyor: {0}</value>
   </data>
   <data name="cache.ignore_line_keys" xml:space="preserve">
-    <value>Ignoring invalid profile key token line: {0}</value>
+    <value>Geçersiz profil anahtarı jetonu satırı yok sayılıyor: {0}</value>
   </data>
   <data name="cache.ignore_string" xml:space="preserve">
-    <value>Ignoring session token string '{0}': {1}</value>
+    <value>Oturum jetonu '{0}' yok sayılıyor: {1}</value>
   </data>
   <data name="cache.ignore_string_keys" xml:space="preserve">
-    <value>Ignoring profile key token string '{0}': {1}</value>
+    <value>Profil anahtarı jetonu '{0}' yok sayılıyor: {1}</value>
   </data>
   <data name="cache.loaded" xml:space="preserve">
-    <value>Loaded session: {0}:{1}</value>
+    <value>Oturum yüklendi: {0}:{1}</value>
   </data>
   <data name="cache.loaded_keys" xml:space="preserve">
-    <value>Loaded profile key, it will be refresh at {0}</value>
+    <value>Profil anahtarı yüklendi, {0} tarihinde yenilenecek</value>
   </data>
   <data name="cache.loading" xml:space="preserve">
-    <value>Loading Minecraft profiles: {0}</value>
+    <value>Minecraft profilleri yükleniyor: {0}</value>
   </data>
   <data name="cache.loading_keys" xml:space="preserve">
-    <value>Loading profile key cache from disk: {0}</value>
+    <value>Profil anahtarı önbelleği diskten yükleniyor: {0}</value>
   </data>
   <data name="cache.loading_session" xml:space="preserve">
-    <value>Loading session cache from disk: {0}</value>
+    <value>Oturum önbelleği diskten yükleniyor: {0}</value>
   </data>
   <data name="cache.malformed" xml:space="preserve">
-    <value>Got malformed data while reading serialized session cache from disk: {0}</value>
+    <value>Diskten serileştirilmiş oturum önbelleği okunurken bozuk veri alındı: {0}</value>
   </data>
   <data name="cache.read_fail" xml:space="preserve">
-    <value>Failed to read serialized session cache from disk: {0}</value>
+    <value>Diskten serileştirilmiş oturum önbelleği okunamadı: {0}</value>
   </data>
   <data name="cache.read_fail_plain" xml:space="preserve">
-    <value>Failed to read session cache from disk: {0}</value>
+    <value>Diskten oturum önbelleği okunamadı: {0}</value>
   </data>
   <data name="cache.read_fail_plain_keys" xml:space="preserve">
-    <value>Failed to read profile key cache from disk: {0}</value>
+    <value>Diskten profil anahtarı önbelleği okunamadı: {0}</value>
   </data>
   <data name="cache.save_fail" xml:space="preserve">
-    <value>Failed to write session cache to disk: {0}</value>
+    <value>Oturum önbelleği diske yazılamadı: {0}</value>
   </data>
   <data name="cache.save_fail_keys" xml:space="preserve">
-    <value>Failed to write profile key cache to disk: {0}</value>
+    <value>Profil anahtarı önbelleği diske yazılamadı: {0}</value>
   </data>
   <data name="cache.saving" xml:space="preserve">
-    <value>Saving session cache to disk</value>
+    <value>Oturum önbelleği diske kaydediliyor</value>
   </data>
   <data name="cache.saving_keys" xml:space="preserve">
-    <value>Saving profile key cache to disk</value>
+    <value>Profil anahtarı önbelleği diske kaydediliyor</value>
   </data>
   <data name="chat.done" xml:space="preserve">
-    <value>Done. File saved as '{0}'</value>
+    <value>Tamamlandı. Dosya '{0}' olarak kaydedildi</value>
   </data>
   <data name="chat.download" xml:space="preserve">
-    <value>Downloading '{0}.json' from Mojang servers...</value>
+    <value>Mojang sunucularından '{0}.json' indiriliyor...</value>
   </data>
   <data name="chat.fail" xml:space="preserve">
-    <value>Failed to download the file.</value>
+    <value>Dosya indirilemedi.</value>
   </data>
   <data name="chat.loaded" xml:space="preserve">
-    <value>Translations file loaded.</value>
+    <value>Çeviri dosyası yüklendi.</value>
   </data>
   <data name="chat.message_chain_broken" xml:space="preserve">
-    <value>Player {0}'s message chain is broken!</value>
+    <value>{0} oyuncusunun mesaj zinciri bozuk!</value>
   </data>
   <data name="chat.not_found" xml:space="preserve">
-    <value>Translations file not found: '{0}'
-Some messages won't be properly printed without this file.</value>
+    <value>Çeviri dosyası bulunamadı: '{0}'</value>
   </data>
   <data name="chat.request" xml:space="preserve">
-    <value>Performing request to {0}</value>
+    <value>{0} adresine istek yapılıyor</value>
   </data>
   <data name="chat.save_fail" xml:space="preserve">
-    <value>Failed to save the file {0}.</value>
+    <value>{0} dosyası kaydedilemedi.</value>
   </data>
   <data name="chat.use_default" xml:space="preserve">
-    <value>Switch to use Minecraft's default language resource "en_us.json".</value>
+    <value>Minecraft'ın varsayılan dil kaynağına geçiliyor: "en_us.json".</value>
   </data>
   <data name="chatbot.reconnect" xml:space="preserve">
     <value>[{0}] Disconnecting and Reconnecting to the Server</value>
@@ -1725,25 +1724,25 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Top slot</value>
   </data>
   <data name="error.auth" xml:space="preserve">
-    <value>Got error code from server while refreshing authentication: {0}</value>
+    <value>Kimlik yenilenirken sunucudan hata kodu alındı: {0}</value>
   </data>
   <data name="error.connect" xml:space="preserve">
-    <value>Failed to connect to this IP.</value>
+    <value>Bu IP'ye bağlanılamadı.</value>
   </data>
   <data name="error.connection_timeout" xml:space="preserve">
-    <value>A timeout occured while attempting to connect to this IP.</value>
+    <value>Bu IP'ye bağlanmaya çalışırken zaman aşımı oluştu.</value>
   </data>
   <data name="error.determine" xml:space="preserve">
-    <value>Failed to determine server version.</value>
+    <value>Sunucu sürümü belirlenemedi.</value>
   </data>
   <data name="error.forge" xml:space="preserve">
-    <value>Forge Login Handshake did not complete successfully</value>
+    <value>Forge giriş anlaşması başarıyla tamamlanmadı.</value>
   </data>
   <data name="error.forgeforce" xml:space="preserve">
-    <value>Cannot force Forge support for this Minecraft version!</value>
+    <value>Bu Minecraft sürümü için Forge desteği zorlanamıyor!</value>
   </data>
   <data name="error.forge_encrypt" xml:space="preserve">
-    <value>Forge StartEncryption Handshake did not complete successfully</value>
+    <value>Forge şifreleme başlatma anlaşması başarıyla tamamlanmadı.</value>
   </data>
   <data name="error.generator.invalid" xml:space="preserve">
     <value>Invalid usage of the generator command!</value>
@@ -1755,61 +1754,61 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Invalid data path provided! (The path either does not exists or you have made a typo)</value>
   </data>
   <data name="error.http_code" xml:space="preserve">
-    <value>Got error code from server: {0}</value>
+    <value>Sunucudan hata kodu alındı: {0}</value>
   </data>
   <data name="error.invalid_encrypt" xml:space="preserve">
-    <value>Invalid response to StartEncryption packet</value>
+    <value>Şifreleme başlatma paketine geçersiz yanıt</value>
   </data>
   <data name="error.invalid_response" xml:space="preserve">
-    <value>Invalid response to Handshake packet</value>
+    <value>Anlaşma paketine geçersiz yanıt</value>
   </data>
   <data name="error.inventoryhandling_not_enabled" xml:space="preserve">
-    <value>This feature requires Inventory Handling to be enabled in order to work!</value>
+    <value>Bu özellik için Envanter İşleme'nin açık olması gerekir!</value>
   </data>
   <data name="error.join" xml:space="preserve">
-    <value>An error occured when attempting to join this server.</value>
+    <value>Bu sunucuya bağlanmaya çalışırken bir hata oluştu.</value>
   </data>
   <data name="error.login" xml:space="preserve">
-    <value>Login failed : </value>
+    <value>Giriş başarısız: </value>
   </data>
   <data name="error.login.blocked" xml:space="preserve">
-    <value>Incorrect username/password, blacklisted IP or too many logins.</value>
+    <value>Hatalı kullanıcı adı/şifre, kara listedeki IP veya çok fazla giriş denemesi.</value>
   </data>
   <data name="error.login.cancel" xml:space="preserve">
-    <value>User cancelled.</value>
+    <value>Kullanıcı iptal etti.</value>
   </data>
   <data name="error.login.migrated" xml:space="preserve">
-    <value>Account migrated, use e-mail as username.</value>
+    <value>Hesap taşınmış, kullanıcı adı olarak e-posta kullan.</value>
   </data>
   <data name="error.login.network" xml:space="preserve">
-    <value>Network error.</value>
+    <value>Ağ hatası.</value>
   </data>
   <data name="error.login.premium" xml:space="preserve">
-    <value>User not premium.</value>
+    <value>Kullanıcı premium değil.</value>
   </data>
   <data name="error.login.response" xml:space="preserve">
-    <value>Invalid server response.</value>
+    <value>Geçersiz sunucu yanıtı.</value>
   </data>
   <data name="error.login.server" xml:space="preserve">
-    <value>Login servers are unavailable. Please try again later.</value>
+    <value>Giriş sunucuları kullanılamıyor. Lütfen daha sonra tekrar dene.</value>
   </data>
   <data name="error.login.ssl" xml:space="preserve">
-    <value>SSL Error.</value>
+    <value>SSL hatası.</value>
   </data>
   <data name="error.login.unknown" xml:space="preserve">
-    <value>Unknown Error.</value>
+    <value>Bilinmeyen hata.</value>
   </data>
   <data name="error.login_failed" xml:space="preserve">
-    <value>Failed to login to this server.</value>
+    <value>Bu sunucuya giriş yapılamadı.</value>
   </data>
   <data name="error.missing.argument" xml:space="preserve">
-    <value>You are missing argument {0}</value>
+    <value>{0} argümanı eksik</value>
   </data>
   <data name="error.no_version_report" xml:space="preserve">
-    <value>Server does not report its protocol version, autodetection will not work.</value>
+    <value>Sunucu protokol sürümünü bildirmiyor, otomatik algılama çalışmayacak.</value>
   </data>
   <data name="error.ping" xml:space="preserve">
-    <value>Failed to ping this IP.</value>
+    <value>Bu IP'ye ping başarısız.</value>
   </data>
   <data name="error.realms.access_denied" xml:space="preserve">
     <value>This Realms world does not exist or access was denied</value>
@@ -1827,25 +1826,25 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Realms server may require some time to start up. Please retry again later.</value>
   </data>
   <data name="error.setting.argument_syntax" xml:space="preserve">
-    <value>{0}: Invalid syntax, expecting --argname=value or --section.argname=value</value>
+    <value>{0}: Geçersiz sözdizimi, --argname=değer veya --section.argname=değer bekleniyor</value>
   </data>
   <data name="error.terrain_not_enabled" xml:space="preserve">
-    <value>This feature requires Terrain And Movements to be enabled in order to work!</value>
+    <value>Bu özellik için Arazi ve Hareket'in açık olması gerekir!</value>
   </data>
   <data name="error.timeout" xml:space="preserve">
-    <value>Connection Timeout</value>
+    <value>Bağlantı Zaman Aşımı</value>
   </data>
   <data name="error.unexpect_response" xml:space="preserve">
-    <value>Unexpected response from the server (is that a Minecraft server?)</value>
+    <value>Sunucudan beklenmeyen yanıt (bu bir Minecraft sunucusu mu?)</value>
   </data>
   <data name="error.unsupported" xml:space="preserve">
-    <value>Cannot connect to the server : This version is not supported !</value>
+    <value>Sunucuya bağlanılamadı: bu sürüm desteklenmiyor!</value>
   </data>
   <data name="error.usage" xml:space="preserve">
-    <value>Usage:</value>
+    <value>Kullanım:</value>
   </data>
   <data name="error.version_different" xml:space="preserve">
-    <value>Server reports a different version than manually set. Login may not work.</value>
+    <value>Sunucu, elle ayarlanandan farklı bir sürüm bildiriyor. Giriş çalışmayabilir.</value>
   </data>
   <data name="exception.chatbot.init" xml:space="preserve">
     <value>ChatBot methods should NOT be called in the constructor as API handler is not initialized yet. Override Initialize() or AfterGameJoined() instead to perform initialization tasks.</value>
@@ -1920,52 +1919,52 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>[{0}] Initializing FileSystemWatcher for file: {1}</value>
   </data>
   <data name="forge.accept" xml:space="preserve">
-    <value>Accepting server mod list...</value>
+    <value>Sunucu mod listesi kabul ediliyor...</value>
   </data>
   <data name="forge.accept_registry" xml:space="preserve">
-    <value>Accepting server registries...</value>
+    <value>Sunucu kayıtları kabul ediliyor...</value>
   </data>
   <data name="forge.complete" xml:space="preserve">
-    <value>Forge server connection complete!</value>
+    <value>Forge sunucu bağlantısı tamamlandı!</value>
   </data>
   <data name="forge.fml2.config" xml:space="preserve">
-    <value>Acknowledging FML2 Server Config: {0}</value>
+    <value>FML2 Sunucu Yapılandırması onaylanıyor: {0}</value>
   </data>
   <data name="forge.fml2.mod" xml:space="preserve">
-    <value>Received FML2 Server Mod List</value>
+    <value>FML2 Sunucu Mod Listesi alındı</value>
   </data>
   <data name="forge.fml2.mod_send" xml:space="preserve">
-    <value>Sending back FML2 Client Mod List</value>
+    <value>FML2 İstemci Mod Listesi geri gönderiliyor</value>
   </data>
   <data name="forge.fml2.registry" xml:space="preserve">
-    <value>Acknowledging FML2 Server Registry: {0}</value>
+    <value>FML2 Sunucu Kaydı onaylanıyor: {0}</value>
   </data>
   <data name="forge.fml2.unknown" xml:space="preserve">
-    <value>Got Unknown FML2 Handshake message no. {0}</value>
+    <value>Bilinmeyen FML2 anlaşma mesajı no. {0}</value>
   </data>
   <data name="forge.fml2.unknown_channel" xml:space="preserve">
-    <value>Ignoring Unknown FML2 LoginMessage channel: {0}</value>
+    <value>Bilinmeyen FML2 LoginMessage kanalı yok sayılıyor: {0}</value>
   </data>
   <data name="forge.mod_list" xml:space="preserve">
-    <value>Mod list:</value>
+    <value>Mod listesi:</value>
   </data>
   <data name="forge.no_mod" xml:space="preserve">
-    <value>Server is running Forge without mods.</value>
+    <value>Sunucu Forge çalıştırıyor (modsuz).</value>
   </data>
   <data name="forge.registry" xml:space="preserve">
-    <value>Received registry with {0} entries</value>
+    <value>{0} kayıtlı kayıt defteri alındı</value>
   </data>
   <data name="forge.registry_2" xml:space="preserve">
-    <value>Received registry {0} with {1} entries</value>
+    <value>{1} kayıtlı {0} kayıt defteri alındı</value>
   </data>
   <data name="forge.send_mod" xml:space="preserve">
-    <value>Sending falsified mod list to server...</value>
+    <value>Sunucuya sahte mod listesi gönderiliyor...</value>
   </data>
   <data name="forge.version" xml:space="preserve">
-    <value>Forge protocol version : {0}</value>
+    <value>Forge protokol sürümü: {0}</value>
   </data>
   <data name="forge.with_mod" xml:space="preserve">
-    <value>Server is running Forge with {0} mods.</value>
+    <value>Sunucu Forge çalıştırıyor ({0} mod ile).</value>
   </data>
   <data name="general.available_cmd" xml:space="preserve">
     <value>Available commands: {0}</value>
@@ -2002,7 +2001,7 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Your browser should open automatically. If not, open the link below in your browser.</value>
   </data>
   <data name="mcc.connecting" xml:space="preserve">
-    <value>Connecting to {0}...</value>
+    <value>{0} adresine bağlanılıyor...</value>
   </data>
   <data name="mcc.console_mode_tui_recommendation" xml:space="preserve">
     <value>Tip: try TUI mode for a cleaner interface, mouse-friendly inventory actions, and a nicer layout. Run {0}tryout tui§8 to switch [Console.General] ConsoleMode to "tui" for the next restart.</value>
@@ -2017,34 +2016,34 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Please report this issue to the MCC Team.</value>
   </data>
   <data name="mcc.device_code_prompt" xml:space="preserve">
-    <value>To sign in, open {0} in your browser and enter the code: §e{1}</value>
+    <value>Premium giriş → Tarayıcında şu adresi aç: {0} → Kod: §e{1}</value>
   </data>
   <data name="mcc.device_code_waiting" xml:space="preserve">
-    <value>Waiting for authentication to complete...</value>
+    <value>Microsoft giriş onayı bekleniyor...</value>
   </data>
   <data name="mcc.disconnect.login" xml:space="preserve">
-    <value>Login failed :</value>
+    <value>Giriş başarısız:</value>
   </data>
   <data name="mcc.disconnect.lost" xml:space="preserve">
-    <value>Connection has been lost.</value>
+    <value>Sunucu bağlantısı koptu.</value>
   </data>
   <data name="mcc.disconnect.server" xml:space="preserve">
-    <value>Disconnected by Server :</value>
+    <value>Sunucu bağlantıyı kesti:</value>
   </data>
   <data name="mcc.disconnected" xml:space="preserve">
-    <value>Not connected to any server. Use '{0}help' for help.</value>
+    <value>Hiçbir sunucuya bağlı değil. Yardım için '{0}help' yaz.</value>
   </data>
   <data name="mcc.fetching_key" xml:space="preserve">
-    <value>Fetching profile key from Microsoft.</value>
+    <value>Microsoft'tan profil anahtarı alınıyor.</value>
   </data>
   <data name="mcc.forge" xml:space="preserve">
-    <value>Checking if server is running Forge...</value>
+    <value>Sunucunun Forge çalıştırıp çalıştırmadığı kontrol ediliyor...</value>
   </data>
   <data name="mcc.forgeforce" xml:space="preserve">
     <value>Force-enabling Forge support.</value>
   </data>
   <data name="mcc.found" xml:space="preserve">
-    <value>Found server {0}:{1} for domain {2}</value>
+    <value>{2} alan adı için sunucu bulundu: {0}:{1}</value>
   </data>
   <data name="mcc.generator.done" xml:space="preserve">
     <value>Succesfully generated {0} palette using the dataset: {1}</value>
@@ -2056,7 +2055,7 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>New configuration file "{0}" is generated.</value>
   </data>
   <data name="mcc.handshake" xml:space="preserve">
-    <value>Handshake successful. (Server ID: {0})</value>
+    <value>El sıkışma başarılı. (Sunucu Kimliği: {0})</value>
   </data>
   <data name="mcc.has_update" xml:space="preserve">
     <value>A new version of MCC is available and you can download it via /upgrade
@@ -2072,8 +2071,8 @@ Or download it manually: {0}</value>
     <value>Server IP : </value>
   </data>
   <data name="mcc.joined" xml:space="preserve">
-    <value>Server was successfully joined.
-Type '{0}quit' to leave the server.</value>
+    <value>Sunucuya başarıyla bağlanıldı.
+Ayrılmak için '{0}quit' yaz.</value>
   </data>
   <data name="mcc.link" xml:space="preserve">
     <value>Link: {0}</value>
@@ -2085,11 +2084,11 @@ Type '{0}quit' to leave the server.</value>
     <value>Please type the username or email of your choice.</value>
   </data>
   <data name="mcc.not_found" xml:space="preserve">
-    <value>Failed to perform SRV lookup for {0}
+    <value>{0} için SRV kaydı bulunamadı.
 {1}: {2}</value>
   </data>
   <data name="mcc.offline" xml:space="preserve">
-    <value>You chose to run in offline mode.</value>
+    <value>Çevrimdışı (offline) modda çalışılıyor.</value>
   </data>
   <data name="mcc.password_basic_io" xml:space="preserve">
     <value>Please type the password for {0}.</value>
@@ -2098,19 +2097,19 @@ Type '{0}quit' to leave the server.</value>
     <value>Password(invisible): </value>
   </data>
   <data name="mcc.player_dead" xml:space="preserve">
-    <value>You are dead. Type '{0}respawn' to respawn.</value>
+    <value>Öldün. Yeniden doğmak için '{0}respawn' yaz.</value>
   </data>
   <data name="mcc.player_dead_respawn" xml:space="preserve">
-    <value>You are dead. Automatically respawning after 1 second.</value>
+    <value>Öldün. 1 saniye içinde otomatik yeniden doğuluyor.</value>
   </data>
   <data name="mcc.press_exit" xml:space="preserve">
     <value>Or press Enter to exit Minecraft Console Client.</value>
   </data>
   <data name="mcc.profile_key_invalid" xml:space="preserve">
-    <value>Cached profile key needs to be refreshed.</value>
+    <value>Kayıtlı profil anahtarı yenilenmeli.</value>
   </data>
   <data name="mcc.profile_key_valid" xml:space="preserve">
-    <value>Cached profile key is still valid for {0}.</value>
+    <value>Kayıtlı profil anahtarı hâlâ geçerli: {0}</value>
   </data>
   <data name="mcc.realms_available" xml:space="preserve">
     <value>You have access to the following Realms worlds</value>
@@ -2119,54 +2118,53 @@ Type '{0}quit' to leave the server.</value>
     <value>Use realms:&lt;index&gt; as server IP to join a Realms world</value>
   </data>
   <data name="mcc.reconnect" xml:space="preserve">
-    <value>Waiting 5 seconds ({0} attempts left)...</value>
+    <value>5 saniye bekleniyor ({0} deneme kaldı)...</value>
   </data>
   <data name="mcc.resolve" xml:space="preserve">
-    <value>Resolving {0}...</value>
+    <value>{0} çözümleniyor...</value>
   </data>
   <data name="mcc.restart" xml:space="preserve">
-    <value>Restarting Minecraft Console Client...</value>
+    <value>Bot yeniden başlatılıyor...</value>
   </data>
   <data name="mcc.send_text_not_connected" xml:space="preserve">
-    <value>Cannot send text: not connected to a server.</value>
+    <value>Metin gönderilemiyor: sunucuya bağlı değil.</value>
   </data>
   <data name="mcc.restart_delay" xml:space="preserve">
-    <value>Waiting {0} seconds before restarting...</value>
+    <value>{0} saniye sonra yeniden başlatılıyor...</value>
   </data>
   <data name="mcc.retrieve" xml:space="preserve">
-    <value>Retrieving Server Info...</value>
+    <value>Sunucu bilgisi alınıyor...</value>
   </data>
   <data name="mcc.run_with_default_settings" xml:space="preserve">
     <value>
 MCC is running with default settings.</value>
   </data>
   <data name="mcc.server_offline" xml:space="preserve">
-    <value>Server is in offline mode.</value>
+    <value>Sunucu çevrimdışı (offline) modda.</value>
   </data>
   <data name="mcc.server_protocol" xml:space="preserve">
-    <value>Server version: {0} (protocol v{1})</value>
+    <value>Sunucu sürümü: {0} (protokol v{1})</value>
   </data>
   <data name="mcc.server_version" xml:space="preserve">
-    <value>Server version: </value>
+    <value>Sunucu sürümü: </value>
   </data>
   <data name="mcc.session" xml:space="preserve">
-    <value>Checking Session...</value>
+    <value>Oturum denetleniyor...</value>
   </data>
   <data name="mcc.session_fail" xml:space="preserve">
-    <value>Failed to check session.</value>
+    <value>Oturum denetlenemedi.</value>
   </data>
   <data name="mcc.session_invalid" xml:space="preserve">
-    <value>Cached session is invalid or expired.</value>
+    <value>Kayıtlı oturum geçersiz veya süresi dolmuş.</value>
   </data>
   <data name="mcc.session_valid" xml:space="preserve">
-    <value>Cached session is still valid for {0}.</value>
+    <value>Kayıtlı oturum hâlâ geçerli: {0}</value>
   </data>
   <data name="mcc.settings_generated" xml:space="preserve">
     <value>Settings file MinecraftClient.ini has been generated.</value>
   </data>
   <data name="mcc.unknown_version" xml:space="preserve">
-    <value>Unknown or not supported MC version {0}.
-Switching to autodetection mode.</value>
+    <value>Bilinmeyen veya desteklenmeyen MC sürümü {0}.</value>
   </data>
   <data name="mcc.update.already_latest" xml:space="preserve">
     <value>The current version is already up to date or is a development build.</value>
@@ -2214,11 +2212,10 @@ Switching to autodetection mode.</value>
     <value>Please use the newly generated MinecraftClient.ini</value>
   </data>
   <data name="mcc.use_version" xml:space="preserve">
-    <value>Using Minecraft version {0} (protocol v{1})</value>
+    <value>Minecraft sürümü: {0} (protokol v{1})</value>
   </data>
   <data name="mcc.version_supported" xml:space="preserve">
-    <value>Version is supported.
-Logging in...</value>
+    <value>Sürüm destekleniyor.</value>
   </data>
   <data name="mcc.with_forge" xml:space="preserve">
     <value>, with Forge</value>
@@ -2504,7 +2501,7 @@ see item details.</value>
     <value>You're now under {0} effect (Duration: {1}).</value>
   </data>
   <data name="bot.effect.expired" xml:space="preserve">
-    <value>Effect {0} has expired</value>
+    <value>{0} etkisi sona erdi</value>
   </data>
   <data name="effect.duration.unlimited" xml:space="preserve">
     <value>Unlimited</value>
