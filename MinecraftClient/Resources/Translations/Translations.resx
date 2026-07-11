@@ -420,7 +420,7 @@ ownersOnly: {5}
 cooldown: {6}</value>
   </data>
   <data name="bot.autoRespond.match_run" xml:space="preserve">
-    <value>Running action: {0}</value>
+    <value>Çalıştırılıyor: {0}</value>
   </data>
   <data name="bot.autoRespond.no_action" xml:space="preserve">
     <value>Eşleşme için işlem yok:
@@ -721,13 +721,13 @@ cooldown: {6}</value>
 {0}</value>
   </data>
   <data name="bot.scriptScheduler.running_inverval" xml:space="preserve">
-    <value>Interval / Running action: {0}</value>
+    <value>Aralık / Çalıştırılıyor: {0}</value>
   </data>
   <data name="bot.scriptScheduler.running_login" xml:space="preserve">
-    <value>Login / Running action: {0}</value>
+    <value>Giriş / Çalıştırılıyor: {0}</value>
   </data>
   <data name="bot.scriptScheduler.running_time" xml:space="preserve">
-    <value>Time / Running action: {0}</value>
+    <value>Zaman / Çalıştırılıyor: {0}</value>
   </data>
   <data name="bot.scriptScheduler.task" xml:space="preserve">
     <value>triggeronfirstlogin: {0}
@@ -792,37 +792,37 @@ Erişim için bu sohbetin kimliğini yapılandırma dosyasındaki "Authorized_Ch
     <value>Bot: {0} told me : {1}</value>
   </data>
   <data name="botname.Alerts" xml:space="preserve">
-    <value>Alerts</value>
+    <value>Uyarılar</value>
   </data>
   <data name="botname.AntiAFK" xml:space="preserve">
-    <value>AntiAFK</value>
+    <value>AFK Önleyici</value>
   </data>
   <data name="botname.AutoAttack" xml:space="preserve">
-    <value>AutoAttack</value>
+    <value>Otomatik Saldırı</value>
   </data>
   <data name="botname.AutoCraft" xml:space="preserve">
-    <value>AutoCraft</value>
+    <value>Otomatik Üretim</value>
   </data>
   <data name="botname.AutoDig" xml:space="preserve">
-    <value>AutoDig</value>
+    <value>Otomatik Kazı</value>
   </data>
   <data name="botname.AutoDrop" xml:space="preserve">
-    <value>AutoDrop</value>
+    <value>Otomatik Atma</value>
   </data>
   <data name="botname.AutoEat" xml:space="preserve">
-    <value>AutoEat</value>
+    <value>Otomatik Yeme</value>
   </data>
   <data name="botname.AutoFishing" xml:space="preserve">
-    <value>AutoFishing</value>
+    <value>Otomatik Balık Tutma</value>
   </data>
   <data name="botname.AutoRelog" xml:space="preserve">
-    <value>AutoRelog</value>
+    <value>Otomatik Yeniden Bağlanma</value>
   </data>
   <data name="botname.AutoRespond" xml:space="preserve">
-    <value>AutoRespond</value>
+    <value>Otomatik Yanıt</value>
   </data>
   <data name="botname.ChatLog" xml:space="preserve">
-    <value>ChatLog</value>
+    <value>Sohbet Kaydı</value>
   </data>
   <data name="botname.DiscordBridge" xml:space="preserve">
     <value>DiscordBridge</value>
@@ -831,34 +831,34 @@ Erişim için bu sohbetin kimliğini yapılandırma dosyasındaki "Authorized_Ch
     <value>DiscordRpc</value>
   </data>
   <data name="botname.Farmer" xml:space="preserve">
-    <value>Farmer</value>
+    <value>Çiftçi</value>
   </data>
   <data name="botname.FollowPlayer" xml:space="preserve">
-    <value>FollowPlayer</value>
+    <value>Oyuncu Takip</value>
   </data>
   <data name="botname.HangmanGame" xml:space="preserve">
-    <value>HangmanGame</value>
+    <value>Adam Asmaca</value>
   </data>
   <data name="botname.Mailer" xml:space="preserve">
-    <value>Mailer</value>
+    <value>Posta</value>
   </data>
   <data name="botname.Map" xml:space="preserve">
-    <value>Map</value>
+    <value>Harita</value>
   </data>
   <data name="botname.PlayerListLogger" xml:space="preserve">
-    <value>PlayerListLogger</value>
+    <value>Oyuncu Listesi Kaydı</value>
   </data>
   <data name="botname.RemoteControl" xml:space="preserve">
-    <value>RemoteControl</value>
+    <value>Uzaktan Kumanda</value>
   </data>
   <data name="botname.ReplayCapture" xml:space="preserve">
-    <value>ReplayCapture</value>
+    <value>Tekrar Kaydı</value>
   </data>
   <data name="botname.Script" xml:space="preserve">
-    <value>Script</value>
+    <value>Betik</value>
   </data>
   <data name="botname.ScriptScheduler" xml:space="preserve">
-    <value>ScriptScheduler</value>
+    <value>Betik Zamanlayıcı</value>
   </data>
   <data name="botname.TelegramBridge" xml:space="preserve">
     <value>TelegramBridge</value>
@@ -879,13 +879,13 @@ Erişim için bu sohbetin kimliğini yapılandırma dosyasındaki "Authorized_Ch
     <value>Sunucu:</value>
   </data>
   <data name="mcc.server_info.label_version" xml:space="preserve">
-    <value>Version:</value>
+    <value>Sürüm:</value>
   </data>
   <data name="mcc.server_info.label_protocol" xml:space="preserve">
-    <value>Protocol: {0}</value>
+    <value>Protokol: {0}</value>
   </data>
   <data name="mcc.server_info.label_players" xml:space="preserve">
-    <value>Players:</value>
+    <value>Oyuncular:</value>
   </data>
   <data name="mcc.server_info.label_ping" xml:space="preserve">
     <value>Ping:</value>
@@ -894,10 +894,10 @@ Erişim için bu sohbetin kimliğini yapılandırma dosyasındaki "Authorized_Ch
     <value>{0} ms</value>
   </data>
   <data name="mcc.server_info.label_connecting_as" xml:space="preserve">
-    <value>Connecting as:</value>
+    <value>Bağlanılan sürüm:</value>
   </data>
   <data name="mcc.server_info.label_online" xml:space="preserve">
-    <value>Online Players:</value>
+    <value>Çevrimiçi oyuncular:</value>
   </data>
   <data name="mcc.server_info.sample_more" xml:space="preserve">
     <value>... +{0}</value>
