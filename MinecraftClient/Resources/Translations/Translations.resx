@@ -118,25 +118,25 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="bot.alerts.end_rain" xml:space="preserve">
-    <value>Weather change: It is no longer raining.</value>
+    <value>Hava değişimi: Yağmur durdu.</value>
   </data>
   <data name="bot.alerts.end_thunderstorm" xml:space="preserve">
-    <value>Weather change: It is no longer a thunderstorm.</value>
+    <value>Hava değişimi: Fırtına durdu.</value>
   </data>
   <data name="bot.alerts.start_rain" xml:space="preserve">
-    <value>Weather change: It is raining now.</value>
+    <value>Hava değişimi: Yağmur başladı.</value>
   </data>
   <data name="bot.alerts.start_thunderstorm" xml:space="preserve">
-    <value>Weather change: It is a thunderstorm.</value>
+    <value>Hava değişimi: Fırtına başladı.</value>
   </data>
   <data name="bot.antiafk.invalid_walk_range" xml:space="preserve">
     <value>Geçersiz yürüme mesafesi; 0'dan büyük pozitif tam sayı olmalı, varsayılan 5 kullanılıyor!</value>
   </data>
   <data name="bot.antiafk.not_using_terrain_handling" xml:space="preserve">
-    <value>The terrain handling is not enabled in the settings of the client, enable it if you want to use it with this bot. Using alternative (command) method.</value>
+    <value>İstemci ayarlarında arazi işleme etkin değil; bu botla kullanmak istiyorsan etkinleştir. Alternatif (komut) yöntemi kullanılıyor.</value>
   </data>
   <data name="bot.antiafk.swapping" xml:space="preserve">
-    <value>The time range begins with a bigger value, swapped them around.</value>
+    <value>Zaman aralığı büyük değerle başlıyordu, değerler yer değiştirildi.</value>
   </data>
   <data name="bot.autoAttack.invalidcooldown" xml:space="preserve">
     <value>Saldırı bekleme süresi 0'dan küçük olamaz.</value>
@@ -145,16 +145,16 @@
     <value>Üretim iptal edildi! Malzemelerini kontrol et.</value>
   </data>
   <data name="bot.autoCraft.alias" xml:space="preserve">
-    <value>Auto-crafting ChatBot command alias</value>
+    <value>Otomatik Üretim sohbet botu komut takma adı</value>
   </data>
   <data name="bot.autoCraft.available_cmd" xml:space="preserve">
-    <value>Available commands: {0}. Use /autocraft help &lt;cmd name&gt; for more information.</value>
+    <value>Kullanılabilir komutlar: {0}. Daha fazla bilgi için /autocraft help &lt;komut adı&gt; kullan.</value>
   </data>
   <data name="bot.autoCraft.close_inventory" xml:space="preserve">
     <value>Envanter #{0} Otomatik Üretim tarafından kapatıldı.</value>
   </data>
   <data name="bot.autoCraft.cmd" xml:space="preserve">
-    <value>Auto-crafting ChatBot command</value>
+    <value>Otomatik Üretim sohbet botu komutu</value>
   </data>
   <data name="bot.autoCraft.cmd.list" xml:space="preserve">
     <value>Total {0} recipes loaded: {1}</value>
@@ -169,25 +169,25 @@
     <value>Tarif ayrıştırılırken tarif adı eksik.</value>
   </data>
   <data name="bot.autoCraft.help.help" xml:space="preserve">
-    <value>Get the command description. Usage: /autocraft help &lt;command name&gt;</value>
+    <value>Komut açıklamasını al. Kullanım: /autocraft help &lt;komut adı&gt;</value>
   </data>
   <data name="bot.autoCraft.help.list" xml:space="preserve">
-    <value>List available recipes.</value>
+    <value>Kullanılabilir tarifleri listele.</value>
   </data>
   <data name="bot.autoCraft.help.load" xml:space="preserve">
-    <value>Load the config file.</value>
+    <value>Yapılandırma dosyasını yükle.</value>
   </data>
   <data name="bot.autoCraft.help.reload" xml:space="preserve">
-    <value>Reload the config file.</value>
+    <value>Yapılandırma dosyasını yeniden yükle.</value>
   </data>
   <data name="bot.autoCraft.help.resetcfg" xml:space="preserve">
-    <value>Write the default example config to default location.</value>
+    <value>Varsayılan örnek yapılandırmayı varsayılan konuma yaz.</value>
   </data>
   <data name="bot.autoCraft.help.start" xml:space="preserve">
-    <value>Start the crafting. Usage: /autocraft start &lt;recipe name&gt;</value>
+    <value>Üretimi başlat. Kullanım: /autocraft start &lt;tarif adı&gt;</value>
   </data>
   <data name="bot.autoCraft.help.stop" xml:space="preserve">
-    <value>Stop the current running crafting process</value>
+    <value>Çalışan üretim işlemini durdur</value>
   </data>
   <data name="bot.autocraft.invaild_result" xml:space="preserve">
     <value>Geçersiz sonuç eşyası!</value>
@@ -199,52 +199,52 @@
     <value>Eksik malzeme: {0}</value>
   </data>
   <data name="bot.autoCraft.no_recipe_name" xml:space="preserve">
-    <value>Please specify the recipe name you want to craft.</value>
+    <value>Lütfen üretmek istediğin tarifin adını belirt.</value>
   </data>
   <data name="bot.autoCraft.recipe_not_exist" xml:space="preserve">
-    <value>Specified recipe name does not exist. Check your config file.</value>
+    <value>Belirtilen tarif adı yok. Yapılandırma dosyanı kontrol et.</value>
   </data>
   <data name="bot.autoCraft.start" xml:space="preserve">
     <value>Otomatik Üretim başlıyor: {0}</value>
   </data>
   <data name="bot.autoCraft.start_fail" xml:space="preserve">
-    <value>AutoCraft cannot be started. Check your available materials for crafting {0}</value>
+    <value>Otomatik Üretim başlatılamadı. {0} üretimi için malzemelerini kontrol et.</value>
   </data>
   <data name="bot.autoCraft.stop" xml:space="preserve">
     <value>AutoCraft stopped</value>
   </data>
   <data name="bot.autoCraft.table_not_found" xml:space="preserve">
-    <value>table not found</value>
+    <value>çalışma tezgâhı bulunamadı</value>
   </data>
   <data name="bot.autoCraft.timeout" xml:space="preserve">
     <value>Action timeout! Reason: {0}</value>
   </data>
   <data name="bot.autodig.available_cmd" xml:space="preserve">
-    <value>Available commands: {0}. Use /autodig help &lt;cmd name&gt; for more information.</value>
+    <value>Kullanılabilir komutlar: {0}. Daha fazla bilgi için /autodig help &lt;komut adı&gt; kullan.</value>
   </data>
   <data name="bot.autodig.cmd" xml:space="preserve">
-    <value>Auto-digging ChatBot command</value>
+    <value>Kazıcı sohbet botu komutu</value>
   </data>
   <data name="bot.autodig.dig_timeout" xml:space="preserve">
     <value>Kazı zaman aşımına uğradı, yeniden deneniyor.</value>
   </data>
   <data name="bot.autodig.help.help" xml:space="preserve">
-    <value>Get the command description. Usage: /autodig help &lt;command name&gt;</value>
+    <value>Komut açıklamasını al. Kullanım: /autodig help &lt;komut adı&gt;</value>
   </data>
   <data name="bot.autodig.help.start" xml:space="preserve">
-    <value>Start the automatic digging bot.</value>
+    <value>Otomatik kazma botunu başlat.</value>
   </data>
   <data name="bot.autodig.help.stop" xml:space="preserve">
-    <value>Deactivate the automatic digging bot.</value>
+    <value>Otomatik kazma botunu durdur.</value>
   </data>
   <data name="bot.autodig.not_allow" xml:space="preserve">
-    <value>The block currently pointed to is not in the allowed list.</value>
+    <value>Bakılan blok izinli listede değil.</value>
   </data>
   <data name="bot.autodig.no_inv_handle" xml:space="preserve">
     <value>Envanter İşleme kapalı. Araçlar otomatik değiştirilemez.</value>
   </data>
   <data name="bot.autodig.drop_low_durability" xml:space="preserve">
-    <value>Dropped low durability {0} from slot {1}.</value>
+    <value>Düşük dayanıklılıktaki {0}, {1}. yuvadan atıldı.</value>
   </data>
   <data name="bot.autodig.start" xml:space="preserve">
     <value>Kazı başladı.</value>
@@ -253,7 +253,7 @@
     <value>Kazı {0:0.0} saniye içinde başlayacak.</value>
   </data>
   <data name="bot.autodig.stop" xml:space="preserve">
-    <value>Auto-digging has been stopped.</value>
+    <value>Kazı durduruldu.</value>
   </data>
   <data name="bot.autodig.switch" xml:space="preserve">
     <value>{1}. yuvadaki {0} aracına geçildi.</value>
@@ -262,10 +262,10 @@
     <value>Eşya eklendi: {0}</value>
   </data>
   <data name="bot.autoDrop.alias" xml:space="preserve">
-    <value>AutoDrop ChatBot command alias</value>
+    <value>Otomatik Atma sohbet botu komut takma adı</value>
   </data>
   <data name="bot.autoDrop.cmd" xml:space="preserve">
-    <value>AutoDrop ChatBot command</value>
+    <value>Otomatik Atma sohbet botu komutu</value>
   </data>
   <data name="bot.autoDrop.incorrect_name" xml:space="preserve">
     <value>Hatalı eşya adı {0}. Lütfen tekrar dene.</value>
@@ -302,7 +302,7 @@
     <value>Bilinmeyen mod. Geçerli modlar: Include, Exclude, Everything</value>
   </data>
   <data name="bot.autoFish.available_cmd" xml:space="preserve">
-    <value>Available commands: {0}. Use /fish help &lt;cmd name&gt; for more information.</value>
+    <value>Kullanılabilir komutlar: {0}. Daha fazla bilgi için /fish help &lt;komut adı&gt; kullan.</value>
   </data>
   <data name="bot.autoFish.cast_timeout" xml:space="preserve">
     <value>Atış zaman aşımı, kısa süre içinde yeniden denenecek. (Zaman aşımı {0:0.0} sn'ye çıkarıldı).</value>
@@ -314,28 +314,28 @@
     <value>({0:0.0},{1:0.0},{2:0.0}) konumunda olta çekiliyor! (Sayı: {3})</value>
   </data>
   <data name="bot.autoFish.cmd" xml:space="preserve">
-    <value>Auto-Fishing ChatBot command</value>
+    <value>Balık Tutma sohbet botu komutu</value>
   </data>
   <data name="bot.autoFish.despawn" xml:space="preserve">
-    <value>Fish floating despawn, will re-cast.</value>
+    <value>Oltadaki yem kayboldu, yeniden atılacak.</value>
   </data>
   <data name="bot.autoFish.fishing_timeout" xml:space="preserve">
-    <value>Fishing timeout, will soon re-cast.</value>
+    <value>Balık tutma zaman aşımı, kısa süre içinde yeniden atılacak.</value>
   </data>
   <data name="bot.autoFish.got" xml:space="preserve">
     <value>Fishing got {0}</value>
   </data>
   <data name="bot.autoFish.help.help" xml:space="preserve">
-    <value>Get the command description. Usage: /fish help &lt;command name&gt;</value>
+    <value>Komut açıklamasını al. Kullanım: /fish help &lt;komut adı&gt;</value>
   </data>
   <data name="bot.autoFish.help.start" xml:space="preserve">
-    <value>Start auto-fishing.</value>
+    <value>Balık tutmayı başlat.</value>
   </data>
   <data name="bot.autoFish.help.status" xml:space="preserve">
-    <value>List all obtained items. Or use "/fish status clear" to clear the list.</value>
+    <value>Elde edilen tüm eşyaları listele. Veya listeyi temizlemek için "/fish status clear" kullan.</value>
   </data>
   <data name="bot.autoFish.help.stop" xml:space="preserve">
-    <value>Stop auto-fishing.</value>
+    <value>Balık tutmayı durdur.</value>
   </data>
   <data name="bot.autoFish.no_inv_handle" xml:space="preserve">
     <value>Envanter İşleme kapalı. Olta dayanıklılığı kontrol edilemez ve olta değiştirilemez.</value>
@@ -423,33 +423,33 @@ cooldown: {6}</value>
     <value>Running action: {0}</value>
   </data>
   <data name="bot.autoRespond.no_action" xml:space="preserve">
-    <value>No action for match:
+    <value>Eşleşme için işlem yok:
 {0}</value>
   </data>
   <data name="bot.autoRespond.no_trigger" xml:space="preserve">
-    <value>This match will never trigger:
+    <value>Bu eşleşme asla tetiklenmeyecek:
 {0}</value>
   </data>
   <data name="bot.chatLog.invalid_file" xml:space="preserve">
-    <value>Path '{0}' contains invalid characters.</value>
+    <value>'{0}' yolu geçersiz karakterler içeriyor.</value>
   </data>
   <data name="bot.DiscordBridge.canceled_sending" xml:space="preserve">
-    <value>Sending message to Discord was canceled due an error occuring. For more info enable Debug.</value>
+    <value>Bir hata oluştuğu için Discord'a mesaj gönderimi iptal edildi. Daha fazla bilgi için Debug'ı etkinleştir.</value>
   </data>
   <data name="bot.DiscordBridge.channel_not_found" xml:space="preserve">
-    <value>The provided channel with an id '{0}' has not been found!</value>
+    <value>'{0}' kimlikli belirtilen kanal bulunamadı!</value>
   </data>
   <data name="bot.DiscordBridge.command_executed" xml:space="preserve">
-    <value>The command was executed with the result</value>
+    <value>Komut şu sonuçla çalıştırıldı</value>
   </data>
   <data name="bot.DiscordBridge.connected" xml:space="preserve">
-    <value>Succesfully connected with MCC!</value>
+    <value>MCC ile başarıyla bağlanıldı!</value>
   </data>
   <data name="bot.DiscordBridge.desc" xml:space="preserve">
-    <value>This command allows you to specify in the which direction the messages will be relayed via the Discord Bridge chat bot.</value>
+    <value>Bu komut, mesajların Discord Köprüsü sohbet botu üzerinden hangi yönde aktarılacağını belirlemeni sağlar.</value>
   </data>
   <data name="bot.DiscordBridge.direction" xml:space="preserve">
-    <value>Direction of the Discord Brdige has been switched to '{0}'!</value>
+    <value>Discord Köprüsü'nün yönü '{0}' olarak değiştirildi!</value>
   </data>
   <data name="bot.DiscordBridge.direction.both" xml:space="preserve">
     <value>Both</value>
@@ -461,70 +461,70 @@ cooldown: {6}</value>
     <value>Minecraft</value>
   </data>
   <data name="bot.DiscordBridge.disconnected" xml:space="preserve">
-    <value>Successfully disconnected with MCC!</value>
+    <value>MCC ile bağlantı başarıyla kesildi!</value>
   </data>
   <data name="bot.DiscordBridge.guild_not_found" xml:space="preserve">
-    <value>The provided guild/server with an id '{0}' has not been found!</value>
+    <value>'{0}' kimlikli belirtilen sunucu bulunamadı!</value>
   </data>
   <data name="bot.DiscordBridge.invalid_direction" xml:space="preserve">
-    <value>Invalid direction provided! Available directions: both|b, minecraft|mc, discord|dsc. Example: "dscbridge direction mc"</value>
+    <value>Geçersiz yön! Kullanılabilir yönler: both|b, minecraft|mc, discord|dsc. Örnek: "dscbridge direction mc"</value>
   </data>
   <data name="bot.DiscordBridge.missing_token" xml:space="preserve">
-    <value>Please provide a valid token!</value>
+    <value>Lütfen geçerli bir token gir!</value>
   </data>
   <data name="bot.DiscordBridge.unknown_error" xml:space="preserve">
-    <value>An unknown error has occured!</value>
+    <value>Bilinmeyen bir hata oluştu!</value>
   </data>
   <data name="bot.DiscordRpc.missing_app_id" xml:space="preserve">
-    <value>Please provide a valid Discord Application ID! Get one at https://discord.com/developers/applications</value>
+    <value>Lütfen geçerli bir Discord Uygulama Kimliği gir! Buradan alabilirsin: https://discord.com/developers/applications</value>
   </data>
   <data name="bot.DiscordRpc.connected" xml:space="preserve">
     <value>Connected to Discord as {0}</value>
   </data>
   <data name="bot.DiscordRpc.connection_failed" xml:space="preserve">
-    <value>Failed to connect to Discord (pipe {0}). Is Discord running?</value>
+    <value>Discord'a bağlanılamadı (pipe {0}). Discord çalışıyor mu?</value>
   </data>
   <data name="bot.DiscordRpc.initialized" xml:space="preserve">
     <value>Discord Rich Presence initialized successfully.</value>
   </data>
   <data name="bot.DiscordRpc.init_error" xml:space="preserve">
-    <value>Failed to initialize Discord Rich Presence: {0}</value>
+    <value>Discord Rich Presence başlatılamadı: {0}</value>
   </data>
   <data name="bot.DiscordRpc.update_error" xml:space="preserve">
-    <value>Error updating Discord presence: {0}</value>
+    <value>Discord durumu güncellenirken hata: {0}</value>
   </data>
   <data name="bot.DiscordRpc.invalid_interval" xml:space="preserve">
-    <value>Invalid update interval, must be at least 1 second. Using default of 10 seconds.</value>
+    <value>Geçersiz güncelleme aralığı, en az 1 saniye olmalı. Varsayılan 10 saniye kullanılıyor.</value>
   </data>
   <data name="bot.farmer.already_running" xml:space="preserve">
-    <value>The bot is already farming!</value>
+    <value>Bot zaten çiftçilik yapıyor!</value>
   </data>
   <data name="bot.farmer.already_stopped" xml:space="preserve">
-    <value>The bot has already stopped farming!</value>
+    <value>Bot çiftçiliği zaten durdurdu!</value>
   </data>
   <data name="bot.farmer.crop_type" xml:space="preserve">
     <value>Crop type</value>
   </data>
   <data name="bot.farmer.crop_unavailable" xml:space="preserve">
-    <value>{0} is only available in Minecraft {1} and newer!</value>
+    <value>{0} yalnızca Minecraft {1} ve üzeri sürümlerde kullanılabilir!</value>
   </data>
   <data name="bot.farmer.desc" xml:space="preserve">
     <value>Farming bot</value>
   </data>
   <data name="bot.farmer.invalid_crop_type" xml:space="preserve">
-    <value>Invalid crop type provided (Types which you can use: Beetroot, Carrot, Melon, Netherwart, Pumpkin, Potato, Wheat)!</value>
+    <value>Geçersiz ekin türü (Kullanabileceğin türler: Beetroot, Carrot, Melon, Netherwart, Pumpkin, Potato, Wheat)!</value>
   </data>
   <data name="bot.farmer.invalid_radius" xml:space="preserve">
-    <value>Invalid radius provided, you must provide a valid integer number greater than 0!</value>
+    <value>Geçersiz yarıçap, 0'dan büyük geçerli bir tam sayı girmelisin!</value>
   </data>
   <data name="bot.farmer.needs_inventory" xml:space="preserve">
-    <value>The Farmer bot needs Inventory Handling in order to work, please enable it!</value>
+    <value>Çiftçi botu çalışmak için Envanter İşleme'ye ihtiyaç duyar, lütfen etkinleştir!</value>
   </data>
   <data name="bot.farmer.needs_terrain" xml:space="preserve">
-    <value>The Farmer bot needs Terrain Handling in order to work, please enable it!</value>
+    <value>Çiftçi botu çalışmak için Arazi İşleme'ye ihtiyaç duyar, lütfen etkinleştir!</value>
   </data>
   <data name="bot.farmer.not_implemented" xml:space="preserve">
-    <value>Not implemented below 1.8!</value>
+    <value>1.8 altında uygulanmadı!</value>
   </data>
   <data name="bot.farmer.radius" xml:space="preserve">
     <value>Radius</value>
@@ -536,22 +536,22 @@ cooldown: {6}</value>
     <value>Stopped farming!</value>
   </data>
   <data name="bot.farmer.stopping" xml:space="preserve">
-    <value>Stoping farming, this might take a second...</value>
+    <value>Çiftçilik durduruluyor, bu bir saniye sürebilir...</value>
   </data>
   <data name="bot.farmer.warining_allow_teleport" xml:space="preserve">
-    <value>You have enabled teleporting, this might get your bot account kicked and in the worst case scenario banned! Use with caution!</value>
+    <value>Işınlanmayı etkinleştirdin; bu, bot hesabının atılmasına ve en kötü senaryoda yasaklanmasına yol açabilir! Dikkatli kullan!</value>
   </data>
   <data name="bot.farmer.warining_force_unsafe" xml:space="preserve">
-    <value>You have enabled un-safe movement, the bot might get hurt!</value>
+    <value>Güvensiz hareketi etkinleştirdin, bot zarar görebilir!</value>
   </data>
   <data name="bot.farmer.warining_invalid_parameter" xml:space="preserve">
-    <value>Invalid parameter "{0}" provided (Use format: "key:value")!</value>
+    <value>Geçersiz parametre "{0}" (Biçim kullan: "anahtar:değer")!</value>
   </data>
   <data name="bot.mailer.cmd" xml:space="preserve">
-    <value>mailer command</value>
+    <value>posta komutu</value>
   </data>
   <data name="bot.mailer.cmd.getignored" xml:space="preserve">
-    <value>--- Ignore list ---
+    <value>--- Yok sayma listesi ---
 {0}</value>
   </data>
   <data name="bot.mailer.cmd.getmails" xml:space="preserve">
@@ -562,25 +562,25 @@ cooldown: {6}</value>
     <value>See usage</value>
   </data>
   <data name="bot.mailer.cmd.ignore.added" xml:space="preserve">
-    <value>Added {0} to the ignore list!</value>
+    <value>{0} yok sayma listesine eklendi!</value>
   </data>
   <data name="bot.mailer.cmd.ignore.invalid" xml:space="preserve">
-    <value>Missing or invalid name. Usage: {0} &lt;username&gt;</value>
+    <value>Eksik veya geçersiz ad. Kullanım: {0} &lt;kullanıcı adı&gt;</value>
   </data>
   <data name="bot.mailer.cmd.ignore.removed" xml:space="preserve">
-    <value>Removed {0} from the ignore list!</value>
+    <value>{0} yok sayma listesinden çıkarıldı!</value>
   </data>
   <data name="bot.mailer.create.db" xml:space="preserve">
     <value>Creating new database file: {0}</value>
   </data>
   <data name="bot.mailer.create.ignore" xml:space="preserve">
-    <value>Creating new ignore list: {0}</value>
+    <value>Yeni yok sayma listesi oluşturuluyor: {0}</value>
   </data>
   <data name="bot.mailer.delivered" xml:space="preserve">
     <value>Delivered: {0}</value>
   </data>
   <data name="bot.mailer.init" xml:space="preserve">
-    <value>Initializing Mailer with settings:</value>
+    <value>Posta şu ayarlarla başlatılıyor:</value>
   </data>
   <data name="bot.mailer.init.db" xml:space="preserve">
     <value> - Database File: {0}</value>
@@ -589,52 +589,52 @@ cooldown: {6}</value>
     <value> - Max Database Size: {0}</value>
   </data>
   <data name="bot.mailer.init.ignore" xml:space="preserve">
-    <value> - Ignore List: {0}</value>
+    <value> - Yok sayma listesi: {0}</value>
   </data>
   <data name="bot.mailer.init.mail_retention" xml:space="preserve">
     <value> - Mail Retention: {0}</value>
   </data>
   <data name="bot.mailer.init.max_mails" xml:space="preserve">
-    <value> - Max Mails per Player: {0}</value>
+    <value> - Oyuncu başına en fazla posta: {0}</value>
   </data>
   <data name="bot.mailer.init.public" xml:space="preserve">
     <value> - Public Interactions: {0}</value>
   </data>
   <data name="bot.mailer.init_fail.db_size" xml:space="preserve">
-    <value>Cannot enable Mailer: Max Database Size must be greater than zero. Please review the settings.</value>
+    <value>Posta etkinleştirilemiyor: En Fazla Veritabanı Boyutu sıfırdan büyük olmalı. Lütfen ayarları gözden geçir.</value>
   </data>
   <data name="bot.mailer.init_fail.mail_retention" xml:space="preserve">
-    <value>Cannot enable Mailer: Mail Retention must be greater than zero. Please review the settings.</value>
+    <value>Posta etkinleştirilemiyor: Posta Saklama süresi sıfırdan büyük olmalı. Lütfen ayarları gözden geçir.</value>
   </data>
   <data name="bot.mailer.init_fail.max_mails" xml:space="preserve">
-    <value>Cannot enable Mailer: Max Mails per Player must be greater than zero. Please review the settings.</value>
+    <value>Posta etkinleştirilemiyor: Oyuncu başına en fazla posta sıfırdan büyük olmalı. Lütfen ayarları gözden geçir.</value>
   </data>
   <data name="bot.mailer.load.db" xml:space="preserve">
-    <value>Loading database file: {0}</value>
+    <value>Veritabanı dosyası yükleniyor: {0}</value>
   </data>
   <data name="bot.mailer.load.ignore" xml:space="preserve">
-    <value>Loading ignore list: </value>
+    <value>Yok sayma listesi yükleniyor: </value>
   </data>
   <data name="bot.mailer.process_mails" xml:space="preserve">
-    <value>Looking for mails to send @ {0}</value>
+    <value>Gönderilecek postalar aranıyor @ {0}</value>
   </data>
   <data name="bot.mailer.saving" xml:space="preserve">
-    <value>Saving message: {0}</value>
+    <value>Mesaj kaydediliyor: {0}</value>
   </data>
   <data name="bot.mailer.user_ignored" xml:space="preserve">
     <value>{0} is ignored!</value>
   </data>
   <data name="bot.map.cmd.desc" xml:space="preserve">
-    <value>Render maps (item maps)</value>
+    <value>Haritaları oluştur (eşya haritaları)</value>
   </data>
   <data name="bot.map.cmd.invalid_id" xml:space="preserve">
-    <value>Invalid ID provided, must be a number!</value>
+    <value>Geçersiz kimlik, bir sayı olmalı!</value>
   </data>
   <data name="bot.map.cmd.not_found" xml:space="preserve">
-    <value>A map with id '{0}' does not exists!</value>
+    <value>'{0}' kimlikli bir harita yok!</value>
   </data>
   <data name="bot.map.failed_to_render" xml:space="preserve">
-    <value>Failed to render the map with id: '{0}'</value>
+    <value>'{0}' kimlikli harita oluşturulamadı</value>
   </data>
   <data name="bot.map.list_item" xml:space="preserve">
     <value>- Map id: {0} (Last Updated: {1})</value>
@@ -643,40 +643,40 @@ cooldown: {6}</value>
     <value>No maps received!</value>
   </data>
   <data name="bot.map.received" xml:space="preserve">
-    <value>The list of received maps from the server:</value>
+    <value>Sunucudan alınan haritaların listesi:</value>
   </data>
   <data name="bot.map.received_map" xml:space="preserve">
-    <value>Received a new Map, with Id: {0}</value>
+    <value>Yeni bir Harita alındı, Kimlik: {0}</value>
   </data>
   <data name="bot.map.rendered" xml:space="preserve">
-    <value>Succesfully rendered a map with id '{0}' to: '{1}'</value>
+    <value>'{0}' kimlikli harita başarıyla şuraya oluşturuldu: '{1}'</value>
   </data>
   <data name="bot.map.resized_rendered_image" xml:space="preserve">
-    <value>Resized the rendered image of the map with id: '{0}' to {1}x{1}.</value>
+    <value>'{0}' kimlikli haritanın oluşturulan görüntüsü {1}x{1} boyutuna getirildi.</value>
   </data>
   <data name="bot.map.scale" xml:space="preserve">
-    <value>The size of the map is reduced from ({0}x{1}) to ({2}x{3}) due to the size limitation of the current terminal.</value>
+    <value>Mevcut terminalin boyut kısıtı nedeniyle harita boyutu ({0}x{1}) değerinden ({2}x{3}) değerine düşürüldü.</value>
   </data>
   <data name="bot.map.sent_to_discord" xml:space="preserve">
-    <value>Sent a rendered image of a map with an id '{0}' to the Discord via Discord Brdige chat bot!</value>
+    <value>'{0}' kimlikli haritanın oluşturulan görüntüsü Discord Köprüsü sohbet botu üzerinden Discord'a gönderildi!</value>
   </data>
   <data name="bot.map.sent_to_telegram" xml:space="preserve">
-    <value>Sent a rendered image of a map with an id '{0}' to the Telegram via Telegram Bridge chat bot!</value>
+    <value>'{0}' kimlikli haritanın oluşturulan görüntüsü Telegram Köprüsü sohbet botu üzerinden Telegram'a gönderildi!</value>
   </data>
   <data name="bot.map.tui_header" xml:space="preserve">
     <value>Map #{0} ({1}x{2}) [{3}%]</value>
   </data>
   <data name="bot.map.tui_controls" xml:space="preserve">
-    <value>Scroll=Zoom  Drag=Pan  +/-=Zoom  Arrows=Pan  Esc/E=Close</value>
+    <value>Kaydır=Yakınlaştır  Sürükle=Kaydır  +/-=Yakınlaştır  Oklar=Kaydır  Esc/E=Kapat</value>
   </data>
   <data name="bot.replayCapture.cmd" xml:space="preserve">
-    <value>replay command</value>
+    <value>replay komutu</value>
   </data>
   <data name="bot.replayCapture.created" xml:space="preserve">
     <value>Replay file created.</value>
   </data>
   <data name="bot.replayCapture.restart" xml:space="preserve">
-    <value>Record was stopped. Restart the program to start another record.</value>
+    <value>Kayıt durduruldu. Başka bir kayıt başlatmak için programı yeniden başlat.</value>
   </data>
   <data name="bot.replayCapture.stopped" xml:space="preserve">
     <value>Record stopped.</value>
@@ -694,30 +694,30 @@ cooldown: {6}</value>
     <value>Script '{0}' loaded.</value>
   </data>
   <data name="script.compile.error" xml:space="preserve">
-    <value>Error in {0} at line {1}, column {2}: [{3}] {4}</value>
+    <value>{0} dosyasında {1}. satır, {2}. sütunda hata: [{3}] {4}</value>
   </data>
   <data name="script.compile.error_no_location" xml:space="preserve">
-    <value>Error in {0}: [{1}] {2}</value>
+    <value>{0} dosyasında hata: [{1}] {2}</value>
   </data>
   <data name="script.compile.failed" xml:space="preserve">
-    <value>[Script] Compilation failed with error(s):</value>
+    <value>[Betik] Derleme hatalarla başarısız oldu:</value>
   </data>
   <data name="script.compile.started" xml:space="preserve">
-    <value>[Script] Starting compilation for {0}...</value>
+    <value>[Betik] {0} için derleme başlatılıyor...</value>
   </data>
   <data name="script.compile.succeeded" xml:space="preserve">
-    <value>[Script] Compilation done with no errors.</value>
+    <value>[Betik] Derleme hatasız tamamlandı.</value>
   </data>
   <data name="bot.scriptScheduler.loaded_task" xml:space="preserve">
     <value>Loaded task:
 {0}</value>
   </data>
   <data name="bot.scriptScheduler.no_action" xml:space="preserve">
-    <value>No action for task:
+    <value>Görev için işlem yok:
 {0}</value>
   </data>
   <data name="bot.scriptScheduler.no_trigger" xml:space="preserve">
-    <value>This task will never trigger:
+    <value>Bu görev asla tetiklenmeyecek:
 {0}</value>
   </data>
   <data name="bot.scriptScheduler.running_inverval" xml:space="preserve">
@@ -739,19 +739,19 @@ cooldown: {6}</value>
  action: {6}</value>
   </data>
   <data name="bot.TelegramBridge.canceled_sending" xml:space="preserve">
-    <value>Sending message to Telegram was canceled due an error occuring. For more info enable Debug.</value>
+    <value>Bir hata oluştuğu için Telegram'a mesaj gönderimi iptal edildi. Daha fazla bilgi için Debug'ı etkinleştir.</value>
   </data>
   <data name="bot.TelegramBridge.command_executed" xml:space="preserve">
-    <value>The command was executed with the result</value>
+    <value>Komut şu sonuçla çalıştırıldı</value>
   </data>
   <data name="bot.TelegramBridge.connected" xml:space="preserve">
-    <value>Succesfully connected with the MCC!</value>
+    <value>MCC ile başarıyla bağlanıldı!</value>
   </data>
   <data name="bot.TelegramBridge.desc" xml:space="preserve">
-    <value>This command allows you to specify in the which direction the messages will be relayed via the Telegram Bridge chat bot.</value>
+    <value>Bu komut, mesajların Telegram Köprüsü sohbet botu üzerinden hangi yönde aktarılacağını belirlemeni sağlar.</value>
   </data>
   <data name="bot.TelegramBridge.direction" xml:space="preserve">
-    <value>Direction of the Telegram Brdige has been switched to '{0}'!</value>
+    <value>Telegram Köprüsü'nün yönü '{0}' olarak değiştirildi!</value>
   </data>
   <data name="bot.TelegramBridge.direction.both" xml:space="preserve">
     <value>Both</value>
@@ -763,27 +763,27 @@ cooldown: {6}</value>
     <value>Telegram</value>
   </data>
   <data name="bot.TelegramBridge.disconnected" xml:space="preserve">
-    <value>Disconnected from from the MCC!</value>
+    <value>MCC ile bağlantı kesildi!</value>
   </data>
   <data name="bot.TelegramBridge.invalid_direction" xml:space="preserve">
-    <value>Invalid direction provided! Available directions: both|b, minecraft|mc, telegram|tg|t. Example: "tgbridge direction mc"</value>
+    <value>Geçersiz yön! Kullanılabilir yönler: both|b, minecraft|mc, telegram|tg|t. Örnek: "tgbridge direction mc"</value>
   </data>
   <data name="bot.TelegramBridge.missing_authorized_channels" xml:space="preserve">
-    <value>[WARNING] You have not provided any Channel IDs, for "Authorized_Chat_Ids" field, anyone who finds your bot will be able to send messages and commands to it!</value>
+    <value>[UYARI] Hiçbir Kanal Kimliği girmedin; "Authorized_Chat_Ids" alanı boş olduğu için botunu bulan herkes ona mesaj ve komut gönderebilir!</value>
   </data>
   <data name="bot.TelegramBridge.missing_channel_id" xml:space="preserve">
-    <value>[WARNING] You have not provided a Channel ID, you will ONLY get replies to commands sent from Telegram!</value>
+    <value>[UYARI] Bir Kanal Kimliği girmedin, YALNIZCA Telegram'dan gönderilen komutlara yanıt alacaksın!</value>
   </data>
   <data name="bot.TelegramBridge.missing_token" xml:space="preserve">
-    <value>Please provide a valid bot token!</value>
+    <value>Lütfen geçerli bir bot token'ı gir!</value>
   </data>
   <data name="bot.TelegramBridge.unauthorized" xml:space="preserve">
-    <value>**🛑 Unauthorized access! 🛑
+    <value>**🛑 Yetkisiz erişim! 🛑
 
-Add the ID of this chat to "Authorized_Chat_Ids" field in the configuration file to gain access!**</value>
+Erişim için bu sohbetin kimliğini yapılandırma dosyasındaki "Authorized_Chat_Ids" alanına ekle!**</value>
   </data>
   <data name="bot.TelegramBridge.unknown_error" xml:space="preserve">
-    <value>An unknown error has occured!</value>
+    <value>Bilinmeyen bir hata oluştu!</value>
   </data>
   <data name="bot.testBot.said" xml:space="preserve">
     <value>Bot: {0} said : {1}</value>
@@ -867,16 +867,16 @@ Add the ID of this chat to "Authorized_Chat_Ids" field in the configuration file
     <value>TestBot</value>
   </data>
   <data name="mcc.banner.classic" xml:space="preserve">
-    <value>Minecraft Console Client v{0} - for MC {1} to {2} - {3}</value>
+    <value>RakitBot Client v{0} - MC {1}-{2}</value>
   </data>
   <data name="mcc.banner.star_reminder" xml:space="preserve">
-    <value>⭐ Like MCC? Star us on GitHub: https://github.com/MCCTeam/Minecraft-Console-Client</value>
+    <value>Geri bildirimleriniz bizim için önemli — önerilerinizi bekliyoruz!</value>
   </data>
   <data name="mcc.banner.label_mc_versions" xml:space="preserve">
     <value>Supported MC Versions:</value>
   </data>
   <data name="mcc.server_info.label_server" xml:space="preserve">
-    <value>Server:</value>
+    <value>Sunucu:</value>
   </data>
   <data name="mcc.server_info.label_version" xml:space="preserve">
     <value>Version:</value>
@@ -903,7 +903,7 @@ Add the ID of this chat to "Authorized_Chat_Ids" field in the configuration file
     <value>... +{0}</value>
   </data>
   <data name="mcc.server_info.version_upgrade" xml:space="preserve">
-    <value>Server reported protocol {0} ({1}), upgraded to {2} ({3}) for best compatibility</value>
+    <value>Sunucu {0} ({1}) protokolünü bildirdi, en iyi uyumluluk için {2} ({3}) sürümüne yükseltildi</value>
   </data>
   <data name="cache.converting" xml:space="preserve">
     <value>Oturum önbelleği diskten dönüştürülüyor: {0}</value>
@@ -987,43 +987,43 @@ Add the ID of this chat to "Authorized_Chat_Ids" field in the configuration file
     <value>Minecraft'ın varsayılan dil kaynağına geçiliyor: "en_us.json".</value>
   </data>
   <data name="chatbot.reconnect" xml:space="preserve">
-    <value>[{0}] Disconnecting and Reconnecting to the Server</value>
+    <value>[{0}] Sunucudan bağlantı kesiliyor ve yeniden bağlanılıyor</value>
   </data>
   <data name="cmd.animation.desc" xml:space="preserve">
-    <value>Swing your arm.</value>
+    <value>Kolunu salla.</value>
   </data>
   <data name="cmd.bed.bed_not_found" xml:space="preserve">
-    <value>Could not find a bed!</value>
+    <value>Yatak bulunamadı!</value>
   </data>
   <data name="cmd.bed.cant_reach_safely" xml:space="preserve">
-    <value>Can not reach the bed safely!</value>
+    <value>Yatağa güvenle ulaşılamıyor!</value>
   </data>
   <data name="cmd.bed.desc" xml:space="preserve">
-    <value>Used to sleep in or leave a bed.</value>
+    <value>Yatakta uyumak veya yataktan kalkmak için kullanılır.</value>
   </data>
   <data name="cmd.bed.failed_to_reach_in_time" xml:space="preserve">
-    <value>Failed to reach the bed position (X: {0:0.0}, Y: {1:0.0}, Z: {2:0.0}) in time (30 seconds). Giving up!</value>
+    <value>Yatak konumuna (X: {0:0.0}, Y: {1:0.0}, Z: {2:0.0}) zamanında (30 saniye) ulaşılamadı. Vazgeçiliyor!</value>
   </data>
   <data name="cmd.bed.found_a_bed_at" xml:space="preserve">
-    <value>Found a bed at (X: {0:0.0}, Y: {1:0.0}, Z: {2:0.0}).</value>
+    <value>(X: {0:0.0}, Y: {1:0.0}, Z: {2:0.0}) konumunda yatak bulundu.</value>
   </data>
   <data name="cmd.bed.in" xml:space="preserve">
     <value>Succesfully laid in bed!</value>
   </data>
   <data name="cmd.bed.leaving" xml:space="preserve">
-    <value>Sending a command to leave a bed to the server.</value>
+    <value>Sunucuya yataktan kalkma komutu gönderiliyor.</value>
   </data>
   <data name="cmd.bed.moving" xml:space="preserve">
-    <value>Moving to (X: {0:0.0}, Y: {1:0.0}, Z: {2:0.0}) where the bed is located.</value>
+    <value>Yatağın bulunduğu (X: {0:0.0}, Y: {1:0.0}, Z: {2:0.0}) konumuna gidiliyor.</value>
   </data>
   <data name="cmd.bed.not_a_bed" xml:space="preserve">
-    <value>The block on (X: {0:0.0}, Y: {1:0.0}, Z: {2:0.0}) is not a bed!</value>
+    <value>(X: {0:0.0}, Y: {1:0.0}, Z: {2:0.0}) konumundaki blok yatak değil!</value>
   </data>
   <data name="cmd.bed.not_in" xml:space="preserve">
-    <value>Could not lay in bed. Are you trying to sleep in a bed? (PS: You must use the head block coordinates of the bed)</value>
+    <value>Yatakta uyunamadı. Bir yatakta uyumaya mı çalışıyorsun? (Not: Yatağın baş bloğu koordinatlarını kullanmalısın)</value>
   </data>
   <data name="cmd.bed.searching" xml:space="preserve">
-    <value>Searching for a bed in radius of {0:0.00}...</value>
+    <value>{0:0.00} yarıçapında yatak aranıyor...</value>
   </data>
   <data name="cmd.bed.trying_to_use" xml:space="preserve">
     <value>Trying to sleep in a bed on location (X: {0:0.0}, Y: {1:0.0}, Z: {2:0.0}). Result: {3}</value>
@@ -1032,10 +1032,10 @@ Add the ID of this chat to "Authorized_Chat_Ids" field in the configuration file
     <value>Blocks around</value>
   </data>
   <data name="cmd.blockinfo.BlockType" xml:space="preserve">
-    <value>Block type</value>
+    <value>Blok türü</value>
   </data>
   <data name="cmd.blockinfo.desc" xml:space="preserve">
-    <value>Reports the type of the block on the provided coordinates. (Use -s to report blocks around the target block).</value>
+    <value>Verilen koordinatlardaki bloğun türünü bildirir. (Hedef bloğun çevresindeki blokları bildirmek için -s kullan).</value>
   </data>
   <data name="cmd.blockinfo.Negative" xml:space="preserve">
     <value>Negative</value>
@@ -1044,7 +1044,7 @@ Add the ID of this chat to "Authorized_Chat_Ids" field in the configuration file
     <value>Positive</value>
   </data>
   <data name="cmd.bots.desc" xml:space="preserve">
-    <value>List bots, unload a bot or all bots.</value>
+    <value>Botları listele, bir botu veya tüm botları kaldır.</value>
   </data>
   <data name="cmd.bots.list" xml:space="preserve">
     <value>Loaded bots</value>
@@ -1053,7 +1053,7 @@ Add the ID of this chat to "Authorized_Chat_Ids" field in the configuration file
     <value>No bots loaded!</value>
   </data>
   <data name="cmd.bots.notfound" xml:space="preserve">
-    <value>Bot {0} is not loaded, check if you have made a typo!</value>
+    <value>Bot {0} yüklü değil, yazım hatası yapmış olabilir misin kontrol et!</value>
   </data>
   <data name="cmd.bots.unloaded" xml:space="preserve">
     <value>Successfully unloaded bot: {0}</value>
@@ -1062,50 +1062,50 @@ Add the ID of this chat to "Authorized_Chat_Ids" field in the configuration file
     <value>Successfully unloaded all bots!</value>
   </data>
   <data name="cmd.changeSlot.changed" xml:space="preserve">
-    <value>Changed to slot {0}</value>
+    <value>Yuva {0} seçildi.</value>
   </data>
   <data name="cmd.changeSlot.desc" xml:space="preserve">
-    <value>Change slot in hotbar</value>
+    <value>Hotbar'da yuva değiştir</value>
   </data>
   <data name="cmd.changeSlot.fail" xml:space="preserve">
-    <value>Could not change slot</value>
+    <value>Yuva değiştirilemedi</value>
   </data>
   <data name="cmd.changeSlot.nan" xml:space="preserve">
-    <value>Could not change slot: Not a Number</value>
+    <value>Yuva değiştirilemedi: Sayı değil</value>
   </data>
   <data name="cmd.chunk.chunk_pos" xml:space="preserve">
     <value>chunk: ({0}, {1}).</value>
   </data>
   <data name="cmd.chunk.current" xml:space="preserve">
-    <value>Current location：{0}, chunk: ({1}, {2}).</value>
+    <value>Mevcut konum：{0}, chunk: ({1}, {2}).</value>
   </data>
   <data name="cmd.chunk.desc" xml:space="preserve">
-    <value>Displays the chunk loading status.
-Change EnableEmoji=false in the settings if the display is confusing.</value>
+    <value>Chunk yükleme durumunu gösterir.
+Görüntü karışıksa ayarlardan EnableEmoji=false yap.</value>
   </data>
   <data name="cmd.chunk.for_debug" xml:space="preserve">
-    <value>This command is used for debugging, make sure you know what you are doing.</value>
+    <value>Bu komut hata ayıklama için kullanılır, ne yaptığından emin ol.</value>
   </data>
   <data name="cmd.chunk.icon" xml:space="preserve">
-    <value>Player:{0}, MarkedChunk:{1}, NotReceived:{2}, Loading:{3}, Loaded:{4}</value>
+    <value>Oyuncu:{0}, İşaretliChunk:{1}, Alınmadı:{2}, Yükleniyor:{3}, Yüklendi:{4}</value>
   </data>
   <data name="cmd.chunk.marked" xml:space="preserve">
     <value>Marked location: </value>
   </data>
   <data name="cmd.chunk.outside" xml:space="preserve">
-    <value>Since the marked chunk is outside the graph, it will not be displayed!</value>
+    <value>İşaretli chunk grafiğin dışında olduğu için görüntülenmeyecek!</value>
   </data>
   <data name="cmd.connect.desc" xml:space="preserve">
-    <value>connect to the specified server.</value>
+    <value>belirtilen sunucuya bağlan.</value>
   </data>
   <data name="cmd.connect.invalid_ip" xml:space="preserve">
-    <value>Invalid server IP '{0}'.</value>
+    <value>Geçersiz sunucu IP'si '{0}'.</value>
   </data>
   <data name="cmd.connect.unknown" xml:space="preserve">
-    <value>Unknown account '{0}'.</value>
+    <value>Bilinmeyen hesap '{0}'.</value>
   </data>
   <data name="cmd.console_chat.desc" xml:space="preserve">
-    <value>toggle chat visibility in the console.</value>
+    <value>konsolda sohbet görünürlüğünü aç/kapat.</value>
   </data>
   <data name="cmd.console_chat.state_off" xml:space="preserve">
     <value>Console chat output is now hidden.</value>
@@ -1114,67 +1114,67 @@ Change EnableEmoji=false in the settings if the display is confusing.</value>
     <value>Console chat output is now visible.</value>
   </data>
   <data name="cmd.clear_console.desc" xml:space="preserve">
-    <value>clear the console output.</value>
+    <value>konsol çıktısını temizle.</value>
   </data>
   <data name="cmd.debug.desc" xml:space="preserve">
     <value>toggle debug messages.</value>
   </data>
   <data name="cmd.debug.state_off" xml:space="preserve">
-    <value>Debug messages are now OFF</value>
+    <value>Hata ayıklama mesajları artık KAPALI</value>
   </data>
   <data name="cmd.debug.state_on" xml:space="preserve">
-    <value>Debug messages are now ON</value>
+    <value>Hata ayıklama mesajları artık AÇIK</value>
   </data>
   <data name="cmd.dig.desc" xml:space="preserve">
-    <value>Attempt to break a block</value>
+    <value>Bir bloğu kırmayı dene</value>
   </data>
   <data name="cmd.dig.dig" xml:space="preserve">
-    <value>Attempting to dig block at {0} {1} {2} ({3})</value>
+    <value>{0} {1} {2} konumundaki blok kazılıyor ({3})</value>
   </data>
   <data name="cmd.dig.fail" xml:space="preserve">
-    <value>Failed to start digging block.</value>
+    <value>Blok kazma başlatılamadı.</value>
   </data>
   <data name="cmd.dig.no_block" xml:space="preserve">
-    <value>No block at this location (Air)</value>
+    <value>Bu konumda blok yok (Hava)</value>
   </data>
   <data name="cmd.dig.too_far" xml:space="preserve">
-    <value>You are too far away from this block.</value>
+    <value>Bu bloğa çok uzaksın.</value>
   </data>
   <data name="cmd.dropItem.desc" xml:space="preserve">
-    <value>Drop specified type of items from player inventory or opened container</value>
+    <value>Oyuncu envanterinden veya açık envanterden belirtilen türdeki eşyaları at</value>
   </data>
   <data name="cmd.dropItem.dropped" xml:space="preserve">
-    <value>Dropped all {0} from inventory #{1}</value>
+    <value>Envanter #{1} içinden tüm {0} atıldı</value>
   </data>
   <data name="cmd.dropItem.unknown_item" xml:space="preserve">
-    <value>Unknown item {0}</value>
+    <value>Bilinmeyen eşya {0}</value>
   </data>
   <data name="cmd.enchant.clicked" xml:space="preserve">
-    <value>Sent a click to the server, if you have enough levels and if you have placed the items in the correct slots it should enchant!</value>
+    <value>Sunucuya bir tıklama gönderildi; yeterli seviyen varsa ve eşyaları doğru yuvalara yerleştirdiysen büyülenecektir!</value>
   </data>
   <data name="cmd.enchant.desc" xml:space="preserve">
-    <value>Enchant an item when you have the Enchantment table opened and the list of enchants recieved.</value>
+    <value>Büyü masası açıkken ve büyü listesi alındığında bir eşyayı büyüle.</value>
   </data>
   <data name="cmd.enchant.enchanting_no_item" xml:space="preserve">
-    <value>You must put an item inside the enchanting table in slot 0!</value>
+    <value>Büyü masasının 0. yuvasına bir eşya koymalısın!</value>
   </data>
   <data name="cmd.enchant.enchanting_no_lapis" xml:space="preserve">
-    <value>You must put at least 3 lapis lazuli inside the enchanting table in slot 1!</value>
+    <value>Büyü masasının 1. yuvasına en az 3 lapis lazuli koymalısın!</value>
   </data>
   <data name="cmd.enchant.enchanting_table_not_opened" xml:space="preserve">
-    <value>You must open a an enchanting table in order to use this option!</value>
+    <value>Bu seçeneği kullanmak için bir büyü masası açmalısın!</value>
   </data>
   <data name="cmd.enchant.invalid_slot" xml:space="preserve">
-    <value>Invalid slot provided (Available: top, middle, bottom)!</value>
+    <value>Geçersiz yuva (Kullanılabilir: top, middle, bottom)!</value>
   </data>
   <data name="cmd.enchant.not_clicked" xml:space="preserve">
-    <value>Could not click!</value>
+    <value>Tıklanamadı!</value>
   </data>
   <data name="cmd.enchant.no_enchantments" xml:space="preserve">
-    <value>You must first put an item to enchant to the enchanting table in order to get enchantments from the server, then you can execute this command!</value>
+    <value>Sunucudan büyü alabilmek için önce büyülenecek bir eşyayı büyü masasına koymalısın, sonra bu komutu çalıştırabilirsin!</value>
   </data>
   <data name="cmd.enchant.no_levels" xml:space="preserve">
-    <value>You do not have enouhg levels to enchant! (Your current level is {0}, you need to be level {1}).</value>
+    <value>Büyülemek için yeterli seviyen yok! (Mevcut seviyen {0}, {1}. seviye olman gerekiyor).</value>
   </data>
   <data name="cmd.entityCmd.attacked" xml:space="preserve">
     <value>Entity attacked</value>
@@ -1207,7 +1207,7 @@ Change EnableEmoji=false in the settings if the display is confusing.</value>
     <value>Helmet</value>
   </data>
   <data name="cmd.entityCmd.item" xml:space="preserve">
-    <value>Item</value>
+    <value>Eşya</value>
   </data>
   <data name="cmd.entityCmd.latency" xml:space="preserve">
     <value>Latency</value>
@@ -1225,7 +1225,7 @@ Change EnableEmoji=false in the settings if the display is confusing.</value>
     <value>Nickname</value>
   </data>
   <data name="cmd.entityCmd.not_found" xml:space="preserve">
-    <value>Entity not found</value>
+    <value>Varlık bulunamadı</value>
   </data>
   <data name="cmd.entityCmd.offhand" xml:space="preserve">
     <value>Off Hand</value>
@@ -1237,73 +1237,73 @@ Change EnableEmoji=false in the settings if the display is confusing.</value>
     <value>Type</value>
   </data>
   <data name="cmd.entityCmd.used" xml:space="preserve">
-    <value>Entity used</value>
+    <value>Varlık kullanıldı</value>
   </data>
   <data name="cmd.execif.desc" xml:space="preserve">
-    <value>Allows you to execute a command if a condition is met. (You can use variables from MinecraftClient.ini and /set command, as well as CSharp expressions)</value>
+    <value>Bir koşul sağlanırsa komut çalıştırmanı sağlar. (MinecraftClient.ini ve /set komutundaki değişkenleri, ayrıca CSharp ifadelerini kullanabilirsin)</value>
   </data>
   <data name="cmd.execif.error" xml:space="preserve">
-    <value>Error: {0}</value>
+    <value>Hata: {0}</value>
   </data>
   <data name="cmd.execif.error_occured" xml:space="preserve">
-    <value>An error has occured while executing the command: {0}</value>
+    <value>Komut çalıştırılırken bir hata oluştu: {0}</value>
   </data>
   <data name="cmd.execif.executed" xml:space="preserve">
-    <value>The condition '{0}' was met, executed command '{1}' with result '{2}'.</value>
+    <value>'{0}' koşulu sağlandı, '{1}' komutu çalıştırıldı, sonuç: '{2}'.</value>
   </data>
   <data name="cmd.execif.executed_no_output" xml:space="preserve">
-    <value>The condition '{0}' was met, executed command '{1}', no result was returned.</value>
+    <value>'{0}' koşulu sağlandı, '{1}' komutu çalıştırıldı, sonuç dönmedi.</value>
   </data>
   <data name="cmd.execmulti.desc" xml:space="preserve">
     <value>Execute multiple commands one after another</value>
   </data>
   <data name="cmd.execmulti.executed" xml:space="preserve">
-    <value>Executed the command '{0}' with {1}</value>
+    <value>'{0}' komutu {1} ile çalıştırıldı</value>
   </data>
   <data name="cmd.execmulti.no_result" xml:space="preserve">
     <value>no result!</value>
   </data>
   <data name="cmd.execmulti.prevent" xml:space="preserve">
-    <value>You can not use execmulti or execif within execmulti command!</value>
+    <value>execmulti içinde execmulti veya execif kullanamazsın!</value>
   </data>
   <data name="cmd.execmulti.result" xml:space="preserve">
     <value>result '{0}'!</value>
   </data>
   <data name="cmd.exit.desc" xml:space="preserve">
-    <value>disconnect from the server.</value>
+    <value>sunucudan bağlantıyı kes.</value>
   </data>
   <data name="cmd.follow.already_following" xml:space="preserve">
-    <value>Already following {0}!</value>
+    <value>Zaten {0} takip ediliyor!</value>
   </data>
   <data name="cmd.follow.already_stopped" xml:space="preserve">
-    <value>Already stopped</value>
+    <value>Zaten durduruldu</value>
   </data>
   <data name="cmd.follow.cant_reach_player" xml:space="preserve">
-    <value>Can not reach the player, he is either in chunks that are not loaded, too far away or not reachable by a bot due to obstacles like gaps or water bodies!</value>
+    <value>Oyuncuya ulaşılamıyor; ya yüklenmemiş chunk'larda, ya çok uzakta ya da boşluk/su gibi engeller yüzünden bot tarafından erişilemez durumda!</value>
   </data>
   <data name="cmd.follow.desc" xml:space="preserve">
-    <value>Makes the bot follow a specified player</value>
+    <value>Botun belirtilen bir oyuncuyu takip etmesini sağlar</value>
   </data>
   <data name="cmd.follow.invalid_name" xml:space="preserve">
-    <value>Invalid or empty player name provided!</value>
+    <value>Geçersiz veya boş oyuncu adı!</value>
   </data>
   <data name="cmd.follow.invalid_player" xml:space="preserve">
-    <value>The specified player is either not connected out out of the range!</value>
+    <value>Belirtilen oyuncu ya bağlı değil ya da menzil dışında!</value>
   </data>
   <data name="cmd.follow.note" xml:space="preserve">
-    <value>NOTE: The bot is quite slow, you need to walk slowly and at a close distance for it to be able to keep up, kinda like when you make animals follow you by holding food in your hand. This is a limitation due to a pathfinding algorithm, we are working to get a better one.</value>
+    <value>NOT: Bot oldukça yavaştır, yetişebilmesi için yavaş ve yakın mesafede yürümen gerekir; elinde yemek tutarak hayvanları peşinden sürüklemek gibi. Bu, yol bulma algoritmasının bir kısıtıdır, daha iyisi üzerinde çalışıyoruz.</value>
   </data>
   <data name="cmd.follow.pausing" xml:space="preserve">
     <value>Pausing!</value>
   </data>
   <data name="cmd.follow.player_came_to_the_range" xml:space="preserve">
-    <value>The player {0} came back to the range!</value>
+    <value>{0} oyuncusu menzile geri döndü!</value>
   </data>
   <data name="cmd.follow.player_left" xml:space="preserve">
-    <value>The player {0} left the server!</value>
+    <value>{0} oyuncusu sunucudan ayrıldı!</value>
   </data>
   <data name="cmd.follow.player_left_the_range" xml:space="preserve">
-    <value>The player {0} has left the range!</value>
+    <value>{0} oyuncusu menzilden çıktı!</value>
   </data>
   <data name="cmd.follow.resuming" xml:space="preserve">
     <value>Resuming to follow!</value>
@@ -1318,13 +1318,13 @@ Change EnableEmoji=false in the settings if the display is confusing.</value>
     <value>Switched to following {0}!</value>
   </data>
   <data name="cmd.follow.unsafe_enabled" xml:space="preserve">
-    <value>Enabled us-safe walking (NOTE: The bot might die or get hurt!)</value>
+    <value>Güvensiz yürüme etkinleştirildi (NOT: Bot ölebilir veya zarar görebilir!)</value>
   </data>
   <data name="cmd.follow.usage" xml:space="preserve">
-    <value>follow &lt;player name|stop&gt; [-f] (Use -f to enable un-safe walking)</value>
+    <value>follow &lt;oyuncu adı|stop&gt; [-f] (Güvensiz yürümeyi açmak için -f kullan)</value>
   </data>
   <data name="cmd.effects.desc" xml:space="preserve">
-    <value>list your currently active effects.</value>
+    <value>şu anda aktif etkilerini listele.</value>
   </data>
   <data name="cmd.effects.entry" xml:space="preserve">
     <value>- {0} ({1})</value>
@@ -1339,115 +1339,115 @@ Change EnableEmoji=false in the settings if the display is confusing.</value>
     <value>try a recommended feature.</value>
   </data>
   <data name="cmd.tryout.list.header" xml:space="preserve">
-    <value>Available tryouts:</value>
+    <value>Kullanılabilir denemeler:</value>
   </data>
   <data name="cmd.tryout.list.tui" xml:space="preserve">
-    <value>tui: set [Console.General] ConsoleMode = "tui" for the next restart.</value>
+    <value>tui: sonraki yeniden başlatma için [Console.General] ConsoleMode = "tui" ayarla.</value>
   </data>
   <data name="cmd.tryout.tui.already_enabled" xml:space="preserve">
-    <value>[Console.General] ConsoleMode is already "tui" in the config. To switch back, set [Console.General] ConsoleMode = "classic". Restart MCC after changing it for the new mode to take effect.</value>
+    <value>[Console.General] ConsoleMode ayarda zaten "tui". Geri dönmek için [Console.General] ConsoleMode = "classic" ayarla. Değişiklikten sonra yeni modun etkili olması için MCC'yi yeniden başlat.</value>
   </data>
   <data name="cmd.tryout.tui.enabled" xml:space="preserve">
-    <value>Updated [Console.General] ConsoleMode from "{0}" to "{1}" in the config. To switch back, set [Console.General] ConsoleMode = "classic". Restart MCC to apply the change.</value>
+    <value>Ayardaki [Console.General] ConsoleMode "{0}" değerinden "{1}" değerine güncellendi. Geri dönmek için [Console.General] ConsoleMode = "classic" ayarla. Değişikliği uygulamak için MCC'yi yeniden başlat.</value>
   </data>
   <data name="cmd.health.desc" xml:space="preserve">
-    <value>Display Health and Food saturation.</value>
+    <value>Can ve Açlık doygunluğunu göster.</value>
   </data>
   <data name="cmd.health.response" xml:space="preserve">
-    <value>Health: {0}, Saturation: {1}, Level: {2}, TotalExperience: {3}</value>
+    <value>Can: {0}, Doygunluk: {1}, Seviye: {2}, ToplamDeneyim: {3}</value>
   </data>
   <data name="cmd.inventory.clicking" xml:space="preserve">
-    <value>{0} clicking slot {1} in window #{2}</value>
+    <value>{0} pencere #{2} içindeki {1}. yuvaya tıklanıyor</value>
   </data>
   <data name="cmd.inventory.close" xml:space="preserve">
     <value>Closing Inventoy #{0}</value>
   </data>
   <data name="cmd.inventory.close_fail" xml:space="preserve">
-    <value>Failed to close Inventory #{0}</value>
+    <value>Envanter #{0} kapatılamadı</value>
   </data>
   <data name="cmd.inventory.container_not_found" xml:space="preserve">
-    <value>Cannot find container, please retry with explicit ID</value>
+    <value>Envanter bulunamadı, lütfen açık kimlikle tekrar dene</value>
   </data>
   <data name="cmd.inventory.creative_delete" xml:space="preserve">
-    <value>Requested to clear slot #{0}</value>
+    <value>{0}. yuvanın temizlenmesi istendi</value>
   </data>
   <data name="cmd.inventory.creative_done" xml:space="preserve">
-    <value>Requested {0} x{1} in slot #{2}</value>
+    <value>{2}. yuvada {0} x{1} istendi</value>
   </data>
   <data name="cmd.inventory.creative_fail" xml:space="preserve">
-    <value>Failed to request Creative action</value>
+    <value>Yaratıcı mod işlemi istenemedi</value>
   </data>
   <data name="cmd.inventory.damage" xml:space="preserve">
     <value>Damage</value>
   </data>
   <data name="cmd.inventory.desc" xml:space="preserve">
-    <value>Inventory command</value>
+    <value>Envanter komutu</value>
   </data>
   <data name="cmd.inventory.drop" xml:space="preserve">
-    <value>Dropped 1 item from slot #{0}</value>
+    <value>{0}. yuvadan 1 eşya atıldı</value>
   </data>
   <data name="cmd.inventory.drop_stack" xml:space="preserve">
-    <value>Dropped whole item stack from slot #{0}</value>
+    <value>{0}. yuvadan tüm eşya yığını atıldı</value>
   </data>
   <data name="cmd.inventory.found_items" xml:space="preserve">
-    <value>Found items</value>
+    <value>Bulunan eşyalar</value>
   </data>
   <data name="cmd.inventory.help.available" xml:space="preserve">
-    <value>Available actions</value>
+    <value>Kullanılabilir işlemler</value>
   </data>
   <data name="cmd.inventory.help.basic" xml:space="preserve">
     <value>Basic usage</value>
   </data>
   <data name="cmd.inventory.help.click" xml:space="preserve">
-    <value>Click on an item.</value>
+    <value>Bir eşyaya tıkla.</value>
   </data>
   <data name="cmd.inventory.help.close" xml:space="preserve">
-    <value>Close an opened container.</value>
+    <value>Açık bir envanteri kapat.</value>
   </data>
   <data name="cmd.inventory.help.creativedelete" xml:space="preserve">
-    <value>Clear slot in creative mode.</value>
+    <value>Yaratıcı modda yuvayı temizle.</value>
   </data>
   <data name="cmd.inventory.help.creativegive" xml:space="preserve">
-    <value>Give item in creative mode.</value>
+    <value>Yaratıcı modda eşya ver.</value>
   </data>
   <data name="cmd.inventory.help.drop" xml:space="preserve">
-    <value>Drop an item from inventory.</value>
+    <value>Envanterden bir eşya at.</value>
   </data>
   <data name="cmd.inventory.help.help" xml:space="preserve">
     <value>{0}
-Use '/inventory help &lt;action&gt;' for action help.
-'player' and 'container' can be simplified to 'p' and 'c'.
-Note that parameters in '[]' are optional.</value>
+'/inventory help &lt;işlem&gt;' ile işlem yardımı al.
+'player' ve 'container' 'p' ve 'c' olarak kısaltılabilir.
+'[]' içindeki parametrelerin isteğe bağlı olduğunu unutma.</value>
   </data>
   <data name="cmd.inventory.help.inventories" xml:space="preserve">
-    <value>List avaliable inventories</value>
+    <value>Kullanılabilir envanterleri listele</value>
   </data>
   <data name="cmd.inventory.help.list" xml:space="preserve">
-    <value>List your inventory.</value>
+    <value>Envanterini listele.</value>
   </data>
   <data name="cmd.inventory.help.search" xml:space="preserve">
-    <value>Search for an item in avaliable Inventories</value>
+    <value>Kullanılabilir envanterlerde eşya ara</value>
   </data>
   <data name="cmd.inventory.help.shiftclick" xml:space="preserve">
-    <value>Shift click an item.</value>
+    <value>Bir eşyaya Shift+tıkla.</value>
   </data>
   <data name="cmd.inventory.help.unknown" xml:space="preserve">
-    <value>Unknown action.</value>
+    <value>Bilinmeyen işlem.</value>
   </data>
   <data name="cmd.inventory.help.usage" xml:space="preserve">
     <value>Usage</value>
   </data>
   <data name="cmd.inventory.hotbar" xml:space="preserve">
-    <value>Your selected hotbar is {0}</value>
+    <value>Seçili hotbar yuvan {0}</value>
   </data>
   <data name="cmd.inventory.inventories" xml:space="preserve">
     <value>Inventories</value>
   </data>
   <data name="cmd.inventory.inventories_available" xml:space="preserve">
-    <value>Available Inventories</value>
+    <value>Kullanılabilir Envanterler</value>
   </data>
   <data name="cmd.inventory.inventory" xml:space="preserve">
-    <value>Inventory</value>
+    <value>Envanter</value>
   </data>
   <data name="cmd.inventory.left" xml:space="preserve">
     <value>Left</value>
@@ -1456,16 +1456,16 @@ Note that parameters in '[]' are optional.</value>
     <value>Middle</value>
   </data>
   <data name="cmd.inventory.need_creative" xml:space="preserve">
-    <value>You must be in Creative gamemode</value>
+    <value>Yaratıcı modda olmalısın</value>
   </data>
   <data name="cmd.inventory.not_exist" xml:space="preserve">
-    <value>Inventory #{0} do not exist</value>
+    <value>Envanter #{0} mevcut değil</value>
   </data>
   <data name="cmd.inventory.no_found_items" xml:space="preserve">
-    <value>Could not find the specified item in any of avaliable Inventories!</value>
+    <value>Belirtilen eşya kullanılabilir envanterlerin hiçbirinde bulunamadı!</value>
   </data>
   <data name="cmd.inventory.no_item" xml:space="preserve">
-    <value>No item in slot #{0}</value>
+    <value>{0}. yuvada eşya yok</value>
   </data>
   <data name="cmd.inventory.right" xml:space="preserve">
     <value>Right</value>
@@ -1474,22 +1474,22 @@ Note that parameters in '[]' are optional.</value>
     <value>Shift</value>
   </data>
   <data name="cmd.inventory.shiftclick_fail" xml:space="preserve">
-    <value>Shift click failed, this may be because this container type is not supported</value>
+    <value>Shift+tıklama başarısız, bu envanter türü desteklenmiyor olabilir</value>
   </data>
   <data name="cmd.list.desc" xml:space="preserve">
-    <value>get the player list.</value>
+    <value>oyuncu listesini getir.</value>
   </data>
   <data name="cmd.list.players" xml:space="preserve">
     <value>PlayerList: {0}</value>
   </data>
   <data name="cmd.tab.desc" xml:space="preserve">
-    <value>show a vanilla-like tab list. In TUI mode, opens a live overlay.</value>
+    <value>vanilla benzeri bir sekme listesi göster. TUI modunda canlı bir katman açar.</value>
   </data>
   <data name="cmd.tab.no_players" xml:space="preserve">
-    <value>No listed players are currently tracked.</value>
+    <value>Şu anda izlenen listelenmiş oyuncu yok.</value>
   </data>
   <data name="cmd.tab.title" xml:space="preserve">
-    <value>Tab list ({0} players)</value>
+    <value>Sekme listesi ({0} oyuncu)</value>
   </data>
   <data name="cmd.tab.column_ping" xml:space="preserve">
     <value>Ping</value>
@@ -1498,16 +1498,16 @@ Note that parameters in '[]' are optional.</value>
     <value>Team</value>
   </data>
   <data name="cmd.tab.column_player" xml:space="preserve">
-    <value>Player</value>
+    <value>Oyuncu</value>
   </data>
   <data name="cmd.tab.tui_opened" xml:space="preserve">
     <value>Live tab overlay opened.</value>
   </data>
   <data name="cmd.tab.tui_unavailable" xml:space="preserve">
-    <value>The tab overlay is not available right now.</value>
+    <value>Sekme katmanı şu anda kullanılamıyor.</value>
   </data>
   <data name="cmd.log.desc" xml:space="preserve">
-    <value>log some text to the console.</value>
+    <value>konsola bir metin yaz.</value>
   </data>
   <data name="cmd.look.at" xml:space="preserve">
     <value>Looking at yaw: {0} pitch: {1}</value>
@@ -1519,38 +1519,38 @@ Note that parameters in '[]' are optional.</value>
     <value>look at direction or coordinates.</value>
   </data>
   <data name="cmd.look.inspection" xml:space="preserve">
-    <value>The block currently intersecting the line of sight is {0} ({1:0}, {2:0}, {3:0}), distance is {4:0.0}({5:0.0}).</value>
+    <value>Görüş hattıyla kesişen blok {0} ({1:0}, {2:0}, {3:0}), mesafe {4:0.0}({5:0.0}).</value>
   </data>
   <data name="cmd.look.noinspection" xml:space="preserve">
-    <value>There is no block within {0} meters that intersects with the line of sight.</value>
+    <value>{0} metre içinde görüş hattıyla kesişen bir blok yok.</value>
   </data>
   <data name="cmd.look.unknown" xml:space="preserve">
-    <value>Unknown direction '{0}'</value>
+    <value>Bilinmeyen yön '{0}'</value>
   </data>
   <data name="cmd.move.chunk_loading_status" xml:space="preserve">
-    <value>Chunk loading status: {0:P} - {1} out of {2} load completed.</value>
+    <value>Chunk yükleme durumu: {0:P} - {2} chunk'tan {1} tanesi yüklendi.</value>
   </data>
   <data name="cmd.move.chunk_not_loaded" xml:space="preserve">
-    <value>The chunk where the target location resides has not yet been loaded.
-You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading status.</value>
+    <value>Hedef konumun bulunduğu chunk henüz yüklenmedi.
+Chunk yükleme durumunu kontrol etmek için "/chunk status {0:0.0} {1:0.0} {2:0.0}" kullanabilirsin.</value>
   </data>
   <data name="cmd.move.desc" xml:space="preserve">
-    <value>walk or start walking.</value>
+    <value>yürü veya yürümeye başla.</value>
   </data>
   <data name="cmd.move.desc_force" xml:space="preserve">
     <value>force unsafe movements like falling or touching fire</value>
   </data>
   <data name="cmd.move.dir_fail" xml:space="preserve">
-    <value>Cannot move in that direction.</value>
+    <value>O yöne hareket edilemiyor.</value>
   </data>
   <data name="cmd.move.disable" xml:space="preserve">
-    <value>Disabling Terrain and Movements.</value>
+    <value>Arazi ve Hareket kapatılıyor.</value>
   </data>
   <data name="cmd.move.enable" xml:space="preserve">
-    <value>Enabling Terrain and Movements on next server login, respawn or world change.</value>
+    <value>Arazi ve Hareket bir sonraki sunucu girişinde, yeniden doğuşta veya dünya değişiminde etkinleştirilecek.</value>
   </data>
   <data name="cmd.move.fail" xml:space="preserve">
-    <value>Failed to compute path to {0}</value>
+    <value>{0} konumuna yol hesaplanamadı</value>
   </data>
   <data name="cmd.move.gravity.disabled" xml:space="preserve">
     <value>Gravity is disabled.</value>
@@ -1562,13 +1562,13 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Moving {0}</value>
   </data>
   <data name="cmd.move.suggestforce" xml:space="preserve">
-    <value>Failed to compute a safe path to {0}. Try -f parameter to allow unsafe movements.</value>
+    <value>{0} konumuna güvenli yol hesaplanamadı. Güvensiz harekete izin vermek için -f parametresini dene.</value>
   </data>
   <data name="cmd.move.walk" xml:space="preserve">
-    <value>Walking from {1} to {0}</value>
+    <value>{1} konumundan {0} konumuna yürünüyor</value>
   </data>
   <data name="cmd.reco.desc" xml:space="preserve">
-    <value>restart and reconnect to the server.</value>
+    <value>sunucuyu yeniden başlat ve yeniden bağlan.</value>
   </data>
   <data name="cmd.reload.desc" xml:space="preserve">
     <value>Reloads MCC settings.</value>
@@ -1580,28 +1580,28 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Reloading settings...</value>
   </data>
   <data name="cmd.reload.warning1" xml:space="preserve">
-    <value>This command will NOT affect certain settings which are used before connecting to a server!</value>
+    <value>Bu komut, sunucuya bağlanmadan önce kullanılan bazı ayarları ETKİLEMEZ!</value>
   </data>
   <data name="cmd.reload.warning2" xml:space="preserve">
-    <value>Some settings passed through the command line parameters might get overriden!</value>
+    <value>Komut satırı parametreleriyle verilen bazı ayarlar geçersiz kılınabilir!</value>
   </data>
   <data name="cmd.reload.warning3" xml:space="preserve">
-    <value>You also might need to reconnect for some settings to take effect.</value>
+    <value>Bazı ayarların etkili olması için yeniden bağlanman gerekebilir.</value>
   </data>
   <data name="cmd.reload.warning4" xml:space="preserve">
-    <value>Replay Chat Bot will not be hard reloaded due to technical limitations!</value>
+    <value>Replay Chat Bot teknik kısıtlamalar nedeniyle tam olarak yeniden yüklenmeyecek!</value>
   </data>
   <data name="cmd.respawn.desc" xml:space="preserve">
-    <value>Use this to respawn if you are dead.</value>
+    <value>Ölürsen yeniden doğmak için bunu kullan.</value>
   </data>
   <data name="cmd.respawn.done" xml:space="preserve">
-    <value>You have respawned.</value>
+    <value>Yeniden doğdun.</value>
   </data>
   <data name="cmd.script.desc" xml:space="preserve">
     <value>run a script file.</value>
   </data>
   <data name="cmd.send.desc" xml:space="preserve">
-    <value>send a chat message or command.</value>
+    <value>bir sohbet mesajı veya komut gönder.</value>
   </data>
   <data name="cmd.set.desc" xml:space="preserve">
     <value>set a custom %variable%.</value>
@@ -1625,22 +1625,22 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Toggles sneaking</value>
   </data>
   <data name="cmd.sneak.off" xml:space="preserve">
-    <value>You are not sneaking anymore</value>
+    <value>Artık eğilmiyorsun</value>
   </data>
   <data name="cmd.sneak.on" xml:space="preserve">
-    <value>You are sneaking now</value>
+    <value>Artık eğiliyorsun</value>
   </data>
   <data name="cmd.tps.current" xml:space="preserve">
-    <value>Current tps</value>
+    <value>Mevcut tps</value>
   </data>
   <data name="cmd.tps.desc" xml:space="preserve">
-    <value>Display server current tps (tick per second). May not be accurate</value>
+    <value>Sunucunun mevcut tps'ini (saniyedeki tick) göster. Doğru olmayabilir</value>
   </data>
   <data name="cmd.teams.desc" xml:space="preserve">
-    <value>List all scoreboard teams and their members.</value>
+    <value>Tüm skor tablosu takımlarını ve üyelerini listele.</value>
   </data>
   <data name="cmd.teams.no_teams" xml:space="preserve">
-    <value>No teams are currently tracked.</value>
+    <value>Şu anda izlenen takım yok.</value>
   </data>
   <data name="cmd.teams.team_header" xml:space="preserve">
     <value>Team '{0}' (display: {1}, color: {2}, prefix: '{3}', suffix: '{4}', nameTagVisibility: {5}, collisionRule: {6}, friendlyFire: {7}, seeInvisibles: {8})</value>
@@ -1652,76 +1652,76 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>  No members.</value>
   </data>
   <data name="cmd.useblock.desc" xml:space="preserve">
-    <value>Place a block or open chest</value>
+    <value>Bir blok yerleştir veya sandık aç</value>
   </data>
   <data name="cmd.useblock.use" xml:space="preserve">
     <value>Useblock at ({0:0.0}, {1:0.0}, {2:0.0}) {3}.</value>
   </data>
   <data name="cmd.useitem.desc" xml:space="preserve">
-    <value>Use the item in your hand, optionally on a specific block</value>
+    <value>Elindeki eşyayı kullan, isteğe bağlı olarak belirli bir blok üzerinde</value>
   </data>
   <data name="cmd.useitem.use" xml:space="preserve">
-    <value>Used an item</value>
+    <value>Bir eşya kullanıldı</value>
   </data>
   <data name="config.backup.fail" xml:space="preserve">
-    <value>Failed to write to backup file {0}</value>
+    <value>Yedek dosyası {0} yazılamadı</value>
   </data>
   <data name="config.commandsuggestion.illegal_color" xml:space="preserve">
-    <value>The color code {1} in {0} is in illegal format and the default value has been restored.</value>
+    <value>{0} içindeki {1} renk kodu geçersiz biçimde, varsayılan değer geri yüklendi.</value>
   </data>
   <data name="config.load" xml:space="preserve">
-    <value>Settings have been loaded from {0}</value>
+    <value>Ayarlar {0} dosyasından yüklendi</value>
   </data>
   <data name="config.load.fail" xml:space="preserve">
-    <value>Failed to load settings:</value>
+    <value>Ayarlar yüklenemedi:</value>
   </data>
   <data name="config.Main.Advanced.language.invaild" xml:space="preserve">
-    <value>The language code is invalid!</value>
+    <value>Dil kodu geçersiz!</value>
   </data>
   <data name="config.saving" xml:space="preserve">
-    <value>The current setting is saved as {0}</value>
+    <value>Mevcut ayar {0} olarak kaydedildi</value>
   </data>
   <data name="config.write.fail" xml:space="preserve">
-    <value>Failed to write to settings file {0}</value>
+    <value>Ayar dosyası {0} yazılamadı</value>
   </data>
   <data name="debug.color_test" xml:space="preserve">
-    <value>Color test: Your terminal should display {0}</value>
+    <value>Renk testi: Terminalin {0} göstermeli</value>
   </data>
   <data name="debug.crypto" xml:space="preserve">
     <value>Crypto keys &amp; hash generated.</value>
   </data>
   <data name="debug.keys_cache_fail" xml:space="preserve">
-    <value>No profile keys could be loaded from disk</value>
+    <value>Diskten profil anahtarı yüklenemedi</value>
   </data>
   <data name="debug.keys_cache_ok" xml:space="preserve">
-    <value>Profile keys has been successfully loaded from disk.</value>
+    <value>Profil anahtarları diskten başarıyla yüklendi.</value>
   </data>
   <data name="debug.request" xml:space="preserve">
     <value>Performing request to {0}</value>
   </data>
   <data name="debug.session_cache_fail" xml:space="preserve">
-    <value>No sessions could be loaded from disk</value>
+    <value>Diskten oturum yüklenemedi</value>
   </data>
   <data name="debug.session_cache_ok" xml:space="preserve">
-    <value>Session data has been successfully loaded from disk.</value>
+    <value>Oturum verileri diskten başarıyla yüklendi.</value>
   </data>
   <data name="debug.session_id" xml:space="preserve">
     <value>Success. (session ID: {0})</value>
   </data>
   <data name="Enchantment.bottom_slot" xml:space="preserve">
-    <value>Bottom slot</value>
+    <value>Alt yuva</value>
   </data>
   <data name="Enchantment.enchantments_available" xml:space="preserve">
-    <value>Enchantments available</value>
+    <value>Kullanılabilir büyüler</value>
   </data>
   <data name="Enchantment.levels" xml:space="preserve">
     <value>Levels</value>
   </data>
   <data name="Enchantment.middle_slot" xml:space="preserve">
-    <value>Middle slot</value>
+    <value>Orta yuva</value>
   </data>
   <data name="Enchantment.tops_slot" xml:space="preserve">
-    <value>Top slot</value>
+    <value>Üst yuva</value>
   </data>
   <data name="error.auth" xml:space="preserve">
     <value>Kimlik yenilenirken sunucudan hata kodu alındı: {0}</value>
@@ -1745,13 +1745,13 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Forge şifreleme başlatma anlaşması başarıyla tamamlanmadı.</value>
   </data>
   <data name="error.generator.invalid" xml:space="preserve">
-    <value>Invalid usage of the generator command!</value>
+    <value>generator komutunun geçersiz kullanımı!</value>
   </data>
   <data name="error.generator.json" xml:space="preserve">
-    <value>The provided path must be a path to a file that is in .json format!</value>
+    <value>Verilen yol, .json biçiminde bir dosyaya işaret etmeli!</value>
   </data>
   <data name="error.generator.path" xml:space="preserve">
-    <value>Invalid data path provided! (The path either does not exists or you have made a typo)</value>
+    <value>Geçersiz veri yolu! (Yol ya yok ya da yazım hatası yaptın)</value>
   </data>
   <data name="error.http_code" xml:space="preserve">
     <value>Sunucudan hata kodu alındı: {0}</value>
@@ -1811,19 +1811,19 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Bu IP'ye ping başarısız.</value>
   </data>
   <data name="error.realms.access_denied" xml:space="preserve">
-    <value>This Realms world does not exist or access was denied</value>
+    <value>Bu Realms dünyası yok veya erişim reddedildi</value>
   </data>
   <data name="error.realms.disabled" xml:space="preserve">
     <value>Trying to join a Realms world but Realms support is disabled in config</value>
   </data>
   <data name="error.realms.ip_error" xml:space="preserve">
-    <value>Cannot retrieve the server IP of your Realms world</value>
+    <value>Realms dünyanın sunucu IP'si alınamıyor</value>
   </data>
   <data name="error.realms.server_id" xml:space="preserve">
-    <value>Invalid or unknown Realms server ID.</value>
+    <value>Geçersiz veya bilinmeyen Realms sunucu kimliği.</value>
   </data>
   <data name="error.realms.server_unavailable" xml:space="preserve">
-    <value>Realms server may require some time to start up. Please retry again later.</value>
+    <value>Realms sunucusu başlaması için biraz zaman gerektirebilir. Lütfen daha sonra tekrar dene.</value>
   </data>
   <data name="error.setting.argument_syntax" xml:space="preserve">
     <value>{0}: Geçersiz sözdizimi, --argname=değer veya --section.argname=değer bekleniyor</value>
@@ -1847,76 +1847,76 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Sunucu, elle ayarlanandan farklı bir sürüm bildiriyor. Giriş çalışmayabilir.</value>
   </data>
   <data name="exception.chatbot.init" xml:space="preserve">
-    <value>ChatBot methods should NOT be called in the constructor as API handler is not initialized yet. Override Initialize() or AfterGameJoined() instead to perform initialization tasks.</value>
+    <value>API işleyici henüz başlatılmadığı için ChatBot metotları yapıcıda çağrılmamalı. Başlatma görevleri için bunun yerine Initialize() veya AfterGameJoined() metodunu geçersiz kıl.</value>
   </data>
   <data name="exception.csrunner.invalid_head" xml:space="preserve">
-    <value>The provided script does not have a valid MCCScript header</value>
+    <value>Verilen betikte geçerli bir MCCScript başlığı yok</value>
   </data>
   <data name="exception.packet_process" xml:space="preserve">
-    <value>Failed to process incoming packet of type {0}. (PacketID: {1}, Protocol: {2}, LoginPhase: {3}, InnerException: {4}).</value>
+    <value>{0} türündeki gelen paket işlenemedi. (PacketID: {1}, Protokol: {2}, LoginPhase: {3}, InnerException: {4}).</value>
   </data>
   <data name="exception.palette.block" xml:space="preserve">
-    <value>Please update block types handling for this Minecraft version. See Material.cs</value>
+    <value>Lütfen bu Minecraft sürümü için blok türleri işlemesini güncelle. Material.cs'e bak.</value>
   </data>
   <data name="exception.palette.entity" xml:space="preserve">
-    <value>Please update entity types handling for this Minecraft version. See EntityType.cs</value>
+    <value>Lütfen bu Minecraft sürümü için varlık türleri işlemesini güncelle. EntityType.cs'e bak.</value>
   </data>
   <data name="exception.palette.healthfield" xml:space="preserve">
-    <value>Please update health field handling for this Minecraft version.</value>
+    <value>Lütfen bu Minecraft sürümü için can alanı işlemesini güncelle.</value>
   </data>
   <data name="exception.palette.item" xml:space="preserve">
-    <value>Please update item types handling for this Minecraft version. See ItemType.cs</value>
+    <value>Lütfen bu Minecraft sürümü için eşya türleri işlemesini güncelle. ItemType.cs'e bak.</value>
   </data>
   <data name="exception.palette.packet" xml:space="preserve">
-    <value>Please update packet type palette for this Minecraft version. See PacketTypePalette.cs</value>
+    <value>Lütfen bu Minecraft sürümü için paket türü paletini güncelle. PacketTypePalette.cs'e bak.</value>
   </data>
   <data name="exception.unknown_direction" xml:space="preserve">
-    <value>Unknown direction</value>
+    <value>Bilinmeyen yön</value>
   </data>
   <data name="exception.user_logout" xml:space="preserve">
-    <value>User-initiated logout should be done by calling Disconnect()</value>
+    <value>Kullanıcı kaynaklı çıkış Disconnect() çağrılarak yapılmalı</value>
   </data>
   <data name="exception.version_unsupport" xml:space="preserve">
-    <value>The protocol version no.{0} is not supported.</value>
+    <value>{0} numaralı protokol sürümü desteklenmiyor.</value>
   </data>
   <data name="extra.entity_disabled" xml:space="preserve">
-    <value>Entities are currently not handled for that MC version.</value>
+    <value>Varlıklar şu anda bu MC sürümü için işlenmiyor.</value>
   </data>
   <data name="extra.entity_required" xml:space="preserve">
-    <value>Please enable EntityHandling in the config file first.</value>
+    <value>Lütfen önce yapılandırma dosyasında EntityHandling'i etkinleştir.</value>
   </data>
   <data name="extra.inventory_close" xml:space="preserve">
-    <value>Inventory # {0} closed.</value>
+    <value>Envanter #{0} kapatıldı.</value>
   </data>
   <data name="extra.inventory_disabled" xml:space="preserve">
-    <value>Inventories are currently not handled for that MC version.</value>
+    <value>Envanterler şu anda bu MC sürümü için işlenmiyor.</value>
   </data>
   <data name="extra.inventory_enabled" xml:space="preserve">
-    <value>Inventory handling is now enabled.</value>
+    <value>Envanter işleme artık etkin.</value>
   </data>
   <data name="extra.inventory_interact" xml:space="preserve">
-    <value>Use /inventory to interact with it.</value>
+    <value>Etkileşim için /inventory kullan.</value>
   </data>
   <data name="extra.inventory_open" xml:space="preserve">
-    <value>Inventory # {0} opened: {1}</value>
+    <value>Envanter #{0} açıldı: {1}</value>
   </data>
   <data name="extra.inventory_required" xml:space="preserve">
-    <value>Please enable InventoryHandling in the config file first.</value>
+    <value>Lütfen önce yapılandırma dosyasında InventoryHandling'i etkinleştir.</value>
   </data>
   <data name="extra.terrainandmovement_disabled" xml:space="preserve">
-    <value>Terrain &amp; Movements currently not handled for that MC version.</value>
+    <value>Arazi ve Hareket şu anda bu MC sürümü için işlenmiyor.</value>
   </data>
   <data name="extra.terrainandmovement_enabled" xml:space="preserve">
-    <value>Terrain and Movements is now enabled.</value>
+    <value>Arazi ve Hareket artık etkin.</value>
   </data>
   <data name="extra.terrainandmovement_required" xml:space="preserve">
-    <value>Please enable Terrain and Movements in the config file first.</value>
+    <value>Lütfen önce yapılandırma dosyasında Arazi ve Hareket'i etkinleştir.</value>
   </data>
   <data name="filemonitor.fail" xml:space="preserve">
-    <value>[{0}] Failed to initialize FileSystemWatcher, retrying using Polling</value>
+    <value>[{0}] FileSystemWatcher başlatılamadı, Yoklama (Polling) ile tekrar deneniyor</value>
   </data>
   <data name="filemonitor.init" xml:space="preserve">
-    <value>[{0}] Initializing FileSystemWatcher for file: {1}</value>
+    <value>[{0}] Şu dosya için FileSystemWatcher başlatılıyor: {1}</value>
   </data>
   <data name="forge.accept" xml:space="preserve">
     <value>Sunucu mod listesi kabul ediliyor...</value>
@@ -1967,10 +1967,10 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Sunucu Forge çalıştırıyor ({0} mod ile).</value>
   </data>
   <data name="general.available_cmd" xml:space="preserve">
-    <value>Available commands: {0}</value>
+    <value>Kullanılabilir komutlar: {0}</value>
   </data>
   <data name="general.bot_unload" xml:space="preserve">
-    <value>This bot will be unloaded.</value>
+    <value>Bu bot kaldırılacak.</value>
   </data>
   <data name="general.done" xml:space="preserve">
     <value>Done</value>
@@ -1979,41 +1979,41 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>Fail</value>
   </data>
   <data name="icmd.error" xml:space="preserve">
-    <value>OnInternalCommand: Got error from {0}: {1}</value>
+    <value>OnInternalCommand: {0} kaynağından hata alındı: {1}</value>
   </data>
   <data name="icmd.help" xml:space="preserve">
-    <value>help &lt;cmdname&gt;: show brief help about a command.</value>
+    <value>help &lt;komut adı&gt;: bir komut hakkında kısa yardım göster.</value>
   </data>
   <data name="icmd.list" xml:space="preserve">
-    <value>help &lt;cmdname&gt;. Available commands:
-{0}For server help, use '{1}send /help' instead.</value>
+    <value>help &lt;komut adı&gt;. Kullanılabilir komutlar:
+{0}Sunucu yardımı için bunun yerine '{1}send /help' kullan.</value>
   </data>
   <data name="icmd.unknown" xml:space="preserve">
-    <value>Unknown command '{0}'. Use 'help' for command list.</value>
+    <value>Bilinmeyen komut '{0}'. Komut listesi için 'help' kullan.</value>
   </data>
   <data name="mcc.backup_old_config" xml:space="preserve">
-    <value>The old MinecraftClient.ini has been backed up as {0}</value>
+    <value>Eski MinecraftClient.ini, {0} olarak yedeklendi</value>
   </data>
   <data name="mcc.browser_login_code" xml:space="preserve">
-    <value>Paste your code here:</value>
+    <value>Kodunu buraya yapıştır:</value>
   </data>
   <data name="mcc.browser_open" xml:space="preserve">
-    <value>Your browser should open automatically. If not, open the link below in your browser.</value>
+    <value>Tarayıcın otomatik açılmalı. Açılmazsa aşağıdaki bağlantıyı tarayıcında aç.</value>
   </data>
   <data name="mcc.connecting" xml:space="preserve">
     <value>{0} adresine bağlanılıyor...</value>
   </data>
   <data name="mcc.console_mode_tui_recommendation" xml:space="preserve">
-    <value>Tip: try TUI mode for a cleaner interface, mouse-friendly inventory actions, and a nicer layout. Run {0}tryout tui§8 to switch [Console.General] ConsoleMode to "tui" for the next restart.</value>
+    <value>İpucu: daha temiz bir arayüz, fare dostu envanter işlemleri ve daha güzel bir düzen için TUI modunu dene. Sonraki başlatmada [Console.General] ConsoleMode'u "tui" yapmak için {0}tryout tui§8 çalıştır.</value>
   </data>
   <data name="mcc.tui_startup_failed" xml:space="preserve">
-    <value>MCC encountered a problem while starting TUI mode.</value>
+    <value>RakitBot, TUI modunu başlatırken bir sorunla karşılaştı.</value>
   </data>
   <data name="mcc.tui_startup_fallback_classic" xml:space="preserve">
-    <value>As a fallback, MCC has automatically switched [Console.General] ConsoleMode to "classic". This will take effect after you restart MCC.</value>
+    <value>Yedek olarak [Console.General] ConsoleMode otomatik olarak "classic" yapıldı. Bu, yeniden başlattıktan sonra etkili olacak.</value>
   </data>
   <data name="mcc.report_issue" xml:space="preserve">
-    <value>Please report this issue to the MCC Team.</value>
+    <value>Lütfen bu sorunu RakitBot ekibine bildirin.</value>
   </data>
   <data name="mcc.device_code_prompt" xml:space="preserve">
     <value>Premium giriş → Tarayıcında şu adresi aç: {0} → Kod: §e{1}</value>
@@ -2046,10 +2046,10 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>{2} alan adı için sunucu bulundu: {0}:{1}</value>
   </data>
   <data name="mcc.generator.done" xml:space="preserve">
-    <value>Succesfully generated {0} palette using the dataset: {1}</value>
+    <value>{1} veri kümesi kullanılarak {0} paleti başarıyla oluşturuldu</value>
   </data>
   <data name="mcc.generator.generating" xml:space="preserve">
-    <value>Generating {0} palette using the dataset: {1}</value>
+    <value>{1} veri kümesi kullanılarak {0} paleti oluşturuluyor</value>
   </data>
   <data name="mcc.gen_new_config" xml:space="preserve">
     <value>New configuration file "{0}" is generated.</value>
@@ -2058,17 +2058,16 @@ You can use "/chunk status {0:0.0} {1:0.0} {2:0.0}" to check the chunk loading s
     <value>El sıkışma başarılı. (Sunucu Kimliği: {0})</value>
   </data>
   <data name="mcc.has_update" xml:space="preserve">
-    <value>A new version of MCC is available and you can download it via /upgrade
-Or download it manually: {0}</value>
+    <value></value>
   </data>
   <data name="mcc.help_us_translate" xml:space="preserve">
-    <value>Help us translate MCC: {0}</value>
+    <value></value>
   </data>
   <data name="mcc.invaild_config" xml:space="preserve">
-    <value>Failed to parse the settings file, enter "{0}new" to generate a new configuration.</value>
+    <value>Ayar dosyası ayrıştırılamadı, yeni bir yapılandırma oluşturmak için "{0}new" yaz.</value>
   </data>
   <data name="mcc.ip" xml:space="preserve">
-    <value>Server IP : </value>
+    <value>Sunucu IP : </value>
   </data>
   <data name="mcc.joined" xml:space="preserve">
     <value>Sunucuya başarıyla bağlanıldı.
@@ -2081,7 +2080,7 @@ Ayrılmak için '{0}quit' yaz.</value>
     <value>Login :</value>
   </data>
   <data name="mcc.login_basic_io" xml:space="preserve">
-    <value>Please type the username or email of your choice.</value>
+    <value>Lütfen seçtiğin kullanıcı adını veya e-postayı yaz.</value>
   </data>
   <data name="mcc.not_found" xml:space="preserve">
     <value>{0} için SRV kaydı bulunamadı.
@@ -2091,7 +2090,7 @@ Ayrılmak için '{0}quit' yaz.</value>
     <value>Çevrimdışı (offline) modda çalışılıyor.</value>
   </data>
   <data name="mcc.password_basic_io" xml:space="preserve">
-    <value>Please type the password for {0}.</value>
+    <value>Lütfen {0} için şifreyi yaz.</value>
   </data>
   <data name="mcc.password_hidden" xml:space="preserve">
     <value>Password(invisible): </value>
@@ -2112,10 +2111,10 @@ Ayrılmak için '{0}quit' yaz.</value>
     <value>Kayıtlı profil anahtarı hâlâ geçerli: {0}</value>
   </data>
   <data name="mcc.realms_available" xml:space="preserve">
-    <value>You have access to the following Realms worlds</value>
+    <value>Şu Realms dünyalarına erişimin var</value>
   </data>
   <data name="mcc.realms_join" xml:space="preserve">
-    <value>Use realms:&lt;index&gt; as server IP to join a Realms world</value>
+    <value>Bir Realms dünyasına katılmak için sunucu IP'si olarak realms:&lt;index&gt; kullan</value>
   </data>
   <data name="mcc.reconnect" xml:space="preserve">
     <value>5 saniye bekleniyor ({0} deneme kaldı)...</value>
@@ -2137,7 +2136,7 @@ Ayrılmak için '{0}quit' yaz.</value>
   </data>
   <data name="mcc.run_with_default_settings" xml:space="preserve">
     <value>
-MCC is running with default settings.</value>
+RakitBot varsayılan ayarlarla çalışıyor.</value>
   </data>
   <data name="mcc.server_offline" xml:space="preserve">
     <value>Sunucu çevrimdışı (offline) modda.</value>
@@ -2161,55 +2160,55 @@ MCC is running with default settings.</value>
     <value>Kayıtlı oturum hâlâ geçerli: {0}</value>
   </data>
   <data name="mcc.settings_generated" xml:space="preserve">
-    <value>Settings file MinecraftClient.ini has been generated.</value>
+    <value>Ayar dosyası MinecraftClient.ini oluşturuldu.</value>
   </data>
   <data name="mcc.unknown_version" xml:space="preserve">
     <value>Bilinmeyen veya desteklenmeyen MC sürümü {0}.</value>
   </data>
   <data name="mcc.update.already_latest" xml:space="preserve">
-    <value>The current version is already up to date or is a development build.</value>
+    <value></value>
   </data>
   <data name="mcc.update.already_running" xml:space="preserve">
-    <value>Checking for updates has already started.</value>
+    <value></value>
   </data>
   <data name="mcc.update.cancel" xml:space="preserve">
-    <value>The download has been cancelled.</value>
+    <value></value>
   </data>
   <data name="mcc.update.check_fail" xml:space="preserve">
-    <value>Unable to check for updates from Github, please check your internet connection or enable proxy.</value>
+    <value></value>
   </data>
   <data name="mcc.update.download_complete" xml:space="preserve">
-    <value>Self-updating: Download is complete, decompressing.</value>
+    <value></value>
   </data>
   <data name="mcc.update.download_fail" xml:space="preserve">
-    <value>Self-updating: An error occurred while downloading or saving the file:</value>
+    <value></value>
   </data>
   <data name="mcc.update.exist_update" xml:space="preserve">
-    <value>Self-updating: New version detected: "{0}", download will start soon (platform: {1}).</value>
+    <value></value>
   </data>
   <data name="mcc.update.platform_not_support" xml:space="preserve">
-    <value>The latest release does not contain a build that matches your operating system and CPU architecture.</value>
+    <value></value>
   </data>
   <data name="mcc.update.progress" xml:space="preserve">
-    <value>Self-updating: {0:00.00}%, ETA {4}, Downloaded {1:00.0}MB of {2:00.0}MB, Avg {3:0.0}KB/s</value>
+    <value></value>
   </data>
   <data name="mcc.update.progress_type2" xml:space="preserve">
-    <value>Self-updating: Downloaded {0:00.0}MB, Avg {1:0.0}KB/s</value>
+    <value></value>
   </data>
   <data name="mcc.update.promote_force" xml:space="preserve">
-    <value>Add "-f" to force the download.</value>
+    <value></value>
   </data>
   <data name="mcc.update.promote_force_cmd" xml:space="preserve">
-    <value>Use "--force-upgrade" to force the download.</value>
+    <value></value>
   </data>
   <data name="mcc.update.save_as" xml:space="preserve">
-    <value>Self-updating: File saved as: {0}</value>
+    <value></value>
   </data>
   <data name="mcc.update.start" xml:space="preserve">
-    <value>Start checking for updates.</value>
+    <value></value>
   </data>
   <data name="mcc.use_new_config" xml:space="preserve">
-    <value>Please use the newly generated MinecraftClient.ini</value>
+    <value>Lütfen yeni oluşturulan MinecraftClient.ini dosyasını kullan</value>
   </data>
   <data name="mcc.use_version" xml:space="preserve">
     <value>Minecraft sürümü: {0} (protokol v{1})</value>
@@ -2218,127 +2217,131 @@ MCC is running with default settings.</value>
     <value>Sürüm destekleniyor.</value>
   </data>
   <data name="mcc.with_forge" xml:space="preserve">
-    <value>, with Forge</value>
+    <value>, Forge ile</value>
   </data>
   <data name="proxy.connected" xml:space="preserve">
     <value>Connected to proxy {0}:{1}</value>
   </data>
   <data name="cmd.dig.end" xml:space="preserve">
-    <value>Mining of the block located at {0} ends.</value>
+    <value>{0} konumundaki bloğun kazılması bitti.</value>
   </data>
   <data name="cmd.dig.cancel" xml:space="preserve">
-    <value>Cancel mining the block located at {0}.</value>
+    <value>{0} konumundaki bloğun kazılması iptal edildi.</value>
   </data>
   <data name="bot.TelegramBridge.quit_disabled" xml:space="preserve">
-    <value>This command has been disabled due to Telegram caching causing issues, please stop your client manually.</value>
+    <value>Bu komut, Telegram önbelleklemesi sorunlara yol açtığı için devre dışı bırakıldı, lütfen istemcini elle durdur.</value>
   </data>
   <data name="cmd.items.collector.desc" xml:space="preserve">
-    <value>Collect items on the ground</value>
+    <value>Yerdeki eşyaları topla</value>
   </data>
   <data name="cmd.items.collector.usage" xml:space="preserve">
     <value>itemscollector &lt;start/stop&gt;</value>
   </data>
   <data name="cmd.items.collector.already.collecting" xml:space="preserve">
-    <value>Already collecting items!</value>
+    <value>Zaten eşya toplanıyor!</value>
   </data>
   <data name="cmd.items.collector.started" xml:space="preserve">
     <value>Started collecting items!</value>
   </data>
   <data name="cmd.items.collector.already.not.collecting" xml:space="preserve">
-    <value>Already not collecting items!</value>
+    <value>Zaten eşya toplanmıyor!</value>
   </data>
   <data name="cmd.items.collector.stopping" xml:space="preserve">
-    <value>Stopping item collection...</value>
+    <value>Eşya toplama durduruluyor...</value>
   </data>
   <data name="cmd.items.collector.stopped" xml:space="preserve">
     <value>Stopped collecting items.</value>
   </data>
   <data name="bot.WebSocketBot.failed_to_start.ip" xml:space="preserve">
-    <value>§cFailed to start a server! The provided IP address is not a valid one!</value>
+    <value>§cSunucu başlatılamadı! Girilen IP adresi geçerli değil!</value>
   </data>
   <data name="bot.WebSocketBot.failed_to_start.port" xml:space="preserve">
-    <value>§cFailed to start a server! The provided port number {0} is out of the range, it must be 65535 or bellow it!</value>
+    <value>§cSunucu başlatılamadı! Girilen port numarası {0} aralık dışında, 65535 veya altında olmalı!</value>
   </data>
   <data name="ChatBot.WebSocketBot.DebugMode" xml:space="preserve">
     <value />
   </data>
   <data name="bot.WebSocketBot.starting" xml:space="preserve">
-    <value>Starting the Websocket server...</value>
+    <value>Websocket sunucusu başlatılıyor...</value>
   </data>
   <data name="bot.WebSocketBot.started" xml:space="preserve">
     <value>§bServer started on ip §a{0}§b port: §a{1}</value>
   </data>
   <data name="bot.WebSocketBot.failed_to_start.custom" xml:space="preserve">
-    <value>§cFailed to start a server:\n\n{0}\n\n</value>
+    <value>§cSunucu başlatılamadı:
+
+{0}
+
+</value>
   </data>
   <data name="bot.WebSocketBot.new_session" xml:space="preserve">
     <value>§bNew session connected: §a{0}</value>
   </data>
   <data name="bot.WebSocketBot.session_disconnected" xml:space="preserve">
-    <value>§bSession with an id §a{0}§b has disconnected!</value>
+    <value>§b§a{0}§b kimlikli oturumun bağlantısı kesildi!</value>
   </data>
   <data name="bot.WebSocketBot.session_id_changed" xml:space="preserve">
-    <value>§bSession with an id §a{0}§b has been renamed to: §a{1}§b!</value>
+    <value>§b§a{0}§b kimlikli oturum şu ada değiştirildi: §a{1}§b!</value>
   </data>
   <data name="bot.WebSocketBot.session_id_failed_to_change" xml:space="preserve">
-    <value>§cSession with an id §a{0}§b failed to change the ID to: §c{1}§b!</value>
+    <value>§c§a{0}§b kimlikli oturumun kimliği şuna değiştirilemedi: §c{1}§b!</value>
   </data>
   <data name="bot.WebSocketBot.session_authenticated" xml:space="preserve">
-    <value>§bSession with an id §a{0}§b has been successfully authenticated!</value>
+    <value>§b§a{0}§b kimlikli oturum başarıyla doğrulandı!</value>
   </data>
   <data name="cmd.nameitem.item.name.empty" xml:space="preserve">
-    <value>The item name cannot be empty!</value>
+    <value>Eşya adı boş olamaz!</value>
   </data>
   <data name="cmd.nameitem.no.anvil.inventory.open" xml:space="preserve">
-    <value>You need to have an Anvil inventory opened and active in order to use this command!</value>
+    <value>Bu komutu kullanmak için açık ve aktif bir Örs envanterin olmalı!</value>
   </data>
   <data name="cmd.nameitem.first.slot.empty" xml:space="preserve">
-    <value>You need to place an item in the first slot (slot id: 0) of the Anvil inventory!</value>
+    <value>Örs envanterinin ilk yuvasına (yuva id: 0) bir eşya yerleştirmelisin!</value>
   </data>
   <data name="cmd.nameitem.failed" xml:space="preserve">
-    <value>Failed to send the packet for naming an item, try again!</value>
+    <value>Eşya adlandırma paketi gönderilemedi, tekrar dene!</value>
   </data>
   <data name="cmd.nameitem.successful" xml:space="preserve">
-    <value>Successfully sent the item name to the server, you can now click on the slot number 2 in the Anvil inventory to rename the item.</value>
+    <value>Eşya adı sunucuya başarıyla gönderildi; eşyayı yeniden adlandırmak için artık Örs envanterindeki 2 numaralı yuvaya tıklayabilirsin.</value>
   </data>
   <data name="cmd.nameitem.desc" xml:space="preserve">
-    <value>Set an item name when an Anvil inventory is active and the item is in the first slot.</value>
+    <value>Bir Örs envanteri aktifken ve eşya ilk yuvadayken eşya adı belirle.</value>
   </data>
   <data name="cmd.recipebook.craft.failed" xml:space="preserve">
-    <value>Failed to send recipe book craft request for {0}.</value>
+    <value>{0} için tarif kitabı üretim isteği gönderilemedi.</value>
   </data>
   <data name="cmd.recipebook.craft.sent" xml:space="preserve">
     <value>Requested recipe {0}.</value>
   </data>
   <data name="cmd.recipebook.craftall.sent" xml:space="preserve">
-    <value>Requested recipe {0} with craft-all.</value>
+    <value>{0} tarifi tümünü-üret ile istendi.</value>
   </data>
   <data name="cmd.recipebook.desc" xml:space="preserve">
-    <value>List unlocked recipe book recipes and craft them through the active recipe book inventory.</value>
+    <value>Kilidi açılmış tarif kitabı tariflerini listele ve aktif tarif kitabı envanteri üzerinden üret.</value>
   </data>
   <data name="cmd.recipebook.list" xml:space="preserve">
     <value>Unlocked recipe book recipes</value>
   </data>
   <data name="cmd.recipebook.no.active.inventory" xml:space="preserve">
-    <value>You need an active player crafting grid, crafting table, furnace, blast furnace, smoker, or stonecutter inventory.</value>
+    <value>Aktif bir oyuncu üretim ızgarası, çalışma tezgâhı, fırın, izabe fırını, tütsüleyici veya taş kesici envanterine ihtiyacın var.</value>
   </data>
   <data name="cmd.recipebook.no.recipes" xml:space="preserve">
-    <value>No unlocked recipe book recipes are currently tracked.</value>
+    <value>Şu anda izlenen kilidi açılmış tarif kitabı tarifi yok.</value>
   </data>
   <data name="cmd.recipebook.recipe.id.empty" xml:space="preserve">
-    <value>The recipe identifier cannot be empty.</value>
+    <value>Tarif tanımlayıcısı boş olamaz.</value>
   </data>
   <data name="cmd.recipebook.unsupported" xml:space="preserve">
-    <value>Recipe book crafting is only supported on Minecraft 1.13 and newer.</value>
+    <value>Tarif kitabı üretimi yalnızca Minecraft 1.13 ve üzeri sürümlerde desteklenir.</value>
   </data>
   <data name="bot.antiafk.may.not.move" xml:space="preserve">
-    <value>Bot movement lock is held by bot {0}, so the Anti AFK bot might not move!</value>
+    <value>Hareket kilidi {0} botunda, AFK Önleyici hareket etmeyebilir!</value>
   </data>
   <data name="bot.common.movement.lock.held" xml:space="preserve">
-    <value>You can not start/run/use the '{0}' bot because it requires movement, the movement is currently utilized by the '{1}' bot, stop it if you want to use this one.</value>
+    <value>'{0}' botunu başlatamaz/çalıştıramaz/kullanamazsın çünkü hareket gerektiriyor; hareket şu anda '{1}' botu tarafından kullanılıyor, bunu kullanmak istiyorsan onu durdur.</value>
   </data>
   <data name="cmd.wait.random.min.bigger" xml:space="preserve">
-    <value>Minimum number that you have provided is bigger than the maximum, swapping them around!</value>
+    <value>Verdiğin minimum sayı maksimumdan büyük, değerler yer değiştiriliyor!</value>
   </data>
   <data name="cmd.inventory.shiftrightclick" xml:space="preserve">
     <value>Shift right</value>
@@ -2350,19 +2353,19 @@ MCC is running with default settings.</value>
     <value>Selected profile:</value>
   </data>
   <data name="mcc.select_profile" xml:space="preserve">
-    <value>Select a profile from available profiles:</value>
+    <value>Kullanılabilir profillerden bir profil seç:</value>
   </data>
   <data name="mcc.sentry_logging" xml:space="preserve">
-    <value>MCC uses Sentry to log errors. You can opt-out by setting the EnableSentry option in the configuration file to false.</value>
+    <value>RakitBot, hataları kaydetmek için Sentry kullanır. Yapılandırma dosyasındaki EnableSentry seçeneğini false yaparak devre dışı bırakabilirsin.</value>
   </data>
   <data name="mcc.use_quit_to_exit" xml:space="preserve">
-    <value>Use '{0}quit' to exit Minecraft Console Client.</value>
+    <value>RakitBot'tan çıkmak için '{0}quit' yaz.</value>
   </data>
   <data name="cmd.debug.state_header" xml:space="preserve">
     <value>MCC Debug State</value>
   </data>
   <data name="cmd.debug.state_server" xml:space="preserve">
-    <value>Server</value>
+    <value>Sunucu</value>
   </data>
   <data name="cmd.debug.state_username" xml:space="preserve">
     <value>Username</value>
@@ -2404,28 +2407,28 @@ MCC is running with default settings.</value>
     <value>{0} online</value>
   </data>
   <data name="cmd.inventory.help.open" xml:space="preserve">
-    <value>Open interactive TUI inventory viewer (TUI mode only).</value>
+    <value>Etkileşimli TUI envanter görüntüleyiciyi aç (yalnızca TUI modu).</value>
   </data>
   <data name="cmd.inventory.tui_only" xml:space="preserve">
-    <value>Interactive TUI is only available in TUI console mode. Use '/inventory &lt;id&gt; list' instead.</value>
+    <value>Etkileşimli TUI yalnızca TUI konsol modunda kullanılabilir. Bunun yerine '/inventory &lt;id&gt; list' kullan.</value>
   </data>
   <data name="cmd.inventory.tui_already_running" xml:space="preserve">
-    <value>TUI inventory viewer is already running.</value>
+    <value>TUI envanter görüntüleyici zaten çalışıyor.</value>
   </data>
   <data name="cmd.inventory.tui_opening" xml:space="preserve">
-    <value>Opening TUI for Inventory #{0}...</value>
+    <value>Envanter #{0} için TUI açılıyor...</value>
   </data>
   <data name="cmd.inventory.tui_opened" xml:space="preserve">
-    <value>Inventory dialog opened.</value>
+    <value>Envanter penceresi açıldı.</value>
   </data>
   <data name="cmd.inventory.tui_launch_failed" xml:space="preserve">
-    <value>Failed to launch TUI inventory viewer.</value>
+    <value>TUI envanter görüntüleyici başlatılamadı.</value>
   </data>
   <data name="cmd.inventory.tui_unsupported_container" xml:space="preserve">
-    <value>TUI viewer does not support this container type (Inventory #{0}). Use '/inventory {0} list' to view its contents.</value>
+    <value>TUI görüntüleyici bu envanter türünü desteklemiyor (Envanter #{0}). İçeriğini görmek için '/inventory {0} list' kullan.</value>
   </data>
   <data name="tui.select_copy_hint" xml:space="preserve">
-    <value>Hold Shift + Left-click to select and copy text.</value>
+    <value>Metni seçip kopyalamak için Shift + Sol tık tut.</value>
   </data>
   <data name="tui.ctrlc_input_cleared" xml:space="preserve">
     <value>Input cleared. Press Ctrl+C again to quit.</value>
@@ -2434,22 +2437,22 @@ MCC is running with default settings.</value>
     <value>Press Ctrl+C again to quit MCC.</value>
   </data>
   <data name="tui.inventory.item_info" xml:space="preserve">
-    <value>[ Item Info ]</value>
+    <value>[ Eşya Bilgisi ]</value>
   </data>
   <data name="tui.inventory.held_item" xml:space="preserve">
-    <value>[ Held Item ]</value>
+    <value>[ Tutulan Eşya ]</value>
   </data>
   <data name="tui.inventory.controls" xml:space="preserve">
     <value>[ Controls ]</value>
   </data>
   <data name="tui.inventory.controls_help" xml:space="preserve">
-    <value>LClick  Pick/Place
-RClick  Half/Place1
-Shift+C QuickMove
-Q       Drop x1
-Ctrl+Q  Drop Stack
-R       Refresh
-E/ESC   Exit</value>
+    <value>SolTık  Al/Koy
+SağTık  Yarısı/1Koy
+Shift+C HızlıTaşı
+Q       1 At
+Ctrl+Q  Yığını At
+R       Yenile
+E/ESC   Çık</value>
   </data>
   <data name="tui.inventory.cursor_empty" xml:space="preserve">
     <value>(empty)</value>
@@ -2473,32 +2476,32 @@ E/ESC   Exit</value>
     <value>Ft</value>
   </data>
   <data name="tui.inventory.hover_hint" xml:space="preserve">
-    <value>Hover over a slot to
-see item details.</value>
+    <value>Eşya ayrıntılarını görmek için
+bir yuvanın üzerine gel.</value>
   </data>
   <data name="tui.inventory.slot_empty" xml:space="preserve">
     <value>(Empty)</value>
   </data>
   <data name="tui.inventory.slot_detail" xml:space="preserve">
-    <value>Slot #{0}  Count: {1}</value>
+    <value>Yuva #{0}  Adet: {1}</value>
   </data>
   <data name="tui.inventory.durability" xml:space="preserve">
     <value>Durability</value>
   </data>
   <data name="tui.inventory.container_not_found" xml:space="preserve">
-    <value>Container not found</value>
+    <value>Envanter bulunamadı</value>
   </data>
   <data name="tui.inventory.title" xml:space="preserve">
-    <value>Inventory #{0} - {1}</value>
+    <value>Envanter #{0} - {1}</value>
   </data>
   <data name="tui.inventory.item_count" xml:space="preserve">
     <value>{0} items</value>
   </data>
   <data name="tui.tab.hint" xml:space="preserve">
-    <value>Press Esc to close. Refreshes automatically.</value>
+    <value>Kapatmak için Esc'e bas. Otomatik yenilenir.</value>
   </data>
   <data name="bot.effect.gained" xml:space="preserve">
-    <value>You're now under {0} effect (Duration: {1}).</value>
+    <value>Artık {0} etkisi altındasın (Süre: {1}).</value>
   </data>
   <data name="bot.effect.expired" xml:space="preserve">
     <value>{0} etkisi sona erdi</value>
@@ -2546,7 +2549,7 @@ see item details.</value>
     <value>Output</value>
   </data>
   <data name="tui.enchanting.item" xml:space="preserve">
-    <value>Item</value>
+    <value>Eşya</value>
   </data>
   <data name="tui.enchanting.lapis" xml:space="preserve">
     <value>Lapis</value>
@@ -2579,25 +2582,25 @@ see item details.</value>
     <value>McpServer</value>
   </data>
   <data name="bot.mcpserver.starting" xml:space="preserve">
-    <value>Starting embedded MCP server...</value>
+    <value>Gömülü MCP sunucusu başlatılıyor...</value>
   </data>
   <data name="bot.mcpserver.started" xml:space="preserve">
-    <value>Embedded MCP server started on {0}</value>
+    <value>Gömülü MCP sunucusu {0} üzerinde başlatıldı</value>
   </data>
   <data name="bot.mcpserver.start_failed" xml:space="preserve">
-    <value>Failed to start embedded MCP server: {0}</value>
+    <value>Gömülü MCP sunucusu başlatılamadı: {0}</value>
   </data>
   <data name="bot.mcpserver.missing_auth_token" xml:space="preserve">
     <value>Embedded MCP auth token is required but environment variable {0} is empty.</value>
   </data>
   <data name="bot.mcpserver.stopped" xml:space="preserve">
-    <value>Embedded MCP server stopped.</value>
+    <value>Gömülü MCP sunucusu durduruldu.</value>
   </data>
   <data name="bot.mcpserver.stop_failed" xml:space="preserve">
-    <value>Failed to stop embedded MCP server cleanly: {0}</value>
+    <value>Gömülü MCP sunucusu düzgün durdurulamadı: {0}</value>
   </data>
   <data name="cmd.minimap.desc" xml:space="preserve">
-    <value>Toggle the TUI minimap overlay, or adjust its zoom level.</value>
+    <value>TUI mini harita katmanını aç/kapat veya yakınlaştırma seviyesini ayarla.</value>
   </data>
   <data name="cmd.minimap.enabled" xml:space="preserve">
     <value>Minimap enabled.</value>
@@ -2609,10 +2612,10 @@ see item details.</value>
     <value>Minimap zoom set to {0}:1 (blocks per pixel).</value>
   </data>
   <data name="cmd.minimap.zoom_current" xml:space="preserve">
-    <value>Current minimap zoom: {0}:1 blocks/px (range 1-{1}).</value>
+    <value>Mevcut mini harita yakınlaştırma: {0}:1 blok/px (aralık 1-{1}).</value>
   </data>
   <data name="cmd.minimap.tui_only" xml:space="preserve">
-    <value>The minimap command is only available in TUI mode.</value>
+    <value>Mini harita komutu yalnızca TUI modunda kullanılabilir.</value>
   </data>
   <data name="tui.minimap.legend.hostile" xml:space="preserve">
     <value>Hostile</value>
@@ -2624,7 +2627,7 @@ see item details.</value>
     <value>Neutral</value>
   </data>
   <data name="tui.minimap.legend.player" xml:space="preserve">
-    <value>Player</value>
+    <value>Oyuncu</value>
   </data>
   <data name="cmd.minimap.names_status" xml:space="preserve">
     <value>Name display -- Players: {0}, Hostile: {1}, Neutral: {2}, Passive: {3}</value>
@@ -2642,19 +2645,19 @@ see item details.</value>
     <value>{0} name display set to {1}.</value>
   </data>
   <data name="cmd.minimap.position_current" xml:space="preserve">
-    <value>Current minimap position: {0}</value>
+    <value>Mevcut mini harita konumu: {0}</value>
   </data>
   <data name="cmd.minimap.position_set" xml:space="preserve">
     <value>Minimap position set to: {0}</value>
   </data>
   <data name="cmd.minimap.cave_current" xml:space="preserve">
-    <value>Current cave mode: {0}</value>
+    <value>Mevcut mağara modu: {0}</value>
   </data>
   <data name="cmd.minimap.cave_set" xml:space="preserve">
-    <value>Cave mode set to: {0}</value>
+    <value>Mağara modu şuna ayarlandı: {0}</value>
   </data>
   <data name="cmd.achievement.desc" xml:space="preserve">
-    <value>list achievements/advancements from the server.</value>
+    <value>sunucudan başarımları/ilerlemeleri listele.</value>
   </data>
   <data name="cmd.achievement.none" xml:space="preserve">
     <value>No achievements/advancements received yet.</value>
@@ -2690,13 +2693,14 @@ see item details.</value>
     <value>book &lt;read|write|edit|sign&gt;</value>
   </data>
   <data name="cmd.book.desc" xml:space="preserve">
-    <value>read, write, edit, and sign the book held in your main hand.</value>
+    <value>ana elinde tuttuğun kitabı oku, yaz, düzenle ve imzala.</value>
   </data>
   <data name="cmd.book.help_read" xml:space="preserve">
     <value>/book read [page]</value>
   </data>
   <data name="cmd.book.help_write" xml:space="preserve">
-    <value>/book write text &lt;text&gt; or /book write file &lt;path&gt;. Use \n for line breaks and \f for page breaks.</value>
+    <value>/book write text &lt;metin&gt; veya /book write file &lt;yol&gt;. Satır sonu için 
+, sayfa sonu için \f kullan.</value>
   </data>
   <data name="cmd.book.help_edit" xml:space="preserve">
     <value>/book edit, /book edit page &lt;page&gt; &lt;text&gt;, /book edit insert &lt;page&gt; &lt;text&gt;, or /book edit delete &lt;page&gt;.</value>
@@ -2705,22 +2709,22 @@ see item details.</value>
     <value>/book sign &lt;title&gt;</value>
   </data>
   <data name="cmd.book.not_holding_book" xml:space="preserve">
-    <value>You are not holding a book.</value>
+    <value>Bir kitap tutmuyorsun.</value>
   </data>
   <data name="cmd.book.not_holding_writable" xml:space="preserve">
-    <value>You must hold a writable book in your main hand.</value>
+    <value>Ana elinde yazılabilir bir kitap tutmalısın.</value>
   </data>
   <data name="cmd.book.already_signed" xml:space="preserve">
-    <value>Book already signed.</value>
+    <value>Kitap zaten imzalanmış.</value>
   </data>
   <data name="cmd.book.cannot_edit_signed" xml:space="preserve">
-    <value>You cannot edit a signed book.</value>
+    <value>İmzalanmış bir kitabı düzenleyemezsin.</value>
   </data>
   <data name="cmd.book.tui_opened" xml:space="preserve">
     <value>Book TUI opened.</value>
   </data>
   <data name="cmd.book.tui_required" xml:space="preserve">
-    <value>The book editor is only available in TUI mode.</value>
+    <value>Kitap düzenleyici yalnızca TUI modunda kullanılabilir.</value>
   </data>
   <data name="cmd.book.write_sent" xml:space="preserve">
     <value>Book write packet sent.</value>
@@ -2732,19 +2736,19 @@ see item details.</value>
     <value>Book sign packet sent.</value>
   </data>
   <data name="cmd.book.write_failed" xml:space="preserve">
-    <value>Book packet could not be sent.</value>
+    <value>Kitap paketi gönderilemedi.</value>
   </data>
   <data name="cmd.book.file_not_found" xml:space="preserve">
-    <value>Book file not found: {0}</value>
+    <value>Kitap dosyası bulunamadı: {0}</value>
   </data>
   <data name="cmd.book.page_out_of_range" xml:space="preserve">
-    <value>Page {0} is outside the current page range 1-{1}.</value>
+    <value>Sayfa {0}, mevcut sayfa aralığı 1-{1} dışında.</value>
   </data>
   <data name="cmd.book.too_many_pages" xml:space="preserve">
-    <value>Book has {0} pages, but this version supports at most {1} pages.</value>
+    <value>Kitapta {0} sayfa var ama bu sürüm en fazla {1} sayfa destekliyor.</value>
   </data>
   <data name="cmd.book.page_too_long" xml:space="preserve">
-    <value>Page {0} has {1} characters, but this version supports at most {2} characters per page.</value>
+    <value>Sayfa {0} {1} karakter içeriyor ama bu sürüm sayfa başına en fazla {2} karakter destekliyor.</value>
   </data>
   <data name="cmd.book.title_invalid" xml:space="preserve">
     <value>Book title must be 1-{0} characters.</value>
@@ -2780,13 +2784,13 @@ see item details.</value>
     <value>Sign</value>
   </data>
   <data name="tui.book.close" xml:space="preserve">
-    <value>Close</value>
+    <value>Kapat</value>
   </data>
   <data name="tui.book.saved" xml:space="preserve">
     <value>Saved.</value>
   </data>
   <data name="tui.book.save_failed" xml:space="preserve">
-    <value>Book packet could not be sent.</value>
+    <value>Kitap paketi gönderilemedi.</value>
   </data>
   <data name="tui.book.signed" xml:space="preserve">
     <value>Signed.</value>
@@ -2816,7 +2820,7 @@ see item details.</value>
     <value>Protocol state changed: {0} -&gt; {1}</value>
   </data>
   <data name="debug.packet.unknown_type" xml:space="preserve">
-    <value>Unknown(0x{0:X2})</value>
+    <value>Bilinmeyen(0x{0:X2})</value>
   </data>
   <data name="debug.packet.compression.disabled" xml:space="preserve">
     <value>disabled</value>
@@ -2843,13 +2847,13 @@ see item details.</value>
     <value>dialog [show|open|set|click|click-label|cancel|dismiss]</value>
   </data>
   <data name="cmd.dialog.desc" xml:space="preserve">
-    <value>View and interact with the current server custom dialog.</value>
+    <value>Sunucunun mevcut özel diyaloğunu görüntüle ve etkileşime gir.</value>
   </data>
   <data name="dialog.received" xml:space="preserve">
-    <value>Server showed custom dialog: {0}. Use /dialog show.</value>
+    <value>Sunucu özel diyalog gösterdi: {0}. /dialog show kullan.</value>
   </data>
   <data name="dialog.cleared" xml:space="preserve">
-    <value>Server cleared the custom dialog.</value>
+    <value>Sunucu özel diyaloğu temizledi.</value>
   </data>
   <data name="dialog.none" xml:space="preserve">
     <value>No custom dialog is active.</value>
@@ -2861,13 +2865,13 @@ see item details.</value>
     <value>Unresolved dialog {0}</value>
   </data>
   <data name="dialog.unresolved_body" xml:space="preserve">
-    <value>The server referenced dialog registry entry {0}, but MCC has no data for it.</value>
+    <value>Sunucu, {0} diyalog kaydını referans gösterdi ama RakitBot'ta buna dair veri yok.</value>
   </data>
   <data name="dialog.unresolved_action_disabled" xml:space="preserve">
-    <value>This dialog could not be resolved, so actions are disabled.</value>
+    <value>Bu diyalog çözümlenemedi, bu yüzden işlemler devre dışı.</value>
   </data>
   <data name="dialog.input_unknown" xml:space="preserve">
-    <value>Unknown dialog input: {0}</value>
+    <value>Bilinmeyen diyalog girişi: {0}</value>
   </data>
   <data name="dialog.input_set" xml:space="preserve">
     <value>Dialog input {0} set to {1}.</value>
@@ -2879,40 +2883,40 @@ see item details.</value>
     <value>Input {0} expects true or false.</value>
   </data>
   <data name="dialog.input_option_invalid" xml:space="preserve">
-    <value>Input {0} expects one of the listed option IDs.</value>
+    <value>Giriş {0} listelenen seçenek kimliklerinden birini bekliyor.</value>
   </data>
   <data name="dialog.input_number_invalid" xml:space="preserve">
     <value>Input {0} expects a number.</value>
   </data>
   <data name="dialog.input_number_range_invalid" xml:space="preserve">
-    <value>Input {0} must be between {1} and {2}.</value>
+    <value>Giriş {0} {1} ile {2} arasında olmalı.</value>
   </data>
   <data name="dialog.action_unknown" xml:space="preserve">
-    <value>Unknown dialog action index: {0}</value>
+    <value>Bilinmeyen diyalog işlem indeksi: {0}</value>
   </data>
   <data name="dialog.action_label_unknown" xml:space="preserve">
-    <value>Unknown dialog action label: {0}</value>
+    <value>Bilinmeyen diyalog işlem etiketi: {0}</value>
   </data>
   <data name="dialog.action_label_ambiguous" xml:space="preserve">
     <value>Dialog action label is ambiguous: {0}</value>
   </data>
   <data name="dialog.cannot_cancel" xml:space="preserve">
-    <value>This dialog cannot be closed with cancel.</value>
+    <value>Bu diyalog iptal ile kapatılamaz.</value>
   </data>
   <data name="dialog.action_closed" xml:space="preserve">
     <value>Dialog action closed locally.</value>
   </data>
   <data name="dialog.action_command_not_in_play" xml:space="preserve">
-    <value>This dialog command action is only available in play state.</value>
+    <value>Bu diyalog komut işlemi yalnızca oyun durumunda kullanılabilir.</value>
   </data>
   <data name="dialog.action_invalid" xml:space="preserve">
-    <value>Dialog action is invalid.</value>
+    <value>Diyalog işlemi geçersiz.</value>
   </data>
   <data name="dialog.action_custom_failed" xml:space="preserve">
-    <value>Custom dialog action packet could not be sent.</value>
+    <value>Özel diyalog işlem paketi gönderilemedi.</value>
   </data>
   <data name="dialog.action_command_sent" xml:space="preserve">
-    <value>Dialog command sent: {0}</value>
+    <value>Diyalog komutu gönderildi: {0}</value>
   </data>
   <data name="dialog.action_custom_sent" xml:space="preserve">
     <value>Dialog custom action sent: {0}</value>
@@ -2924,7 +2928,7 @@ see item details.</value>
     <value>Dialog URL action: {0}</value>
   </data>
   <data name="dialog.action_suggest_command" xml:space="preserve">
-    <value>Dialog suggested command: {0}</value>
+    <value>Diyalog önerilen komut: {0}</value>
   </data>
   <data name="dialog.action_copy" xml:space="preserve">
     <value>Dialog copy action: {0}</value>
@@ -2933,7 +2937,7 @@ see item details.</value>
     <value>Unsupported dialog action: {0}</value>
   </data>
   <data name="dialog.tui_pending" xml:space="preserve">
-    <value>Custom dialog is pending. Use dialog open after closing the current overlay.</value>
+    <value>Özel diyalog bekliyor. Mevcut katmanı kapattıktan sonra dialog open kullan.</value>
   </data>
   <data name="dialog.tui_unavailable" xml:space="preserve">
     <value>Dialog TUI is unavailable.</value>
@@ -2948,7 +2952,7 @@ see item details.</value>
     <value>OK</value>
   </data>
   <data name="dialog.item_body" xml:space="preserve">
-    <value>Item preview</value>
+    <value>Eşya önizlemesi</value>
   </data>
   <data name="dialog.server_link.report_bug" xml:space="preserve">
     <value>Report bug</value>
@@ -3005,7 +3009,7 @@ see item details.</value>
     <value>  [{0}] {1} ({2})</value>
   </data>
   <data name="dialog.render.cancel_hint" xml:space="preserve">
-    <value>Use /dialog cancel to close or run the cancel action.</value>
+    <value>Kapatmak için /dialog cancel kullan veya iptal işlemini çalıştır.</value>
   </data>
   <data name="dialog.input_desc_text" xml:space="preserve">
     <value>max {0} chars</value>
@@ -3020,31 +3024,31 @@ see item details.</value>
     <value>range {0}..{1}</value>
   </data>
   <data name="dialog.input_desc_unknown" xml:space="preserve">
-    <value>unknown input</value>
+    <value>bilinmeyen giriş</value>
   </data>
   <data name="dialog.action_desc_close" xml:space="preserve">
-    <value>close</value>
+    <value>kapat</value>
   </data>
   <data name="dialog.action_desc_command" xml:space="preserve">
-    <value>command</value>
+    <value>komut</value>
   </data>
   <data name="dialog.action_desc_custom" xml:space="preserve">
     <value>custom</value>
   </data>
   <data name="dialog.action_desc_show_dialog" xml:space="preserve">
-    <value>show dialog</value>
+    <value>diyalog göster</value>
   </data>
   <data name="dialog.action_desc_open_url" xml:space="preserve">
-    <value>open URL</value>
+    <value>URL aç</value>
   </data>
   <data name="dialog.action_desc_suggest" xml:space="preserve">
-    <value>suggest command</value>
+    <value>komut öner</value>
   </data>
   <data name="dialog.action_desc_copy" xml:space="preserve">
     <value>copy</value>
   </data>
   <data name="dialog.action_desc_unknown" xml:space="preserve">
-    <value>unknown</value>
+    <value>bilinmeyen</value>
   </data>
   <data name="dialog.type.notice" xml:space="preserve">
     <value>Notice</value>
@@ -3056,13 +3060,13 @@ see item details.</value>
     <value>Multi Action</value>
   </data>
   <data name="dialog.type.dialog_list" xml:space="preserve">
-    <value>Dialog list</value>
+    <value>Diyalog listesi</value>
   </data>
   <data name="dialog.type.server_links" xml:space="preserve">
-    <value>Server links</value>
+    <value>Sunucu bağlantıları</value>
   </data>
   <data name="dialog.type.unknown" xml:space="preserve">
-    <value>Unknown</value>
+    <value>Bilinmeyen</value>
   </data>
   <data name="dialog.input_kind.text" xml:space="preserve">
     <value>Text</value>
@@ -3077,9 +3081,9 @@ see item details.</value>
     <value>Number</value>
   </data>
   <data name="dialog.input_kind.unknown" xml:space="preserve">
-    <value>Unknown</value>
+    <value>Bilinmeyen</value>
   </data>
   <data name="dialog.render.help_hint" xml:space="preserve">
-    <value>Use /dialog help for a list of commands.</value>
+    <value>Komut listesi için /dialog help kullan.</value>
   </data>
 </root>
