@@ -796,7 +796,7 @@ namespace MinecraftClient
                     public InternalCmdCharType InternalCmdChar = InternalCmdCharType.slash;
 
                     [TomlInlineComment("$Main.Advanced.message_cooldown$")]
-                    public double MessageCooldown = 1.0;
+                    public double MessageCooldown = 0.0;
 
                     [TomlInlineComment("$Main.Advanced.max_chat_message_length$")]
                     public int MaxChatMessageLength = 0;

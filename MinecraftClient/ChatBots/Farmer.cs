@@ -866,16 +866,25 @@ namespace MinecraftClient.ChatBots
         }
 
         // Yoinked from Daenges's Sugarcane Farmer
-        private bool WaitForMoveToLocation(Location pos, float tolerance = 2f)
+        private bool WaitForMoveToLocation(Location pos, float tolerance = 2f, int timeoutMs = 15000)
         {
             if (MoveToLocation(location: pos, allowUnsafe: allowUnsafe, allowDirectTeleport: allowTeleport))
             {
                 LogDebug("Moving to: " + pos);
 
-                while (GetCurrentLocation().Distance(pos) > tolerance)
+                var waitedMs = 0;
+                while (running && GetCurrentLocation().Distance(pos) > tolerance)
+                {
                     Thread.Sleep(200);
+                    waitedMs += 200;
+                    if (waitedMs >= timeoutMs)
+                    {
+                        LogDebug("Hedefe ulasilamadi (timeout), sonraki hedefe geciliyor: " + pos);
+                        return false;
+                    }
+                }
 
-                return true;
+                return running;
             }
             else LogDebug("Can't move to: " + pos);
 

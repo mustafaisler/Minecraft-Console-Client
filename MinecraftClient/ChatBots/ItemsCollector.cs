@@ -206,12 +206,21 @@ public class ItemsCollector : ChatBot
         return true;
     }
 
-    private bool WaitForMoveToLocation(Location location, float tolerance = 1f)
+    private bool WaitForMoveToLocation(Location location, float tolerance = 1f, int timeoutMs = 15000)
     {
         if (!MoveToLocation(location)) return false;
-        while (GetCurrentLocation().Distance(location) > tolerance)
+        var waitedMs = 0;
+        while (running && GetCurrentLocation().Distance(location) > tolerance)
+        {
             Thread.Sleep(200);
+            waitedMs += 200;
+            if (waitedMs >= timeoutMs)
+            {
+                LogToConsole("[ItemsCollector] Hedefe ulasilamadi (15 sn), sonraki hedefe geciliyor.");
+                return false;
+            }
+        }
 
-        return true;
+        return running;
     }
 }
