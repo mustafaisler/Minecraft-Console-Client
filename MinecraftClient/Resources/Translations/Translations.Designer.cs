@@ -7543,6 +7543,51 @@ namespace MinecraftClient {
                 return ResourceManager.GetString("cmd.minimap.cave_set", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Produces a read-only world snapshot for the RakitBot web minimap.
+        /// </summary>
+        internal static string cmd_rbminimap_desc {
+            get {
+                return ResourceManager.GetString("cmd.rbminimap.desc", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to [RbMinimap] FAIL sebep=snapshot_calisiyor.
+        /// </summary>
+        internal static string cmd_rbminimap_busy {
+            get {
+                return ResourceManager.GetString("cmd.rbminimap.busy", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to [RbMinimap] OK version=1 width={0} height={1} zoom={2} entities={3}.
+        /// </summary>
+        internal static string cmd_rbminimap_success {
+            get {
+                return ResourceManager.GetString("cmd.rbminimap.success", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to [RbMinimap] FAIL sebep={0}.
+        /// </summary>
+        internal static string cmd_rbminimap_failure {
+            get {
+                return ResourceManager.GetString("cmd.rbminimap.failure", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to unknown.
+        /// </summary>
+        internal static string cmd_rbminimap_unknown_reason {
+            get {
+                return ResourceManager.GetString("cmd.rbminimap.unknown_reason", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to list achievements/advancements from the server..

@@ -2656,6 +2656,21 @@ bir yuvanın üzerine gel.</value>
   <data name="cmd.minimap.cave_set" xml:space="preserve">
     <value>Mağara modu şuna ayarlandı: {0}</value>
   </data>
+  <data name="cmd.rbminimap.desc" xml:space="preserve">
+    <value>RakitBot web mini haritası için salt okunur dünya görüntüsü üretir.</value>
+  </data>
+  <data name="cmd.rbminimap.busy" xml:space="preserve">
+    <value>[RbMinimap] FAIL sebep=snapshot_calisiyor</value>
+  </data>
+  <data name="cmd.rbminimap.success" xml:space="preserve">
+    <value>[RbMinimap] OK version=1 width={0} height={1} zoom={2} entities={3}</value>
+  </data>
+  <data name="cmd.rbminimap.failure" xml:space="preserve">
+    <value>[RbMinimap] FAIL sebep={0}</value>
+  </data>
+  <data name="cmd.rbminimap.unknown_reason" xml:space="preserve">
+    <value>bilinmeyen</value>
+  </data>
   <data name="cmd.achievement.desc" xml:space="preserve">
     <value>sunucudan başarımları/ilerlemeleri listele.</value>
   </data>
