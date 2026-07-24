@@ -124,7 +124,7 @@ namespace MinecraftClient.Commands
                         container = handler.GetInventory(containerId);
                         if (container is null) { Fail(handler, "container_kapandi"); return; }
                         int emptyTarget = FindTargetSlot(container, containerSlots, itemType, targetIsContainer: deposit, need);
-                        if (emptyTarget < 0) { Fail(handler, "hedefte_yer_yok"); break; }
+                        if (emptyTarget < 0) { Fail(handler, "hedefte_yer_yok"); return; } // OK satiri basilmaz (cift mesaj bug fix)
 
                         handler.DoWindowAction(containerId, slot, WindowActionType.LeftClick); // eline al
                         Thread.Sleep(ACTION_SETTLE_MS);
