@@ -228,7 +228,7 @@ namespace MinecraftClient.Tui
             public int Priority;
         }
 
-        private sealed class SampleResult
+        internal sealed class SampleResult
         {
             public Color[,] Pixels = null!;
             public (char Ch, Color Fg, Color Bg)?[,] CharOverlay = null!;
@@ -258,9 +258,9 @@ namespace MinecraftClient.Tui
             };
         }
 
-        private static SampleResult SampleTerrain(McClient client, int bpp, int mapW, int mapH,
+        internal static SampleResult SampleTerrain(McClient client, int bpp, int mapW, int mapH,
             bool showPlayers, bool showHostile, bool showNeutral, bool showPassive,
-            CaveModeOption caveOpt, CancellationToken ct)
+            CaveModeOption caveOpt, CancellationToken ct, bool fullHeight = false)
         {
             var result = new SampleResult
             {
@@ -286,7 +286,7 @@ namespace MinecraftClient.Tui
 
             var dim = World.GetDimension();
             int minY = dim.minY;
-            int scanTop = Math.Min(playerBlockY + 32, dim.maxY - 1);
+            int scanTop = fullHeight ? dim.maxY - 1 : Math.Min(playerBlockY + 32, dim.maxY - 1);
 
             bool caveMode = ResolveCaveMode(caveOpt, world, dim, playerBlockX, playerBlockY, playerBlockZ, scanTop);
             result.CaveModeActive = caveMode;
