@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using Brigadier.NET;
 using Brigadier.NET.Builder;
 using MinecraftClient.CommandHandler;
@@ -26,6 +27,9 @@ class RbInventory : Command
     private const int LastMovableSlot = 44;
     private const string OutputDirectory = "RakitBot_Inventory";
     private const string OutputFile = "snapshot.json";
+    private const int WindowCloseDelayMs = 120;
+    private const int ClickDelayMs = 90;
+    private const int ServerCorrectionDelayMs = 240;
 
     private static readonly JsonSerializerOptions s_jsonOptions = new()
     {
@@ -78,16 +82,19 @@ class RbInventory : Command
 
         try
         {
+            if (!CloseForegroundInventories(client))
+                return result.SetAndReturn(CmdResult.Status.Fail);
+
             Container? inventory = client.GetInventory(InventoryId);
             if (inventory is null || HasCursorItem(inventory) || !inventory.Items.ContainsKey(source))
                 return result.SetAndReturn(CmdResult.Status.Fail);
 
             Dictionary<ItemType, int> before = CountMovableItems(inventory);
-            if (!client.DoWindowAction(InventoryId, source, WindowActionType.LeftClick))
+            if (!ClickAndWait(client, source))
                 return result.SetAndReturn(CmdResult.Status.Fail);
-            if (!client.DoWindowAction(InventoryId, target, WindowActionType.LeftClick))
+            if (!ClickAndWait(client, target))
             {
-                client.DoWindowAction(InventoryId, source, WindowActionType.LeftClick);
+                ClickAndWait(client, source);
                 return result.SetAndReturn(CmdResult.Status.Fail);
             }
 
@@ -99,11 +106,13 @@ class RbInventory : Command
             // slota bırakarak gerçek sürükle-bırak takasını tamamla.
             if (HasCursorItem(inventory))
             {
-                if (!client.DoWindowAction(InventoryId, source, WindowActionType.LeftClick))
+                if (!ClickAndWait(client, source))
                     return result.SetAndReturn(CmdResult.Status.Fail);
                 inventory = client.GetInventory(InventoryId);
             }
 
+            Thread.Sleep(ServerCorrectionDelayMs);
+            inventory = client.GetInventory(InventoryId);
             if (inventory is null || HasCursorItem(inventory))
                 return result.SetAndReturn(CmdResult.Status.Fail);
 
@@ -122,6 +131,36 @@ class RbInventory : Command
         {
             return result.SetAndReturn(CmdResult.Status.Fail);
         }
+    }
+
+    private static bool CloseForegroundInventories(McClient client)
+    {
+        int[] openInventoryIds = client.InvokeOnMainThread(() => client.GetInventories()
+            .Keys
+            .Where(static inventoryId => inventoryId != InventoryId)
+            .OrderByDescending(static inventoryId => inventoryId)
+            .ToArray());
+
+        foreach (int inventoryId in openInventoryIds)
+        {
+            if (!client.CloseInventory(inventoryId))
+                return false;
+        }
+
+        if (openInventoryIds.Length > 0)
+            Thread.Sleep(WindowCloseDelayMs);
+
+        return client.InvokeOnMainThread(() => client.GetInventories()
+            .Keys
+            .All(static inventoryId => inventoryId == InventoryId));
+    }
+
+    private static bool ClickAndWait(McClient client, int slot)
+    {
+        if (!client.DoWindowAction(InventoryId, slot, WindowActionType.LeftClick))
+            return false;
+        Thread.Sleep(ClickDelayMs);
+        return true;
     }
 
     private static bool HasCursorItem(Container inventory)
