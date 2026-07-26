@@ -14,12 +14,12 @@ namespace MinecraftClient.Commands;
 
 /// <summary>
 /// Produces a bounded player-inventory snapshot and performs safe main-inventory
-/// slot moves for the RakitBot web console.
+/// slot moves and explicit ground drops for the RakitBot web console.
 /// </summary>
 class RbInventory : Command
 {
     public override string CmdName => "rbinventory";
-    public override string CmdUsage => "/rbinventory <snapshot|move <source:9-44> <target:9-44>>";
+    public override string CmdUsage => "/rbinventory <snapshot|move <source:9-44> <target:9-44>|drop <source:9-44> <one|stack>>";
     public override string CmdDesc => Translations.cmd_inventory_desc;
 
     private const int InventoryId = 0;
@@ -48,6 +48,18 @@ class RbInventory : Command
                             r.Source,
                             Arguments.GetInteger(r, "source"),
                             Arguments.GetInteger(r, "target"))))))
+            .Then(l => l.Literal("drop")
+                .Then(l => l.Argument("source", Arguments.Integer(FirstMovableSlot, LastMovableSlot))
+                    .Then(l => l.Literal("one")
+                        .Executes(r => DropItemFromSlot(
+                            r.Source,
+                            Arguments.GetInteger(r, "source"),
+                            entireStack: false)))
+                    .Then(l => l.Literal("stack")
+                        .Executes(r => DropItemFromSlot(
+                            r.Source,
+                            Arguments.GetInteger(r, "source"),
+                            entireStack: true)))))
         );
     }
 
@@ -153,6 +165,60 @@ class RbInventory : Command
         return client.InvokeOnMainThread(() => client.GetInventories()
             .Keys
             .All(static inventoryId => inventoryId == InventoryId));
+    }
+
+    private static int DropItemFromSlot(CmdResult result, int source, bool entireStack)
+    {
+        McClient client = CmdResult.currentHandler!;
+        if (!client.GetInventoryEnabled())
+            return result.SetAndReturn(CmdResult.Status.FailNeedInventory);
+
+        try
+        {
+            if (!CloseForegroundInventories(client))
+                return result.SetAndReturn(CmdResult.Status.Fail);
+
+            Container? inventory = client.GetInventory(InventoryId);
+            if (
+                inventory is null
+                || HasCursorItem(inventory)
+                || !inventory.Items.TryGetValue(source, out Item? beforeItem)
+                || beforeItem.Count <= 0
+            )
+                return result.SetAndReturn(CmdResult.Status.Fail);
+
+            ItemType itemType = beforeItem.Type;
+            int beforeCount = beforeItem.Count;
+            WindowActionType action = entireStack
+                ? WindowActionType.DropItemStack
+                : WindowActionType.DropItem;
+            if (!client.DoWindowAction(InventoryId, source, action))
+                return result.SetAndReturn(CmdResult.Status.Fail);
+
+            Thread.Sleep(ClickDelayMs + ServerCorrectionDelayMs);
+            inventory = client.GetInventory(InventoryId);
+            if (inventory is null || HasCursorItem(inventory))
+                return result.SetAndReturn(CmdResult.Status.Fail);
+
+            int afterCount = inventory.Items.TryGetValue(source, out Item? afterItem)
+                && afterItem.Type == itemType
+                ? afterItem.Count
+                : 0;
+            int expectedCount = entireStack ? 0 : beforeCount - 1;
+            if (afterCount != expectedCount)
+                return result.SetAndReturn(CmdResult.Status.Fail);
+
+            WriteSnapshot(client);
+            return result.SetAndReturn(CmdResult.Status.Done);
+        }
+        catch (Exception exception) when (
+            exception is IOException
+            or UnauthorizedAccessException
+            or JsonException
+            or InvalidOperationException)
+        {
+            return result.SetAndReturn(CmdResult.Status.Fail);
+        }
     }
 
     private static bool ClickAndWait(McClient client, int slot)
