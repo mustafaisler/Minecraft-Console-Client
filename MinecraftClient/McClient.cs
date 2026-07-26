@@ -2937,7 +2937,11 @@ namespace MinecraftClient
 
             SyncPlayerInventorySlotsFromWindow(inventory);
 
-            return handler.SendWindowAction(windowId, slotId, action, item, changedSlots, inventories[windowId].StateID);
+            // Click Container expects the carried item after the local prediction.
+            // Using the pre-click slot reference breaks full/partial stack merges.
+            Item? carriedItem = playerInventory.Items.TryGetValue(-1, out Item? carriedCursorItem)
+                && !carriedCursorItem.IsEmpty ? carriedCursorItem : null;
+            return handler.SendWindowAction(windowId, slotId, action, carriedItem, changedSlots, inventories[windowId].StateID);
         }
 
         /// <summary>
