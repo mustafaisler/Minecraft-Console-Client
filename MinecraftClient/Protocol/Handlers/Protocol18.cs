@@ -1618,6 +1618,14 @@ namespace MinecraftClient.Protocol.Handlers
                             dataTypes.ReadNextBool(packetData); // Dismount Vehicle    - 1.17 to 1.19.3
                     }
                     break;
+                case PacketTypesIn.PlayerAbilities:
+                    {
+                        byte flags = dataTypes.ReadNextByte(packetData);
+                        handler.OnPlayerAbilities((flags & 0x02) != 0);
+                        dataTypes.ReadNextFloat(packetData); // Flying speed
+                        dataTypes.ReadNextFloat(packetData); // Field of view modifier
+                    }
+                    break;
                 case PacketTypesIn.ChunkData:
                     if (handler.GetTerrainEnabled())
                     {

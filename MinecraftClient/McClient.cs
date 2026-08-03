@@ -4342,6 +4342,19 @@ namespace MinecraftClient
         }
 
         /// <summary>
+        /// Apply the server-authoritative flying state to the movement engine.
+        /// </summary>
+        public void OnPlayerAbilities(bool flying)
+        {
+            lock (locationLock)
+            {
+                playerPhysics.CreativeFlying = flying;
+                if (flying)
+                    playerPhysics.DeltaMovement = Vec3d.Zero;
+            }
+        }
+
+        /// <summary>
         /// Called when entities dead/despawn.
         /// </summary>
         public void OnDestroyEntities(int[] Entities)

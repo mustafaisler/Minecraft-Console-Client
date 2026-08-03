@@ -432,6 +432,12 @@ namespace MinecraftClient.Protocol
         void OnGamemodeUpdate(Guid uuid, int gamemode);
 
         /// <summary>
+        /// Called when the server updates the local player's movement abilities.
+        /// </summary>
+        /// <param name="flying">Whether flying is currently active</param>
+        void OnPlayerAbilities(bool flying);
+
+        /// <summary>
         /// Called when a player's latency has changed
         /// </summary>
         /// <param name="uuid">Affected player's UUID</param>
