@@ -57,6 +57,7 @@ namespace MinecraftClient
         private static Thread? _restartThread = null;
         private static readonly object _restartLock = new();
         private static string settingsIniPath = "MinecraftClient.ini";
+        private const string PterodactylStartupReadySignal = "GitHub build";
 
         // [SENTRY]
         // Setting this string to an empty string will disable Sentry
@@ -119,6 +120,7 @@ namespace MinecraftClient
             });
 
             ConsoleIO.LogPrefix = "§8[MCC] ";
+            Console.WriteLine(PterodactylStartupReadySignal);
             if (args.Length >= 1 && args[^1] == "BasicIO" || args.Length >= 1 && args[^1] == "BasicIO-NoColor")
             {
                 if (args.Length >= 1 && args[^1] == "BasicIO-NoColor")
