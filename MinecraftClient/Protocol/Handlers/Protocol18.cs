@@ -5478,6 +5478,9 @@ namespace MinecraftClient.Protocol.Handlers
         public bool SendLocationUpdate(Location location, bool onGround, bool horizontalCollision, float? yaw = null, float? pitch = null,
             bool forceUpdate = false)
         {
+            if (currentState != CurrentState.Play)
+                return false;
+
             if (handler.GetTerrainEnabled())
             {
                 bool legacyMovementCadence = protocolVersion < MC_1_9_Version;
