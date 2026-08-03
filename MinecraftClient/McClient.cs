@@ -721,7 +721,8 @@ namespace MinecraftClient
                 TrySendMessageToServer();
             }
 
-            if (terrainAndMovementsEnabled && locationReceived)
+            if (terrainAndMovementsEnabled && locationReceived
+                && world.GetChunkColumn(location)?.FullyLoaded == true)
             {
                 lock (locationLock)
                 {
