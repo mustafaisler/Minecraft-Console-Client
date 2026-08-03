@@ -2535,7 +2535,17 @@ namespace MinecraftClient.Protocol.Handlers
                 case PacketTypesIn.SpawnEntity:
                     if (handler.GetEntityHandlingEnabled())
                     {
-                        var entity = dataTypes.ReadNextEntity(packetData, entityPalette, false);
+                        Entity entity;
+                        try
+                        {
+                            entity = dataTypes.ReadNextEntity(packetData, entityPalette, false);
+                        }
+                        catch (InvalidOperationException) when (packetData.Count == 0)
+                        {
+                            // A truncated SpawnEntity packet cannot be decoded. Since packets are length-framed,
+                            // dropping only this entity keeps subsequent packets aligned.
+                            break;
+                        }
 
                         if (protocolVersion >= MC_1_20_2_Version)
                         {
