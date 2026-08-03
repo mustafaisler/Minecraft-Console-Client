@@ -81,6 +81,7 @@ namespace MinecraftClient
         private readonly PlayerPhysics playerPhysics = new();
         private readonly MovementInput physicsInput = new();
         private bool physicsInitialized = false;
+        private int physicsTerrainProbeCooldown = 0;
         private Location? pathTarget; // Current waypoint for physics-driven pathfinding
         public enum MovementType { Sneak, Walk, Sprint }
         private int sequenceId; // User for player block synchronization (Aka. digging, placing blocks, etc..)
@@ -726,7 +727,7 @@ namespace MinecraftClient
             {
                 lock (locationLock)
                 {
-                    if (!physicsInitialized)
+                    if (!physicsInitialized && CanInitializePhysics())
                     {
                         BlockShapes.Initialize();
                         playerPhysics.SetPosition(location.X, location.Y, location.Z);
@@ -735,36 +736,39 @@ namespace MinecraftClient
                         physicsInitialized = true;
                     }
 
-                    // Navigate pathfinding: set input based on current path
-                    UpdatePathfindingInput();
+                    if (physicsInitialized)
+                    {
+                        // Navigate pathfinding: set input based on current path
+                        UpdatePathfindingInput();
 
-                    // Sync yaw/pitch if explicitly set (by commands/bots)
-                    if (_yaw is not null) playerPhysics.Yaw = _yaw.Value;
-                    if (_pitch is not null) playerPhysics.Pitch = _pitch.Value;
+                        // Sync yaw/pitch if explicitly set (by commands/bots)
+                        if (_yaw is not null) playerPhysics.Yaw = _yaw.Value;
+                        if (_pitch is not null) playerPhysics.Pitch = _pitch.Value;
 
-                    // Update environment flags (water, lava, climbable)
-                    playerPhysics.UpdateEnvironment(world);
+                        // Update environment flags (water, lava, climbable)
+                        playerPhysics.UpdateEnvironment(world);
 
-                    // Apply movement input
-                    playerPhysics.ApplyInput(physicsInput);
+                        // Apply movement input
+                        playerPhysics.ApplyInput(physicsInput);
 
-                    // Run one physics tick
-                    playerPhysics.Tick(world);
+                        // Run one physics tick
+                        playerPhysics.Tick(world);
 
-                    // Sync back to MCC location
-                    location = new Location(
-                        playerPhysics.Position.X,
-                        playerPhysics.Position.Y,
-                        playerPhysics.Position.Z);
+                        // Sync back to MCC location
+                        location = new Location(
+                            playerPhysics.Position.X,
+                            playerPhysics.Position.Y,
+                            playerPhysics.Position.Z);
 
-                    playerYaw = _yaw ?? playerYaw;
-                    playerPitch = _pitch ?? playerPitch;
+                        playerYaw = _yaw ?? playerYaw;
+                        playerPitch = _pitch ?? playerPitch;
 
-                    // Send position packet
-                    handler.SendLocationUpdate(location, playerPhysics.OnGround, playerPhysics.HorizontalCollision, _yaw, _pitch);
+                        // Send position packet
+                        handler.SendLocationUpdate(location, playerPhysics.OnGround, playerPhysics.HorizontalCollision, _yaw, _pitch);
 
-                    _yaw = null;
-                    _pitch = null;
+                        _yaw = null;
+                        _pitch = null;
+                    }
                 }
             }
 
@@ -3472,6 +3476,10 @@ namespace MinecraftClient
         /// </summary>
         public void OnGameJoined(bool isOnlineMode)
         {
+            ResetPhysicsForWorldChange();
+            if (terrainAndMovementsEnabled)
+                world.Clear();
+
             if (protocolversion < Protocol18Handler.MC_1_19_3_Version || playerKeyPair is null || !isOnlineMode)
                 SetCanSendMessage(true);
             else
@@ -3516,6 +3524,7 @@ namespace MinecraftClient
         public void OnRespawn()
         {
             ClearTasks();
+            ResetPhysicsForWorldChange();
 
             if (terrainAndMovementsRequested)
             {
@@ -3533,6 +3542,54 @@ namespace MinecraftClient
             ClearKnownSigns();
             ClearInventories();
             DispatchBotEvent(bot => bot.OnRespawn());
+        }
+
+        private void ResetPhysicsForWorldChange()
+        {
+            lock (locationLock)
+            {
+                locationReceived = false;
+                physicsInitialized = false;
+                physicsTerrainProbeCooldown = 0;
+                physicsInput.Reset();
+                playerPhysics.Teleport(location.X, location.Y, location.Z);
+                playerPhysics.CreativeFlying = false;
+            }
+        }
+
+        private bool CanInitializePhysics()
+        {
+            if (playerPhysics.CreativeFlying)
+                return true;
+
+            if (physicsTerrainProbeCooldown > 0)
+            {
+                physicsTerrainProbeCooldown--;
+                return false;
+            }
+
+            physicsTerrainProbeCooldown = 20;
+            int minY = World.GetDimension().minY;
+            int startY = (int)Math.Floor(location.Y) - 1;
+            double halfWidth = playerPhysics.PlayerWidth / 2.0 - 0.00001;
+            int minX = (int)Math.Floor(location.X - halfWidth);
+            int maxX = (int)Math.Floor(location.X + halfWidth);
+            int minZ = (int)Math.Floor(location.Z - halfWidth);
+            int maxZ = (int)Math.Floor(location.Z + halfWidth);
+
+            for (int y = startY; y >= minY; y--)
+            {
+                for (int x = minX; x <= maxX; x++)
+                {
+                    for (int z = minZ; z <= maxZ; z++)
+                    {
+                        if (world.GetBlock(new Location(x, y, z)).Type.IsSolid())
+                            return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
