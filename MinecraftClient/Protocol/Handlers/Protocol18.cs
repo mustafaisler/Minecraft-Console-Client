@@ -107,6 +107,7 @@ namespace MinecraftClient.Protocol.Handlers
         private int oldSamplesWeight = 1;
 
         private bool receiveDeclareCommands = false, receivePlayerInfo = false;
+        private bool receivedJoinGame;
         private readonly Lock MessageSigningLock = new();
         private Guid chatUuid = Guid.NewGuid();
         private int pendingAcknowledgments = 0, messageIndex = 0;
@@ -313,6 +314,8 @@ namespace MinecraftClient.Protocol.Handlers
                     while (elapsedMilliseconds >= nextUpdateDue)
                     {
                         handler.OnUpdate();
+                        if (receivedJoinGame && protocolVersion >= MC_1_21_2_Version)
+                            SendPacket(PacketTypesOut.ClientTickEnd, []);
                         nextUpdateDue += ClientTickIntervalMilliseconds;
                         elapsedMilliseconds = stopWatch.ElapsedMilliseconds;
                     }
@@ -826,6 +829,7 @@ namespace MinecraftClient.Protocol.Handlers
                     lastReceivedMessage = null;
                     lastSeenMessagesCollector = protocolVersion >= MC_1_19_3_Version ? new(20) : new(5);
 
+                    receivedJoinGame = true;
                     handler.OnGameJoined(isOnlineMode);
 
                     var playerEntityId = dataTypes.ReadNextInt(packetData);
@@ -1305,6 +1309,7 @@ namespace MinecraftClient.Protocol.Handlers
                     chunkBatchStartTime = GetNanos();
                     break;
                 case PacketTypesIn.StartConfiguration:
+                    receivedJoinGame = false;
                     SetCurrentState(CurrentState.Configuration);
                     SendAcknowledgeConfiguration();
                     break;
