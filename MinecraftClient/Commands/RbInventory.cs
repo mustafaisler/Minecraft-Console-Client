@@ -9,6 +9,8 @@ using Brigadier.NET;
 using Brigadier.NET.Builder;
 using MinecraftClient.CommandHandler;
 using MinecraftClient.Inventory;
+using MinecraftClient.Protocol.Handlers.StructuredComponents.Components._1_20_6;
+using MinecraftClient.Protocol.Handlers.StructuredComponents.Components._1_21_5;
 
 namespace MinecraftClient.Commands;
 
@@ -31,6 +33,9 @@ class RbInventory : Command
     private const int WindowCloseDelayMs = 120;
     private const int ClickDelayMs = 90;
     private const int ServerCorrectionDelayMs = 240;
+    private const int MaxEnchantmentsPerItem = 32;
+    private const int MaxLoreLinesPerItem = 32;
+    private const int MaxTooltipLinesPerItem = 48;
 
     private static readonly JsonSerializerOptions s_jsonOptions = new()
     {
@@ -449,11 +454,18 @@ class RbInventory : Command
         var slots = inventory.Items
             .Where(pair => pair.Key >= 0 && pair.Key < inventory.Type.SlotCount() && pair.Value.Count > 0)
             .OrderBy(pair => pair.Key)
-            .Select(pair => new
+            .Select(pair =>
             {
-                slot = pair.Key,
-                type = pair.Value.Type.ToString(),
-                count = pair.Value.Count,
+                object[] enchantments = SnapshotEnchantments(pair.Value);
+                return new
+                {
+                    slot = pair.Key,
+                    type = pair.Value.Type.ToString(),
+                    count = pair.Value.Count,
+                    enchantments,
+                    glint = SnapshotHasGlint(pair.Value, enchantments.Length > 0),
+                    tooltip = SnapshotTooltip(pair.Value),
+                };
             })
             .ToArray();
 
@@ -482,6 +494,342 @@ class RbInventory : Command
             JsonSerializer.Serialize(snapshot, s_jsonOptions),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         File.Move(temporaryPath, outputPath, overwrite: true);
+    }
+
+    private static object[] SnapshotEnchantments(Item item)
+    {
+        List<object> output = new();
+        var componentEnchantments = item.EnchantmentList;
+        if (componentEnchantments is not null)
+        {
+            foreach (var enchantment in componentEnchantments.Take(MaxEnchantmentsPerItem))
+            {
+                string type = CleanEnchantmentType(enchantment.Type.ToString());
+                if (type.Length == 0 || enchantment.Level <= 0)
+                    continue;
+                output.Add(new
+                {
+                    type,
+                    name = CleanText(EnchantmentMapping.GetEnchantmentName(enchantment.Type), 80),
+                    level = Math.Min(255, enchantment.Level),
+                });
+            }
+            return output.ToArray();
+        }
+
+        if (item.NBT is null
+            || (!item.NBT.TryGetValue("Enchantments", out object? raw)
+                && !item.NBT.TryGetValue("StoredEnchantments", out raw))
+            || raw is not object[] entries)
+            return output.ToArray();
+
+        foreach (var entry in entries.OfType<Dictionary<string, object>>().Take(MaxEnchantmentsPerItem))
+        {
+            if (!entry.TryGetValue("id", out object? idValue)
+                || !entry.TryGetValue("lvl", out object? levelValue))
+                continue;
+            string type = CleanEnchantmentType(Convert.ToString(idValue) ?? string.Empty);
+            int level;
+            try { level = Convert.ToInt32(levelValue); }
+            catch { continue; }
+            if (type.Length == 0 || level <= 0)
+                continue;
+            output.Add(new { type, level = Math.Min(255, level) });
+        }
+        return output.ToArray();
+    }
+
+    private static object SnapshotTooltip(Item item)
+    {
+        string displayName = string.Empty;
+        string[] lore = [];
+        try
+        {
+            displayName = CleanText(item.DisplayName, 512);
+            lore = (item.Lores ?? [])
+                .Take(MaxLoreLinesPerItem)
+                .Select(line => CleanText(line, 512))
+                .Where(static line => line.Length > 0)
+                .ToArray();
+        }
+        catch
+        {
+            // Bozuk tek bir eşya tüm snapshotı engellemez.
+        }
+
+        List<string> details = SnapshotDetailLines(item);
+        List<string> advanced = SnapshotAdvancedLines(item);
+        return new
+        {
+            displayName,
+            rarity = SnapshotRarity(item),
+            lore,
+            details = details.Take(MaxTooltipLinesPerItem).ToArray(),
+            advanced = advanced.Take(MaxTooltipLinesPerItem).ToArray(),
+            hidden = SnapshotTooltipHidden(item),
+        };
+    }
+
+    private static bool SnapshotHasGlint(Item item, bool hasEnchantments)
+    {
+        var overrideComponent = item.Components?
+            .OfType<EnchantmentGlintOverrideComponent>()
+            .FirstOrDefault();
+        return overrideComponent?.HasGlint
+            ?? (hasEnchantments
+                || item.Type is ItemType.EnchantedBook or ItemType.EnchantedGoldenApple);
+    }
+
+    private static string SnapshotRarity(Item item)
+    {
+        var rarity = item.Components?.OfType<RarityComponent>().FirstOrDefault();
+        if (rarity is not null)
+            return rarity.Rarity.ToString().ToLowerInvariant();
+        return item.Type switch
+        {
+            ItemType.EnchantedGoldenApple or ItemType.DragonEgg => "epic",
+            ItemType.EnchantedBook or ItemType.NetherStar or ItemType.Elytra => "uncommon",
+            _ => "common",
+        };
+    }
+
+    private static bool SnapshotTooltipHidden(Item item)
+    {
+        if (item.Components?.Any(component => component is HideTooltipComponent) == true)
+            return true;
+        return item.Components?.OfType<TooltipDisplayComponent>().Any(component => component.HideTooltip) == true;
+    }
+
+    private static List<string> SnapshotDetailLines(Item item)
+    {
+        List<string> lines = [];
+        int hideFlags = NbtInt(item.NBT, "HideFlags") ?? 0;
+        if ((hideFlags & 4) == 0 && SnapshotUnbreakable(item))
+            lines.Add("§9Kırılmaz");
+
+        bool hasCustomAttributes = item.NBT?.ContainsKey("AttributeModifiers") == true
+            || item.Components?.Any(component => component.ComponentName == "minecraft:attribute_modifiers") == true;
+        if ((hideFlags & 2) == 0 && !hasCustomAttributes)
+            AppendDefaultAttributes(lines, item.Type.ToString());
+
+        if ((hideFlags & 64) == 0 && TryReadColor(item, out string? color))
+            lines.Add("§7Renk: §f" + color);
+
+        if ((hideFlags & 8) == 0)
+            AppendStringList(lines, item.NBT, "CanDestroy", "§7Şunları kırabilir:");
+        if ((hideFlags & 16) == 0)
+            AppendStringList(lines, item.NBT, "CanPlaceOn", "§7Şunların üzerine yerleştirilebilir:");
+
+        AppendPotionEffects(lines, item.NBT);
+        AppendTrim(lines, item.NBT);
+        return lines;
+    }
+
+    private static void AppendDefaultAttributes(List<string> lines, string type)
+    {
+        Dictionary<string, (double sword, double pickaxe, double axe, double shovel, double speed)> tools = new()
+        {
+            ["Wooden"] = (4, 2, 7, 2.5, 0),
+            ["Stone"] = (5, 3, 9, 3.5, 0),
+            ["Iron"] = (6, 4, 9, 4.5, 0),
+            ["Golden"] = (4, 2, 7, 2.5, 0),
+            ["Diamond"] = (7, 5, 9, 5.5, 0),
+            ["Netherite"] = (8, 6, 10, 6.5, 0),
+        };
+        foreach (var pair in tools)
+        {
+            double damage;
+            double speed;
+            if (type == pair.Key + "Sword") { damage = pair.Value.sword; speed = 1.6; }
+            else if (type == pair.Key + "Pickaxe") { damage = pair.Value.pickaxe; speed = 1.2; }
+            else if (type == pair.Key + "Axe") { damage = pair.Value.axe; speed = pair.Key switch { "Wooden" or "Stone" => 0.8, "Iron" => 0.9, _ => 1.0 }; }
+            else if (type == pair.Key + "Shovel") { damage = pair.Value.shovel; speed = 1.0; }
+            else if (type == pair.Key + "Hoe") { damage = 1; speed = pair.Key switch { "Stone" => 2, "Iron" => 3, "Diamond" or "Netherite" => 4, _ => 1 }; }
+            else continue;
+            lines.Add("§7Ana eldeyken:");
+            lines.Add("§9 " + damage.ToString("0.#") + " Saldırı Hasarı");
+            lines.Add("§9 " + speed.ToString("0.#") + " Saldırı Hızı");
+            return;
+        }
+
+        Dictionary<string, int[]> armor = new()
+        {
+            ["Leather"] = [1, 3, 2, 1],
+            ["Chainmail"] = [2, 5, 4, 1],
+            ["Iron"] = [2, 6, 5, 2],
+            ["Golden"] = [2, 5, 3, 1],
+            ["Diamond"] = [3, 8, 6, 3],
+            ["Netherite"] = [3, 8, 6, 3],
+        };
+        string[] suffixes = ["Helmet", "Chestplate", "Leggings", "Boots"];
+        string[] headings = ["Baştayken:", "Gövde üzerindeyken:", "Bacaklardayken:", "Ayaklardayken:"];
+        foreach (var pair in armor)
+        {
+            int index = Array.FindIndex(suffixes, suffix => type == pair.Key + suffix);
+            if (index < 0) continue;
+            lines.Add("§7" + headings[index]);
+            lines.Add("§9 +" + pair.Value[index] + " Zırh");
+            if (pair.Key == "Diamond") lines.Add("§9 +2 Zırh Sertliği");
+            if (pair.Key == "Netherite")
+            {
+                lines.Add("§9 +3 Zırh Sertliği");
+                lines.Add("§9 +1 Savrulma Direnci");
+            }
+            return;
+        }
+        if (type == "TurtleHelmet")
+        {
+            lines.Add("§7Baştayken:");
+            lines.Add("§9 +2 Zırh");
+        }
+    }
+
+    private static List<string> SnapshotAdvancedLines(Item item)
+    {
+        List<string> lines = [];
+        int damage = Math.Max(0, item.Damage);
+        int maxDamage = SnapshotMaxDamage(item);
+        if (maxDamage > 0)
+            lines.Add($"§fDayanıklılık: {Math.Max(0, maxDamage - damage)} / {maxDamage}");
+
+        lines.Add("§8minecraft:" + item.Type.ToString().ToUnderscoreCase());
+        if (item.NBT?.Count > 0)
+            lines.Add($"§8NBT: {item.NBT.Count} etiket");
+        if (item.Components?.Count > 0)
+            lines.Add($"§8{item.Components.Count} bileşen");
+
+        int? customModelData = NbtInt(item.NBT, "CustomModelData")
+            ?? item.Components?.OfType<CustomModelDataComponent1206>().FirstOrDefault()?.Value;
+        if (customModelData.HasValue)
+            lines.Add("§8Özel Model Verisi: " + customModelData.Value);
+        return lines;
+    }
+
+    private static bool SnapshotUnbreakable(Item item)
+    {
+        if (item.Components?.OfType<UnbreakableComponent1206>().Any(component => component.Unbreakable) == true)
+            return true;
+        return NbtInt(item.NBT, "Unbreakable") is int value && value != 0;
+    }
+
+    private static int SnapshotMaxDamage(Item item)
+    {
+        int? componentValue = item.Components?.OfType<MaxDamageComponent>().FirstOrDefault()?.MaxDamage;
+        if (componentValue > 0) return componentValue.Value;
+        string type = item.Type.ToString();
+        if (type == "Elytra") return 432;
+        if (type == "Shield") return 336;
+        if (type == "Bow") return 384;
+        if (type == "Crossbow") return 465;
+        if (type == "Trident") return 250;
+        if (type == "FishingRod") return 64;
+        if (type == "FlintAndSteel") return 64;
+        if (type == "Shears") return 238;
+        if (type == "Brush") return 64;
+
+        Dictionary<string, int[]> armor = new()
+        {
+            ["Leather"] = [55, 80, 75, 65],
+            ["Chainmail"] = [165, 240, 225, 195],
+            ["Iron"] = [165, 240, 225, 195],
+            ["Golden"] = [77, 112, 105, 91],
+            ["Diamond"] = [363, 528, 495, 429],
+            ["Netherite"] = [407, 592, 555, 481],
+        };
+        string[] armorSuffixes = ["Helmet", "Chestplate", "Leggings", "Boots"];
+        foreach (var pair in armor)
+            for (int index = 0; index < armorSuffixes.Length; index++)
+                if (type == pair.Key + armorSuffixes[index]) return pair.Value[index];
+        if (type == "TurtleHelmet") return 275;
+
+        Dictionary<string, int> tools = new()
+        {
+            ["Wooden"] = 59,
+            ["Stone"] = 131,
+            ["Iron"] = 250,
+            ["Golden"] = 32,
+            ["Diamond"] = 1561,
+            ["Netherite"] = 2031,
+        };
+        string[] toolSuffixes = ["Sword", "Pickaxe", "Axe", "Shovel", "Hoe"];
+        foreach (var pair in tools)
+            if (toolSuffixes.Any(suffix => type == pair.Key + suffix)) return pair.Value;
+        return 0;
+    }
+
+    private static bool TryReadColor(Item item, out string? color)
+    {
+        color = null;
+        if (item.NBT is null || !item.NBT.TryGetValue("display", out object? rawDisplay)
+            || rawDisplay is not Dictionary<string, object> display)
+            return false;
+        int? value = NbtInt(display, "color");
+        if (!value.HasValue) return false;
+        color = "#" + (value.Value & 0xFFFFFF).ToString("X6");
+        return true;
+    }
+
+    private static void AppendStringList(
+        List<string> lines,
+        Dictionary<string, object>? nbt,
+        string key,
+        string heading)
+    {
+        if (nbt is null || !nbt.TryGetValue(key, out object? raw) || raw is not object[] values || values.Length == 0)
+            return;
+        lines.Add(heading);
+        foreach (string value in values.OfType<string>().Take(32))
+            lines.Add("§8" + CleanText(value, 160));
+    }
+
+    private static void AppendPotionEffects(List<string> lines, Dictionary<string, object>? nbt)
+    {
+        if (nbt is null || !nbt.TryGetValue("CustomPotionEffects", out object? raw) || raw is not object[] effects)
+            return;
+        foreach (var effect in effects.OfType<Dictionary<string, object>>().Take(16))
+        {
+            int id = NbtInt(effect, "Id") ?? 0;
+            int amplifier = NbtInt(effect, "Amplifier") ?? 0;
+            int duration = NbtInt(effect, "Duration") ?? 0;
+            string name;
+            try { name = new EffectData((Effects)id, amplifier, duration, 0).GetDisplayName(); }
+            catch { name = "Etki " + id; }
+            string time = duration > 0 ? $" ({duration / 20 / 60}:{duration / 20 % 60:00})" : string.Empty;
+            lines.Add("§9" + CleanText(name, 120) + time);
+        }
+    }
+
+    private static void AppendTrim(List<string> lines, Dictionary<string, object>? nbt)
+    {
+        if (nbt is null || !nbt.TryGetValue("Trim", out object? raw) || raw is not Dictionary<string, object> trim)
+            return;
+        string material = trim.TryGetValue("material", out object? materialValue)
+            ? CleanText(Convert.ToString(materialValue), 80) : string.Empty;
+        string pattern = trim.TryGetValue("pattern", out object? patternValue)
+            ? CleanText(Convert.ToString(patternValue), 80) : string.Empty;
+        if (material.Length == 0 && pattern.Length == 0) return;
+        lines.Add("§7Zırh Süslemesi:");
+        if (pattern.Length > 0) lines.Add("§9 " + pattern.Split(':').Last());
+        if (material.Length > 0) lines.Add("§9 " + material.Split(':').Last());
+    }
+
+    private static int? NbtInt(Dictionary<string, object>? nbt, string key)
+    {
+        if (nbt is null || !nbt.TryGetValue(key, out object? value) || value is null) return null;
+        try { return Convert.ToInt32(value); }
+        catch { return null; }
+    }
+
+    private static string CleanEnchantmentType(string value)
+    {
+        string resourceName = value.Split(':').LastOrDefault() ?? string.Empty;
+        return new string(resourceName
+            .Where(character => character is >= 'A' and <= 'Z'
+                or >= 'a' and <= 'z'
+                or >= '0' and <= '9'
+                or '_')
+            .Take(80)
+            .ToArray());
     }
 
     private static string CleanText(string? value, int maxLength)
