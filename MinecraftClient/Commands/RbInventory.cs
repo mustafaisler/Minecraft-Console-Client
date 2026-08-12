@@ -879,26 +879,26 @@ class RbInventory : Command
         {
             if (!component1206.ShowInTooltip)
                 return;
-            string material = component1206.TrimMaterialType == 0
+            string componentMaterial = component1206.TrimMaterialType == 0
                 ? component1206.Description
                 : TranslateTrim("trim_material", TrimMaterialName(component1206.TrimMaterialType));
-            string pattern = component1206.TrimPatternType == 0
+            string componentPattern = component1206.TrimPatternType == 0
                 ? component1206.TrimPatternTypeDescription
                 : TranslateTrim("trim_pattern", TrimPatternName(component1206.TrimPatternType));
-            AppendTrimLines(lines, pattern, material);
+            AppendTrimLines(lines, componentPattern, componentMaterial);
             return;
         }
 
         var component1215 = item.Components?.OfType<TrimComponent1215>().FirstOrDefault();
         if (component1215 is not null)
         {
-            string material = component1215.MaterialHolderValue == 0
+            string componentMaterial = component1215.MaterialHolderValue == 0
                 ? component1215.DirectMaterial?.Description ?? string.Empty
                 : TranslateTrim("trim_material", TrimMaterialName(component1215.MaterialHolderValue));
-            string pattern = component1215.PatternHolderValue == 0
+            string componentPattern = component1215.PatternHolderValue == 0
                 ? component1215.DirectPattern?.Description ?? string.Empty
                 : TranslateTrim("trim_pattern", TrimPatternName(component1215.PatternHolderValue));
-            AppendTrimLines(lines, pattern, material);
+            AppendTrimLines(lines, componentPattern, componentMaterial);
             return;
         }
 
