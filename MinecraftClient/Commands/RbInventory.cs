@@ -10,7 +10,10 @@ using Brigadier.NET.Builder;
 using MinecraftClient.CommandHandler;
 using MinecraftClient.Inventory;
 using MinecraftClient.Protocol.Handlers.StructuredComponents.Components._1_20_6;
+using MinecraftClient.Protocol.Handlers.StructuredComponents.Components._1_21_2;
 using MinecraftClient.Protocol.Handlers.StructuredComponents.Components._1_21_5;
+using MinecraftClient.Protocol.Handlers.StructuredComponents.Components.Subcomponents._1_20_6;
+using MinecraftClient.Protocol.Message;
 
 namespace MinecraftClient.Commands;
 
@@ -463,7 +466,7 @@ class RbInventory : Command
                     type = pair.Value.Type.ToString(),
                     count = pair.Value.Count,
                     enchantments,
-                    glint = SnapshotHasGlint(pair.Value, enchantments.Length > 0),
+                    glint = SnapshotHasGlint(pair.Value),
                     tooltip = SnapshotTooltip(pair.Value),
                 };
             })
@@ -570,14 +573,29 @@ class RbInventory : Command
         };
     }
 
-    private static bool SnapshotHasGlint(Item item, bool hasEnchantments)
+    private static bool SnapshotHasGlint(Item item)
     {
         var overrideComponent = item.Components?
             .OfType<EnchantmentGlintOverrideComponent>()
             .FirstOrDefault();
         return overrideComponent?.HasGlint
-            ?? (hasEnchantments
+            ?? (SnapshotHasAnyEnchantments(item)
                 || item.Type is ItemType.EnchantedBook or ItemType.EnchantedGoldenApple);
+    }
+
+    private static bool SnapshotHasAnyEnchantments(Item item)
+    {
+        if (item.EnchantmentList?.Count > 0)
+            return true;
+        if (item.Components?.Any(component =>
+                component.ComponentName is "minecraft:enchantments" or "minecraft:stored_enchantments") == true)
+            return true;
+        if (item.NBT is null)
+            return false;
+        return (item.NBT.TryGetValue("Enchantments", out object? raw)
+                || item.NBT.TryGetValue("StoredEnchantments", out raw))
+            && raw is object[] entries
+            && entries.Length > 0;
     }
 
     private static string SnapshotRarity(Item item)
@@ -604,6 +622,7 @@ class RbInventory : Command
     {
         List<string> lines = [];
         int hideFlags = NbtInt(item.NBT, "HideFlags") ?? 0;
+        bool hideAdditional = item.Components?.Any(component => component is HideAdditionalTooltipComponent) == true;
         if ((hideFlags & 4) == 0 && SnapshotUnbreakable(item))
             lines.Add("§9Kırılmaz");
 
@@ -612,7 +631,10 @@ class RbInventory : Command
         if ((hideFlags & 2) == 0 && !hasCustomAttributes)
             AppendDefaultAttributes(lines, item.Type.ToString());
 
-        if ((hideFlags & 64) == 0 && TryReadColor(item, out string? color))
+        if ((hideFlags & 64) == 0
+            && !hideAdditional
+            && ComponentTooltipVisible(item, "minecraft:dyed_color")
+            && TryReadColor(item, out string? color))
             lines.Add("§7Renk: §f" + color);
 
         if ((hideFlags & 8) == 0)
@@ -620,9 +642,26 @@ class RbInventory : Command
         if ((hideFlags & 16) == 0)
             AppendStringList(lines, item.NBT, "CanPlaceOn", "§7Şunların üzerine yerleştirilebilir:");
 
-        AppendPotionEffects(lines, item.NBT);
-        AppendTrim(lines, item.NBT);
+        if ((hideFlags & 32) == 0
+            && !hideAdditional
+            && ComponentTooltipVisible(item, "minecraft:potion_contents"))
+            AppendPotionEffects(lines, item);
+        if ((hideFlags & 128) == 0
+            && !hideAdditional
+            && ComponentTooltipVisible(item, "minecraft:trim"))
+            AppendTrim(lines, item);
         return lines;
+    }
+
+    private static bool ComponentTooltipVisible(Item item, string componentName)
+    {
+        if (item.Components is null)
+            return true;
+        var component = item.Components.FirstOrDefault(candidate => candidate.ComponentName == componentName);
+        if (component is null)
+            return true;
+        var display = item.Components.OfType<TooltipDisplayComponent>().FirstOrDefault();
+        return display is null || !display.HiddenComponentIds.Contains(component.TypeId);
     }
 
     private static void AppendDefaultAttributes(List<string> lines, string type)
@@ -709,6 +748,8 @@ class RbInventory : Command
     {
         if (item.Components?.OfType<UnbreakableComponent1206>().Any(component => component.Unbreakable) == true)
             return true;
+        if (item.Components?.Any(component => component.ComponentName == "minecraft:unbreakable") == true)
+            return true;
         return NbtInt(item.NBT, "Unbreakable") is int value && value != 0;
     }
 
@@ -760,6 +801,18 @@ class RbInventory : Command
     private static bool TryReadColor(Item item, out string? color)
     {
         color = null;
+        var component1206 = item.Components?.OfType<DyeColorComponent>().FirstOrDefault();
+        if (component1206 is not null && component1206.ShowInTooltip)
+        {
+            color = "#" + (component1206.Color & 0xFFFFFF).ToString("X6");
+            return true;
+        }
+        var component1215 = item.Components?.OfType<DyeColorComponent1215>().FirstOrDefault();
+        if (component1215 is not null)
+        {
+            color = "#" + (component1215.Color & 0xFFFFFF).ToString("X6");
+            return true;
+        }
         if (item.NBT is null || !item.NBT.TryGetValue("display", out object? rawDisplay)
             || rawDisplay is not Dictionary<string, object> display)
             return false;
@@ -782,35 +835,118 @@ class RbInventory : Command
             lines.Add("§8" + CleanText(value, 160));
     }
 
-    private static void AppendPotionEffects(List<string> lines, Dictionary<string, object>? nbt)
+    private static void AppendPotionEffects(List<string> lines, Item item)
     {
-        if (nbt is null || !nbt.TryGetValue("CustomPotionEffects", out object? raw) || raw is not object[] effects)
+        IEnumerable<PotionEffectSubComponent>? componentEffects = item.Components?
+            .OfType<PotionContentsComponent>()
+            .FirstOrDefault()?.Effects;
+        componentEffects ??= item.Components?
+            .OfType<PotionContentsComponent1212>()
+            .FirstOrDefault()?.Effects;
+        if (componentEffects is not null)
+        {
+            foreach (var effect in componentEffects.Take(16))
+                AppendPotionEffectLine(lines, effect.TypeId, effect.Details.Amplifier, effect.Details.Duration);
+            return;
+        }
+
+        if (item.NBT is null
+            || !item.NBT.TryGetValue("CustomPotionEffects", out object? raw)
+            || raw is not object[] effects)
             return;
         foreach (var effect in effects.OfType<Dictionary<string, object>>().Take(16))
-        {
-            int id = NbtInt(effect, "Id") ?? 0;
-            int amplifier = NbtInt(effect, "Amplifier") ?? 0;
-            int duration = NbtInt(effect, "Duration") ?? 0;
-            string name;
-            try { name = new EffectData((Effects)id, amplifier, duration, 0).GetDisplayName(); }
-            catch { name = "Etki " + id; }
-            string time = duration > 0 ? $" ({duration / 20 / 60}:{duration / 20 % 60:00})" : string.Empty;
-            lines.Add("§9" + CleanText(name, 120) + time);
-        }
+            AppendPotionEffectLine(
+                lines,
+                NbtInt(effect, "Id") ?? 0,
+                NbtInt(effect, "Amplifier") ?? 0,
+                NbtInt(effect, "Duration") ?? 0);
     }
 
-    private static void AppendTrim(List<string> lines, Dictionary<string, object>? nbt)
+    private static void AppendPotionEffectLine(List<string> lines, int id, int amplifier, int duration)
     {
-        if (nbt is null || !nbt.TryGetValue("Trim", out object? raw) || raw is not Dictionary<string, object> trim)
+        string name;
+        try { name = new EffectData((Effects)id, amplifier, duration, 0).GetDisplayName(); }
+        catch { name = "Etki " + id; }
+        string time = duration > 0 ? $" ({duration / 20 / 60}:{duration / 20 % 60:00})" : string.Empty;
+        bool harmful = id is 2 or 4 or 7 or 9 or 15 or 17 or 18 or 19 or 20 or 27 or 31;
+        lines.Add((harmful ? "§c" : "§9") + CleanText(name, 120) + time);
+    }
+
+    private static void AppendTrim(List<string> lines, Item item)
+    {
+        var component1206 = item.Components?.OfType<TrimComponent>().FirstOrDefault();
+        if (component1206 is not null)
+        {
+            if (!component1206.ShowInTooltip)
+                return;
+            string material = component1206.TrimMaterialType == 0
+                ? component1206.Description
+                : TranslateTrim("trim_material", TrimMaterialName(component1206.TrimMaterialType));
+            string pattern = component1206.TrimPatternType == 0
+                ? component1206.TrimPatternTypeDescription
+                : TranslateTrim("trim_pattern", TrimPatternName(component1206.TrimPatternType));
+            AppendTrimLines(lines, pattern, material);
+            return;
+        }
+
+        var component1215 = item.Components?.OfType<TrimComponent1215>().FirstOrDefault();
+        if (component1215 is not null)
+        {
+            string material = component1215.MaterialHolderValue == 0
+                ? component1215.DirectMaterial?.Description ?? string.Empty
+                : TranslateTrim("trim_material", TrimMaterialName(component1215.MaterialHolderValue));
+            string pattern = component1215.PatternHolderValue == 0
+                ? component1215.DirectPattern?.Description ?? string.Empty
+                : TranslateTrim("trim_pattern", TrimPatternName(component1215.PatternHolderValue));
+            AppendTrimLines(lines, pattern, material);
+            return;
+        }
+
+        if (item.NBT is null
+            || !item.NBT.TryGetValue("Trim", out object? raw)
+            || raw is not Dictionary<string, object> trim)
             return;
         string material = trim.TryGetValue("material", out object? materialValue)
             ? CleanText(Convert.ToString(materialValue), 80) : string.Empty;
         string pattern = trim.TryGetValue("pattern", out object? patternValue)
             ? CleanText(Convert.ToString(patternValue), 80) : string.Empty;
-        if (material.Length == 0 && pattern.Length == 0) return;
-        lines.Add("§7Zırh Süslemesi:");
-        if (pattern.Length > 0) lines.Add("§9 " + pattern.Split(':').Last());
-        if (material.Length > 0) lines.Add("§9 " + material.Split(':').Last());
+        pattern = TranslateTrim("trim_pattern", pattern.Split(':').Last());
+        material = TranslateTrim("trim_material", material.Split(':').Last());
+        AppendTrimLines(lines, pattern, material);
+    }
+
+    private static void AppendTrimLines(List<string> lines, string pattern, string material)
+    {
+        if (pattern.Length == 0 && material.Length == 0) return;
+        string heading = ChatParser.TranslateString("item.minecraft.smithing_template.upgrade") ?? "Zırh Süslemesi:";
+        lines.Add("§7" + CleanText(heading, 120));
+        if (pattern.Length > 0) lines.Add(HasFormatting(pattern) ? pattern : "§9 " + pattern);
+        if (material.Length > 0) lines.Add(HasFormatting(material) ? material : "§9 " + material);
+    }
+
+    private static string TranslateTrim(string prefix, string resourceName)
+    {
+        if (resourceName.Length == 0) return string.Empty;
+        return CleanText(ChatParser.TranslateString(prefix + ".minecraft." + resourceName) ?? resourceName, 120);
+    }
+
+    private static string TrimMaterialName(int holderValue)
+    {
+        string[] names = ["quartz", "iron", "netherite", "redstone", "copper", "gold", "emerald", "diamond", "lapis", "amethyst", "resin"];
+        int index = holderValue - 1;
+        return index >= 0 && index < names.Length ? names[index] : "malzeme_" + holderValue;
+    }
+
+    private static string TrimPatternName(int holderValue)
+    {
+        string[] names = ["sentry", "dune", "coast", "wild", "ward", "eye", "vex", "tide", "snout", "rib", "spire", "wayfinder", "shaper", "silence", "raiser", "host", "flow", "bolt"];
+        int index = holderValue - 1;
+        return index >= 0 && index < names.Length ? names[index] : "desen_" + holderValue;
+    }
+
+    private static bool HasFormatting(string value)
+    {
+        return value.IndexOf('§') >= 0;
     }
 
     private static int? NbtInt(Dictionary<string, object>? nbt, string key)
