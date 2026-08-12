@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - rakitbot-6blok-v2
   workflow_dispatch:
   
 env:
