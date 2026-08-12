@@ -286,7 +286,7 @@ namespace MinecraftClient.Protocol.Message
 
         private const long MaxResourcePackDownloadBytes = 256L * 1024 * 1024;
         private const int ResourcePackDownloadBufferSize = 81920;
-        private const string ResourcePackTranslationCacheVersion = "1";
+        private const string ResourcePackTranslationCacheVersion = "2";
         private const string ForgeModTranslationCacheVersion = "1";
         private const string LocalForgeModTranslationDirectory = "mods";
 
@@ -662,6 +662,7 @@ namespace MinecraftClient.Protocol.Message
             string selectedLanguage = Config.Main.Advanced.Language;
 
             using ZipArchive archive = new(resourcePackStream, ZipArchiveMode.Read, leaveOpen: true);
+            RbResourcePackGlint.Export(archive);
 
             foreach (ZipArchiveEntry entry in archive.Entries)
             {
