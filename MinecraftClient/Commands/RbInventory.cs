@@ -843,7 +843,7 @@ class RbInventory : Command
         componentEffects ??= item.Components?
             .OfType<PotionContentsComponent1212>()
             .FirstOrDefault()?.Effects;
-        if (componentEffects is not null)
+        if (componentEffects?.Any() == true)
         {
             foreach (var effect in componentEffects.Take(16))
                 AppendPotionEffectLine(lines, effect.TypeId, effect.Details.Amplifier, effect.Details.Duration);
@@ -874,6 +874,20 @@ class RbInventory : Command
 
     private static void AppendTrim(List<string> lines, Item item)
     {
+        if (item.NBT is not null
+            && item.NBT.TryGetValue("Trim", out object? raw)
+            && raw is Dictionary<string, object> trim)
+        {
+            string material = trim.TryGetValue("material", out object? materialValue)
+                ? CleanText(Convert.ToString(materialValue), 80) : string.Empty;
+            string pattern = trim.TryGetValue("pattern", out object? patternValue)
+                ? CleanText(Convert.ToString(patternValue), 80) : string.Empty;
+            pattern = TranslateTrim("trim_pattern", pattern.Split(':').Last());
+            material = TranslateTrim("trim_material", material.Split(':').Last());
+            AppendTrimLines(lines, pattern, material);
+            return;
+        }
+
         var component1206 = item.Components?.OfType<TrimComponent>().FirstOrDefault();
         if (component1206 is not null)
         {
@@ -902,17 +916,6 @@ class RbInventory : Command
             return;
         }
 
-        if (item.NBT is null
-            || !item.NBT.TryGetValue("Trim", out object? raw)
-            || raw is not Dictionary<string, object> trim)
-            return;
-        string material = trim.TryGetValue("material", out object? materialValue)
-            ? CleanText(Convert.ToString(materialValue), 80) : string.Empty;
-        string pattern = trim.TryGetValue("pattern", out object? patternValue)
-            ? CleanText(Convert.ToString(patternValue), 80) : string.Empty;
-        pattern = TranslateTrim("trim_pattern", pattern.Split(':').Last());
-        material = TranslateTrim("trim_material", material.Split(':').Last());
-        AppendTrimLines(lines, pattern, material);
     }
 
     private static void AppendTrimLines(List<string> lines, string pattern, string material)
