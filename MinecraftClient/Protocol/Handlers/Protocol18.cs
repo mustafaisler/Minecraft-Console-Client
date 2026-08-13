@@ -583,6 +583,7 @@ namespace MinecraftClient.Protocol.Handlers
                                     var attributeIdMap = isAttribute ? new Dictionary<int, string>() : null;
                                     var enchantmentIdMap = isEnchantment ? new Dictionary<int, string>() : null;
                                     var tooltipIdMap = isTooltipRegistry ? new Dictionary<int, string>() : null;
+                                    var tooltipDescriptionMap = isTooltipRegistry ? new Dictionary<int, string>() : null;
 
                                     for (var i = 0; i < entryCount; i++)
                                     {
@@ -611,7 +612,10 @@ namespace MinecraftClient.Protocol.Handlers
                                         else if (isEnchantment)
                                             enchantmentIdMap!.Add(i, entryId);
                                         else if (isTooltipRegistry)
+                                        {
                                             tooltipIdMap!.Add(i, entryId);
+                                            tooltipDescriptionMap!.Add(i, TooltipRegistryMapping.ReadDescription(nbtData));
+                                        }
                                         else if (isDialog && nbtData is not null)
                                             handler.OnDialogRegistryData(i, entryId, dialogNbtParser.Parse(nbtData));
                                     }
@@ -629,7 +633,7 @@ namespace MinecraftClient.Protocol.Handlers
                                     else if (isEnchantment)
                                         EnchantmentMapping.SetDynamicEnchantmentIdMap(enchantmentIdMap!);
                                     else if (isTooltipRegistry)
-                                        TooltipRegistryMapping.SetRegistry(registryId, tooltipIdMap!);
+                                        TooltipRegistryMapping.SetRegistry(registryId, tooltipIdMap!, tooltipDescriptionMap!);
                                 }
 
                                 break;
