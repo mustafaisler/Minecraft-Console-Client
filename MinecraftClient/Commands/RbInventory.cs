@@ -880,6 +880,50 @@ class RbInventory : Command
 
     private static void AppendTrim(List<string> lines, Item item)
     {
+        var component1206 = item.Components?.OfType<TrimComponent>().FirstOrDefault();
+        if (component1206 is not null)
+        {
+            if (!component1206.ShowInTooltip)
+                return;
+            string componentMaterial = component1206.TrimMaterialType == 0
+                ? component1206.Description
+                : TooltipRegistryMapping.GetHolderDescription(
+                    "minecraft:trim_material", component1206.TrimMaterialType)
+                    ?? TranslateTrim("trim_material", TooltipRegistryMapping.GetHolderName(
+                    "minecraft:trim_material", component1206.TrimMaterialType)
+                    ?? TrimMaterialName(component1206.TrimMaterialType));
+            string componentPattern = component1206.TrimPatternType == 0
+                ? component1206.TrimPatternTypeDescription
+                : TooltipRegistryMapping.GetHolderDescription(
+                    "minecraft:trim_pattern", component1206.TrimPatternType)
+                    ?? TranslateTrim("trim_pattern", TooltipRegistryMapping.GetHolderName(
+                    "minecraft:trim_pattern", component1206.TrimPatternType)
+                    ?? TrimPatternName(component1206.TrimPatternType));
+            AppendTrimLines(lines, componentPattern, componentMaterial);
+            return;
+        }
+
+        var component1215 = item.Components?.OfType<TrimComponent1215>().FirstOrDefault();
+        if (component1215 is not null)
+        {
+            string componentMaterial = component1215.MaterialHolderValue == 0
+                ? component1215.DirectMaterial?.Description ?? string.Empty
+                : TooltipRegistryMapping.GetHolderDescription(
+                    "minecraft:trim_material", component1215.MaterialHolderValue)
+                    ?? TranslateTrim("trim_material", TooltipRegistryMapping.GetHolderName(
+                    "minecraft:trim_material", component1215.MaterialHolderValue)
+                    ?? TrimMaterialName(component1215.MaterialHolderValue));
+            string componentPattern = component1215.PatternHolderValue == 0
+                ? component1215.DirectPattern?.Description ?? string.Empty
+                : TooltipRegistryMapping.GetHolderDescription(
+                    "minecraft:trim_pattern", component1215.PatternHolderValue)
+                    ?? TranslateTrim("trim_pattern", TooltipRegistryMapping.GetHolderName(
+                    "minecraft:trim_pattern", component1215.PatternHolderValue)
+                    ?? TrimPatternName(component1215.PatternHolderValue));
+            AppendTrimLines(lines, componentPattern, componentMaterial);
+            return;
+        }
+
         var nbt = SnapshotNbt(item);
         if (nbt is not null
             && nbt.TryGetValue("Trim", out object? raw)
@@ -892,45 +936,7 @@ class RbInventory : Command
             pattern = TranslateTrim("trim_pattern", pattern.Split(':').Last());
             material = TranslateTrim("trim_material", material.Split(':').Last());
             AppendTrimLines(lines, pattern, material);
-            return;
         }
-
-        var component1206 = item.Components?.OfType<TrimComponent>().FirstOrDefault();
-        if (component1206 is not null)
-        {
-            if (!component1206.ShowInTooltip)
-                return;
-            string componentMaterial = component1206.TrimMaterialType == 0
-                ? component1206.Description
-                : TranslateTrim("trim_material", TooltipRegistryMapping.GetHolderName(
-                    "minecraft:trim_material", component1206.TrimMaterialType)
-                    ?? TrimMaterialName(component1206.TrimMaterialType));
-            string componentPattern = component1206.TrimPatternType == 0
-                ? component1206.TrimPatternTypeDescription
-                : TranslateTrim("trim_pattern", TooltipRegistryMapping.GetHolderName(
-                    "minecraft:trim_pattern", component1206.TrimPatternType)
-                    ?? TrimPatternName(component1206.TrimPatternType));
-            AppendTrimLines(lines, componentPattern, componentMaterial);
-            return;
-        }
-
-        var component1215 = item.Components?.OfType<TrimComponent1215>().FirstOrDefault();
-        if (component1215 is not null)
-        {
-            string componentMaterial = component1215.MaterialHolderValue == 0
-                ? component1215.DirectMaterial?.Description ?? string.Empty
-                : TranslateTrim("trim_material", TooltipRegistryMapping.GetHolderName(
-                    "minecraft:trim_material", component1215.MaterialHolderValue)
-                    ?? TrimMaterialName(component1215.MaterialHolderValue));
-            string componentPattern = component1215.PatternHolderValue == 0
-                ? component1215.DirectPattern?.Description ?? string.Empty
-                : TranslateTrim("trim_pattern", TooltipRegistryMapping.GetHolderName(
-                    "minecraft:trim_pattern", component1215.PatternHolderValue)
-                    ?? TrimPatternName(component1215.PatternHolderValue));
-            AppendTrimLines(lines, componentPattern, componentMaterial);
-            return;
-        }
-
     }
 
     private static void AppendTrimLines(List<string> lines, string pattern, string material)
