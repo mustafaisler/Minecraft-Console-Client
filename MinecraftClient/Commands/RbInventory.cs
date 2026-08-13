@@ -520,9 +520,10 @@ class RbInventory : Command
             return output.ToArray();
         }
 
-        if (item.NBT is null
-            || (!item.NBT.TryGetValue("Enchantments", out object? raw)
-                && !item.NBT.TryGetValue("StoredEnchantments", out raw))
+        var nbt = SnapshotNbt(item);
+        if (nbt is null
+            || (!nbt.TryGetValue("Enchantments", out object? raw)
+                && !nbt.TryGetValue("StoredEnchantments", out raw))
             || raw is not object[] entries)
             return output.ToArray();
 
@@ -590,10 +591,11 @@ class RbInventory : Command
         if (item.Components?.Any(component =>
                 component.ComponentName is "minecraft:enchantments" or "minecraft:stored_enchantments") == true)
             return true;
-        if (item.NBT is null)
+        var nbt = SnapshotNbt(item);
+        if (nbt is null)
             return false;
-        return (item.NBT.TryGetValue("Enchantments", out object? raw)
-                || item.NBT.TryGetValue("StoredEnchantments", out raw))
+        return (nbt.TryGetValue("Enchantments", out object? raw)
+                || nbt.TryGetValue("StoredEnchantments", out raw))
             && raw is object[] entries
             && entries.Length > 0;
     }
@@ -621,12 +623,13 @@ class RbInventory : Command
     private static List<string> SnapshotDetailLines(Item item)
     {
         List<string> lines = [];
-        int hideFlags = NbtInt(item.NBT, "HideFlags") ?? 0;
+        var nbt = SnapshotNbt(item);
+        int hideFlags = NbtInt(nbt, "HideFlags") ?? 0;
         bool hideAdditional = item.Components?.Any(component => component is HideAdditionalTooltipComponent) == true;
         if ((hideFlags & 4) == 0 && SnapshotUnbreakable(item))
             lines.Add("§9Kırılmaz");
 
-        bool hasCustomAttributes = item.NBT?.ContainsKey("AttributeModifiers") == true
+        bool hasCustomAttributes = nbt?.ContainsKey("AttributeModifiers") == true
             || item.Components?.Any(component => component.ComponentName == "minecraft:attribute_modifiers") == true;
         if ((hideFlags & 2) == 0 && !hasCustomAttributes)
             AppendDefaultAttributes(lines, item.Type.ToString());
@@ -638,9 +641,9 @@ class RbInventory : Command
             lines.Add("§7Renk: §f" + color);
 
         if ((hideFlags & 8) == 0)
-            AppendStringList(lines, item.NBT, "CanDestroy", "§7Şunları kırabilir:");
+            AppendStringList(lines, nbt, "CanDestroy", "§7Şunları kırabilir:");
         if ((hideFlags & 16) == 0)
-            AppendStringList(lines, item.NBT, "CanPlaceOn", "§7Şunların üzerine yerleştirilebilir:");
+            AppendStringList(lines, nbt, "CanPlaceOn", "§7Şunların üzerine yerleştirilebilir:");
 
         if ((hideFlags & 32) == 0
             && !hideAdditional
@@ -732,12 +735,13 @@ class RbInventory : Command
             lines.Add($"§fDayanıklılık: {Math.Max(0, maxDamage - damage)} / {maxDamage}");
 
         lines.Add("§8minecraft:" + item.Type.ToString().ToUnderscoreCase());
-        if (item.NBT?.Count > 0)
-            lines.Add($"§8NBT: {item.NBT.Count} etiket");
+        var nbt = SnapshotNbt(item);
+        if (nbt?.Count > 0)
+            lines.Add($"§8NBT: {nbt.Count} etiket");
         if (item.Components?.Count > 0)
             lines.Add($"§8{item.Components.Count} bileşen");
 
-        int? customModelData = NbtInt(item.NBT, "CustomModelData")
+        int? customModelData = NbtInt(nbt, "CustomModelData")
             ?? item.Components?.OfType<CustomModelDataComponent1206>().FirstOrDefault()?.Value;
         if (customModelData.HasValue)
             lines.Add("§8Özel Model Verisi: " + customModelData.Value);
@@ -750,7 +754,7 @@ class RbInventory : Command
             return true;
         if (item.Components?.Any(component => component.ComponentName == "minecraft:unbreakable") == true)
             return true;
-        return NbtInt(item.NBT, "Unbreakable") is int value && value != 0;
+        return NbtInt(SnapshotNbt(item), "Unbreakable") is int value && value != 0;
     }
 
     private static int SnapshotMaxDamage(Item item)
@@ -813,7 +817,8 @@ class RbInventory : Command
             color = "#" + (component1215.Color & 0xFFFFFF).ToString("X6");
             return true;
         }
-        if (item.NBT is null || !item.NBT.TryGetValue("display", out object? rawDisplay)
+        var nbt = SnapshotNbt(item);
+        if (nbt is null || !nbt.TryGetValue("display", out object? rawDisplay)
             || rawDisplay is not Dictionary<string, object> display)
             return false;
         int? value = NbtInt(display, "color");
@@ -850,8 +855,9 @@ class RbInventory : Command
             return;
         }
 
-        if (item.NBT is null
-            || !item.NBT.TryGetValue("CustomPotionEffects", out object? raw)
+        var nbt = SnapshotNbt(item);
+        if (nbt is null
+            || !nbt.TryGetValue("CustomPotionEffects", out object? raw)
             || raw is not object[] effects)
             return;
         foreach (var effect in effects.OfType<Dictionary<string, object>>().Take(16))
@@ -874,8 +880,9 @@ class RbInventory : Command
 
     private static void AppendTrim(List<string> lines, Item item)
     {
-        if (item.NBT is not null
-            && item.NBT.TryGetValue("Trim", out object? raw)
+        var nbt = SnapshotNbt(item);
+        if (nbt is not null
+            && nbt.TryGetValue("Trim", out object? raw)
             && raw is Dictionary<string, object> trim)
         {
             string material = trim.TryGetValue("material", out object? materialValue)
@@ -895,10 +902,14 @@ class RbInventory : Command
                 return;
             string componentMaterial = component1206.TrimMaterialType == 0
                 ? component1206.Description
-                : TranslateTrim("trim_material", TrimMaterialName(component1206.TrimMaterialType));
+                : TranslateTrim("trim_material", TooltipRegistryMapping.GetHolderName(
+                    "minecraft:trim_material", component1206.TrimMaterialType)
+                    ?? TrimMaterialName(component1206.TrimMaterialType));
             string componentPattern = component1206.TrimPatternType == 0
                 ? component1206.TrimPatternTypeDescription
-                : TranslateTrim("trim_pattern", TrimPatternName(component1206.TrimPatternType));
+                : TranslateTrim("trim_pattern", TooltipRegistryMapping.GetHolderName(
+                    "minecraft:trim_pattern", component1206.TrimPatternType)
+                    ?? TrimPatternName(component1206.TrimPatternType));
             AppendTrimLines(lines, componentPattern, componentMaterial);
             return;
         }
@@ -908,10 +919,14 @@ class RbInventory : Command
         {
             string componentMaterial = component1215.MaterialHolderValue == 0
                 ? component1215.DirectMaterial?.Description ?? string.Empty
-                : TranslateTrim("trim_material", TrimMaterialName(component1215.MaterialHolderValue));
+                : TranslateTrim("trim_material", TooltipRegistryMapping.GetHolderName(
+                    "minecraft:trim_material", component1215.MaterialHolderValue)
+                    ?? TrimMaterialName(component1215.MaterialHolderValue));
             string componentPattern = component1215.PatternHolderValue == 0
                 ? component1215.DirectPattern?.Description ?? string.Empty
-                : TranslateTrim("trim_pattern", TrimPatternName(component1215.PatternHolderValue));
+                : TranslateTrim("trim_pattern", TooltipRegistryMapping.GetHolderName(
+                    "minecraft:trim_pattern", component1215.PatternHolderValue)
+                    ?? TrimPatternName(component1215.PatternHolderValue));
             AppendTrimLines(lines, componentPattern, componentMaterial);
             return;
         }
@@ -950,6 +965,19 @@ class RbInventory : Command
     private static bool HasFormatting(string value)
     {
         return value.IndexOf('§') >= 0;
+    }
+
+    private static Dictionary<string, object>? SnapshotNbt(Item item)
+    {
+        var customData = item.Components?.OfType<CustomDataComponent>().FirstOrDefault()?.Nbt;
+        if (item.NBT is null || item.NBT.Count == 0)
+            return customData;
+        if (customData is null || customData.Count == 0)
+            return item.NBT;
+        Dictionary<string, object> merged = new(item.NBT);
+        foreach (var pair in customData)
+            merged.TryAdd(pair.Key, pair.Value);
+        return merged;
     }
 
     private static int? NbtInt(Dictionary<string, object>? nbt, string key)
