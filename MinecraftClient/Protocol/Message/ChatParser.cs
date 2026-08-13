@@ -286,7 +286,7 @@ namespace MinecraftClient.Protocol.Message
 
         private const long MaxResourcePackDownloadBytes = 256L * 1024 * 1024;
         private const int ResourcePackDownloadBufferSize = 81920;
-        private const string ResourcePackTranslationCacheVersion = "2";
+        private const string ResourcePackTranslationCacheVersion = "3";
         private const string ForgeModTranslationCacheVersion = "1";
         private const string LocalForgeModTranslationDirectory = "mods";
 
@@ -441,7 +441,8 @@ namespace MinecraftClient.Protocol.Message
             }
 
             string cacheFilePath = GetResourcePackTranslationCacheFilePath(resourcePackUri, hash);
-            if (TryLoadCachedResourcePackTranslations(cacheFilePath, resourcePackUri, hash, out Dictionary<string, string>? cachedTranslations))
+            if (TryLoadCachedResourcePackTranslations(cacheFilePath, resourcePackUri, hash, out Dictionary<string, string>? cachedTranslations)
+                && RbResourcePackFont.IsCurrent(resourcePackUri, hash))
             {
                 ReplaceResourcePackTranslations(packIdentifier, cachedTranslations);
                 return;
@@ -452,7 +453,7 @@ namespace MinecraftClient.Protocol.Message
             {
                 DownloadResourcePack(resourcePackUri, hash, temporaryFilePath);
                 using FileStream resourcePackFile = File.OpenRead(temporaryFilePath);
-                Dictionary<string, string> resourcePackTranslations = ExtractResourcePackTranslations(resourcePackFile);
+                Dictionary<string, string> resourcePackTranslations = ExtractResourcePackTranslations(resourcePackFile, resourcePackUri, hash);
                 ReplaceResourcePackTranslations(packIdentifier, resourcePackTranslations);
                 SaveCachedResourcePackTranslations(cacheFilePath, resourcePackUri, hash, resourcePackTranslations);
             }
@@ -655,7 +656,7 @@ namespace MinecraftClient.Protocol.Message
             }
         }
 
-        private static Dictionary<string, string> ExtractResourcePackTranslations(Stream resourcePackStream)
+        private static Dictionary<string, string> ExtractResourcePackTranslations(Stream resourcePackStream, Uri resourcePackUri, string hash)
         {
             var mergedTranslations = new Dictionary<string, string>(StringComparer.Ordinal);
             var selectedLanguageTranslations = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -663,6 +664,7 @@ namespace MinecraftClient.Protocol.Message
 
             using ZipArchive archive = new(resourcePackStream, ZipArchiveMode.Read, leaveOpen: true);
             RbResourcePackGlint.Export(archive);
+            RbResourcePackFont.Export(archive, resourcePackUri, hash);
 
             foreach (ZipArchiveEntry entry in archive.Entries)
             {
