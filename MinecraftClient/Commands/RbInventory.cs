@@ -887,18 +887,12 @@ class RbInventory : Command
                 return;
             string componentMaterial = component1206.TrimMaterialType == 0
                 ? component1206.Description
-                : TooltipRegistryMapping.GetHolderDescription(
-                    "minecraft:trim_material", component1206.TrimMaterialType)
-                    ?? TranslateTrim("trim_material", TooltipRegistryMapping.GetHolderName(
-                    "minecraft:trim_material", component1206.TrimMaterialType)
-                    ?? TrimMaterialName(component1206.TrimMaterialType));
+                : ResolveRegisteredTrim("minecraft:trim_material", "trim_material",
+                    component1206.TrimMaterialType, TrimMaterialName(component1206.TrimMaterialType));
             string componentPattern = component1206.TrimPatternType == 0
                 ? component1206.TrimPatternTypeDescription
-                : TooltipRegistryMapping.GetHolderDescription(
-                    "minecraft:trim_pattern", component1206.TrimPatternType)
-                    ?? TranslateTrim("trim_pattern", TooltipRegistryMapping.GetHolderName(
-                    "minecraft:trim_pattern", component1206.TrimPatternType)
-                    ?? TrimPatternName(component1206.TrimPatternType));
+                : ResolveRegisteredTrim("minecraft:trim_pattern", "trim_pattern",
+                    component1206.TrimPatternType, TrimPatternName(component1206.TrimPatternType));
             AppendTrimLines(lines, componentPattern, componentMaterial);
             return;
         }
@@ -908,18 +902,12 @@ class RbInventory : Command
         {
             string componentMaterial = component1215.MaterialHolderValue == 0
                 ? component1215.DirectMaterial?.Description ?? string.Empty
-                : TooltipRegistryMapping.GetHolderDescription(
-                    "minecraft:trim_material", component1215.MaterialHolderValue)
-                    ?? TranslateTrim("trim_material", TooltipRegistryMapping.GetHolderName(
-                    "minecraft:trim_material", component1215.MaterialHolderValue)
-                    ?? TrimMaterialName(component1215.MaterialHolderValue));
+                : ResolveRegisteredTrim("minecraft:trim_material", "trim_material",
+                    component1215.MaterialHolderValue, TrimMaterialName(component1215.MaterialHolderValue));
             string componentPattern = component1215.PatternHolderValue == 0
                 ? component1215.DirectPattern?.Description ?? string.Empty
-                : TooltipRegistryMapping.GetHolderDescription(
-                    "minecraft:trim_pattern", component1215.PatternHolderValue)
-                    ?? TranslateTrim("trim_pattern", TooltipRegistryMapping.GetHolderName(
-                    "minecraft:trim_pattern", component1215.PatternHolderValue)
-                    ?? TrimPatternName(component1215.PatternHolderValue));
+                : ResolveRegisteredTrim("minecraft:trim_pattern", "trim_pattern",
+                    component1215.PatternHolderValue, TrimPatternName(component1215.PatternHolderValue));
             AppendTrimLines(lines, componentPattern, componentMaterial);
             return;
         }
@@ -951,7 +939,41 @@ class RbInventory : Command
     private static string TranslateTrim(string prefix, string resourceName)
     {
         if (resourceName.Length == 0) return string.Empty;
-        return CleanText(ChatParser.TranslateString(prefix + ".minecraft." + resourceName) ?? resourceName, 120);
+        return CleanText(ChatParser.TranslateString(prefix + ".minecraft." + resourceName)
+            ?? FallbackTrimLabel(prefix, resourceName), 120);
+    }
+
+    private static string ResolveRegisteredTrim(
+        string registryId, string translationPrefix, int holderValue, string fallbackName)
+    {
+        string resourceName = TooltipRegistryMapping.GetHolderName(registryId, holderValue) ?? fallbackName;
+        string? description = TooltipRegistryMapping.GetHolderDescription(registryId, holderValue);
+        if (!string.IsNullOrEmpty(description)
+            && !description.Contains("[" + translationPrefix + ".minecraft.", StringComparison.Ordinal))
+            return CleanText(description, 120);
+
+        string formatting = string.Empty;
+        int bracket = description?.IndexOf('[') ?? -1;
+        if (bracket > 0)
+            formatting = description![..bracket];
+        return formatting + TranslateTrim(translationPrefix, resourceName);
+    }
+
+    private static string FallbackTrimLabel(string prefix, string resourceName)
+    {
+        if (prefix == "trim_material")
+            return resourceName switch
+            {
+                "lapis" => "Lapis Material",
+                _ => HumanizeTrimName(resourceName) + " Material",
+            };
+        return HumanizeTrimName(resourceName) + " Armor Trim";
+    }
+
+    private static string HumanizeTrimName(string resourceName)
+    {
+        return string.Join(" ", resourceName.Split('_', StringSplitOptions.RemoveEmptyEntries)
+            .Select(word => char.ToUpperInvariant(word[0]) + word[1..]));
     }
 
     private static string TrimMaterialName(int holderValue)
