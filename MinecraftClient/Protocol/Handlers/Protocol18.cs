@@ -576,11 +576,13 @@ namespace MinecraftClient.Protocol.Handlers
                                     var isAttribute = registryId == "minecraft:attribute";
                                     var isEnchantment = registryId == "minecraft:enchantment";
                                     var isDialog = registryId == "minecraft:dialog";
+                                    var isTooltipRegistry = TooltipRegistryMapping.IsSupported(registryId);
 
                                     var availableChats = isChat ? new Dictionary<int, string>() : null;
                                     var dimensionIdMap = isDimension ? new Dictionary<int, string>() : null;
                                     var attributeIdMap = isAttribute ? new Dictionary<int, string>() : null;
                                     var enchantmentIdMap = isEnchantment ? new Dictionary<int, string>() : null;
+                                    var tooltipIdMap = isTooltipRegistry ? new Dictionary<int, string>() : null;
 
                                     for (var i = 0; i < entryCount; i++)
                                     {
@@ -608,6 +610,8 @@ namespace MinecraftClient.Protocol.Handlers
                                         }
                                         else if (isEnchantment)
                                             enchantmentIdMap!.Add(i, entryId);
+                                        else if (isTooltipRegistry)
+                                            tooltipIdMap!.Add(i, entryId);
                                         else if (isDialog && nbtData is not null)
                                             handler.OnDialogRegistryData(i, entryId, dialogNbtParser.Parse(nbtData));
                                     }
@@ -624,6 +628,8 @@ namespace MinecraftClient.Protocol.Handlers
                                         World.SetAttributeIdMap(attributeIdMap!);
                                     else if (isEnchantment)
                                         EnchantmentMapping.SetDynamicEnchantmentIdMap(enchantmentIdMap!);
+                                    else if (isTooltipRegistry)
+                                        TooltipRegistryMapping.SetRegistry(registryId, tooltipIdMap!);
                                 }
 
                                 break;
