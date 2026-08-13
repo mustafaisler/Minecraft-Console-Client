@@ -730,7 +730,7 @@ namespace MinecraftClient.Protocol.Handlers
                             "Failed to decode NBT: Does not start with TAG_Compound");
 
                     // NBT root name
-                    var rootName = Encoding.ASCII.GetString(ReadData(ReadNextUShort(cache), cache));
+                    var rootName = MinecraftModifiedUtf8.Decode(ReadData(ReadNextUShort(cache), cache));
 
                     if (!string.IsNullOrEmpty(rootName))
                         nbtData[""] = rootName;
@@ -747,7 +747,7 @@ namespace MinecraftClient.Protocol.Handlers
                     if (nextId is 8)
                     {
                         var byteArrayLength = ReadNextUShort(cache);
-                        var result = Encoding.UTF8.GetString(ReadData(byteArrayLength, cache));
+                        var result = MinecraftModifiedUtf8.Decode(ReadData(byteArrayLength, cache));
 
                         return new Dictionary<string, object>()
                         {
@@ -765,7 +765,7 @@ namespace MinecraftClient.Protocol.Handlers
                     return nbtData;
 
                 int fieldNameLength = ReadNextUShort(cache);
-                string fieldName = Encoding.ASCII.GetString(ReadData(fieldNameLength, cache));
+                string fieldName = MinecraftModifiedUtf8.Decode(ReadData(fieldNameLength, cache));
                 object fieldValue = ReadNbtField(cache, fieldType);
 
                 // This will override previous tags with the same name
@@ -795,7 +795,7 @@ namespace MinecraftClient.Protocol.Handlers
                 case 7: // TAG_Byte_Array
                     return ReadData(ReadNextInt(cache), cache);
                 case 8: // TAG_String
-                    return Encoding.UTF8.GetString(ReadData(ReadNextUShort(cache), cache));
+                    return MinecraftModifiedUtf8.Decode(ReadData(ReadNextUShort(cache), cache));
                 case 9: // TAG_List
                     int listType = ReadNextByte(cache);
                     int listLength = ReadNextInt(cache);
@@ -1521,7 +1521,7 @@ namespace MinecraftClient.Protocol.Handlers
                     && nbt.TryGetValue("", out var rootVal) && rootVal is string rootStr)
                 {
                     bytes.Add(8); // TAG_String
-                    var strBytes = Encoding.UTF8.GetBytes(rootStr);
+                    var strBytes = MinecraftModifiedUtf8.Encode(rootStr);
                     bytes.AddRange(GetUShort((ushort)strBytes.Length));
                     bytes.AddRange(strBytes);
                     return bytes.ToArray();
@@ -1538,8 +1538,9 @@ namespace MinecraftClient.Protocol.Handlers
 
                     rootName ??= "";
 
-                    bytes.AddRange(GetUShort((ushort)rootName.Length));
-                    bytes.AddRange(Encoding.ASCII.GetBytes(rootName));
+                    byte[] rootNameBytes = MinecraftModifiedUtf8.Encode(rootName);
+                    bytes.AddRange(GetUShort(CheckedNbtStringLength(rootNameBytes)));
+                    bytes.AddRange(rootNameBytes);
                 }
             }
 
@@ -1549,8 +1550,8 @@ namespace MinecraftClient.Protocol.Handlers
                 if (item.Key == "" && root)
                     continue;
 
-                byte[] fieldNameLength = GetUShort((ushort)item.Key.Length);
-                byte[] fieldName = Encoding.ASCII.GetBytes(item.Key);
+                byte[] fieldName = MinecraftModifiedUtf8.Encode(item.Key);
+                byte[] fieldNameLength = GetUShort(CheckedNbtStringLength(fieldName));
                 byte[] fieldData = GetNbtField(item.Value, out byte fieldType);
                 bytes.Add(fieldType);
                 bytes.AddRange(fieldNameLength);
@@ -1560,6 +1561,13 @@ namespace MinecraftClient.Protocol.Handlers
 
             bytes.Add(0); // TAG_End
             return bytes.ToArray();
+        }
+
+        private static ushort CheckedNbtStringLength(byte[] bytes)
+        {
+            if (bytes.Length > ushort.MaxValue)
+                throw new System.IO.InvalidDataException("NBT string exceeds the unsigned-short wire limit.");
+            return (ushort)bytes.Length;
         }
 
         /// <summary>
@@ -1608,8 +1616,8 @@ namespace MinecraftClient.Protocol.Handlers
             else if (obj is string)
             {
                 fieldType = 8; // TAG_String
-                byte[] stringBytes = Encoding.UTF8.GetBytes((string)obj);
-                return ConcatBytes(GetUShort((ushort)stringBytes.Length), stringBytes);
+                byte[] stringBytes = MinecraftModifiedUtf8.Encode((string)obj);
+                return ConcatBytes(GetUShort(CheckedNbtStringLength(stringBytes)), stringBytes);
             }
             else if (obj is object[])
             {
