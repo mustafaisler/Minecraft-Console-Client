@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using Brigadier.NET;
 using Brigadier.NET.Exceptions;
@@ -4725,7 +4726,7 @@ namespace MinecraftClient
 
         /// <summary>
         /// Received some Title from the server
-        /// <param name="action"> 0 = set title, 1 = set subtitle, 3 = set action bar, 4 = set times and display, 4 = hide, 5 = reset</param>
+        /// <param name="action">0 = set title, 1 = set subtitle, 2 = set action bar, 3 = set times, 4 = clear, 5 = reset</param>
         /// <param name="titletext"> title text</param>
         /// <param name="subtitletext"> suntitle text</param>
         /// <param name="actionbartext"> action bar text</param>
@@ -4735,7 +4736,72 @@ namespace MinecraftClient
         /// <param name="json"> json text</param>
         public void OnTitle(int action, string titletext, string subtitletext, string actionbartext, int fadein, int stay, int fadeout, string json)
         {
+            var type = action switch
+            {
+                0 => "title",
+                1 => "subtitle",
+                2 => "actionbar",
+                3 => "times",
+                4 => "clear",
+                5 => "reset",
+                _ => null,
+            };
+            if (type is not null)
+            {
+                EmitRakitBotHud(new
+                {
+                    v = 1,
+                    type,
+                    text = action switch
+                    {
+                        0 => titletext,
+                        1 => subtitletext,
+                        2 => actionbartext,
+                        _ => string.Empty,
+                    },
+                    fadeIn = fadein,
+                    stay,
+                    fadeOut = fadeout,
+                    at = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                });
+            }
             DispatchBotEvent(bot => bot.OnTitle(action, titletext, subtitletext, actionbartext, fadein, stay, fadeout, json));
+        }
+
+        /// <summary>
+        /// Received a boss bar update from the server.
+        /// </summary>
+        public void OnBossBar(Guid id, int action, string title, float progress, int color, int division, byte flags)
+        {
+            EmitRakitBotHud(new
+            {
+                v = 1,
+                type = "bossbar",
+                id = id.ToString("D"),
+                action = action switch
+                {
+                    0 => "add",
+                    1 => "remove",
+                    2 => "progress",
+                    3 => "title",
+                    4 => "style",
+                    5 => "flags",
+                    _ => "unknown",
+                },
+                title,
+                progress,
+                color,
+                division,
+                flags,
+                at = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            });
+        }
+
+        private static void EmitRakitBotHud(object payload)
+        {
+            if (!Config.Main.Advanced.ShowXPBarMessages)
+                return;
+            ConsoleIO.WriteLine("[RBHUD]" + JsonSerializer.Serialize(payload));
         }
 
         /// <summary>

@@ -1044,7 +1044,7 @@ namespace MinecraftClient.Protocol.Handlers
                             //Hide system messages or xp bar messages?
                             messageType = dataTypes.ReadNextByte(packetData);
                             if (messageType == 1 && !Config.Main.Advanced.ShowSystemMessages
-                                || messageType == 2 && !Config.Main.Advanced.ShowSystemMessages)
+                                || messageType == 2 && !Config.Main.Advanced.ShowXPBarMessages)
                                 break;
 
                             senderUuid = protocolVersion >= MC_1_16_5_Version
@@ -1054,7 +1054,11 @@ namespace MinecraftClient.Protocol.Handlers
                         else
                             senderUuid = Guid.Empty;
 
-                        handler.OnTextReceived(new(message, null, true, messageType, senderUuid));
+                        if (messageType == 2)
+                            handler.OnTitle(2, string.Empty, string.Empty, ChatParser.ParseText(message),
+                                -1, -1, -1, message);
+                        else
+                            handler.OnTextReceived(new(message, null, true, messageType, senderUuid));
                     }
                     else if (protocolVersion == MC_1_19_Version) // 1.19
                     {
@@ -1338,6 +1342,9 @@ namespace MinecraftClient.Protocol.Handlers
                         {
                             if (!Config.Main.Advanced.ShowXPBarMessages)
                                 break;
+                            handler.OnTitle(2, string.Empty, string.Empty,
+                                ChatParser.ParseText(systemMessage), -1, -1, -1, systemMessage);
+                            break;
                         }
                         else
                         {
@@ -1352,7 +1359,15 @@ namespace MinecraftClient.Protocol.Handlers
                         var msgType = dataTypes.ReadNextVarInt(packetData);
                         if (msgType == 1 && !Config.Main.Advanced.ShowSystemMessages)
                             break;
-                        handler.OnTextReceived(new(systemMessage, null, true, msgType, Guid.Empty, true));
+                        if (msgType == 2)
+                        {
+                            if (!Config.Main.Advanced.ShowXPBarMessages)
+                                break;
+                            handler.OnTitle(2, string.Empty, string.Empty,
+                                ChatParser.ParseText(systemMessage), -1, -1, -1, systemMessage);
+                        }
+                        else
+                            handler.OnTextReceived(new(systemMessage, null, true, msgType, Guid.Empty, true));
                     }
 
                     break;
@@ -1887,6 +1902,66 @@ namespace MinecraftClient.Protocol.Handlers
                     }
 
                     break;
+                case PacketTypesIn.BossBar:
+                    var bossBarId = dataTypes.ReadNextUUID(packetData);
+                    var bossBarAction = dataTypes.ReadNextVarInt(packetData);
+                    var bossBarTitle = string.Empty;
+                    var bossBarProgress = -1F;
+                    var bossBarColor = -1;
+                    var bossBarDivision = -1;
+                    byte bossBarFlags = 0;
+                    switch (bossBarAction)
+                    {
+                        case 0:
+                            bossBarTitle = ChatParser.ParseText(dataTypes.ReadNextChat(packetData));
+                            bossBarProgress = dataTypes.ReadNextFloat(packetData);
+                            bossBarColor = dataTypes.ReadNextVarInt(packetData);
+                            bossBarDivision = dataTypes.ReadNextVarInt(packetData);
+                            bossBarFlags = dataTypes.ReadNextByte(packetData);
+                            break;
+                        case 1:
+                            break;
+                        case 2:
+                            bossBarProgress = dataTypes.ReadNextFloat(packetData);
+                            break;
+                        case 3:
+                            bossBarTitle = ChatParser.ParseText(dataTypes.ReadNextChat(packetData));
+                            break;
+                        case 4:
+                            bossBarColor = dataTypes.ReadNextVarInt(packetData);
+                            bossBarDivision = dataTypes.ReadNextVarInt(packetData);
+                            break;
+                        case 5:
+                            bossBarFlags = dataTypes.ReadNextByte(packetData);
+                            break;
+                    }
+                    handler.OnBossBar(bossBarId, bossBarAction, bossBarTitle, bossBarProgress,
+                        bossBarColor, bossBarDivision, bossBarFlags);
+                    break;
+                case PacketTypesIn.ActionBar:
+                    var actionBarJson = dataTypes.ReadNextChat(packetData);
+                    handler.OnTitle(2, string.Empty, string.Empty, ChatParser.ParseText(actionBarJson),
+                        -1, -1, -1, actionBarJson);
+                    break;
+                case PacketTypesIn.ClearTiles:
+                    handler.OnTitle(dataTypes.ReadNextBool(packetData) ? 5 : 4, string.Empty, string.Empty,
+                        string.Empty, -1, -1, -1, string.Empty);
+                    break;
+                case PacketTypesIn.SetTitleSubTitle:
+                    var subtitleJson = dataTypes.ReadNextChat(packetData);
+                    handler.OnTitle(1, string.Empty, ChatParser.ParseText(subtitleJson), string.Empty,
+                        -1, -1, -1, subtitleJson);
+                    break;
+                case PacketTypesIn.SetTitleText:
+                    var titleJson = dataTypes.ReadNextChat(packetData);
+                    handler.OnTitle(0, ChatParser.ParseText(titleJson), string.Empty, string.Empty,
+                        -1, -1, -1, titleJson);
+                    break;
+                case PacketTypesIn.SetTitleTime:
+                    handler.OnTitle(3, string.Empty, string.Empty, string.Empty,
+                        dataTypes.ReadNextInt(packetData), dataTypes.ReadNextInt(packetData),
+                        dataTypes.ReadNextInt(packetData), string.Empty);
+                    break;
                 case PacketTypesIn.Title:
                     if (protocolVersion >= MC_1_8_Version)
                     {
@@ -1942,7 +2017,10 @@ namespace MinecraftClient.Protocol.Handlers
                             }
                         }
 
-                        handler.OnTitle(action2, titleText, subtitleText, actionBarText, fadein, stay, fadeout,
+                        var normalizedAction = protocolVersion < MC_1_10_Version && action2 >= 2
+                            ? action2 + 1
+                            : action2;
+                        handler.OnTitle(normalizedAction, titleText, subtitleText, actionBarText, fadein, stay, fadeout,
                             json);
                     }
 

@@ -144,6 +144,7 @@ namespace MinecraftClient.Protocol
         /// This method is called when the protocol handler receives a title
         /// </summary>
         void OnTitle(int action, string titletext, string subtitletext, string actionbartext, int fadein, int stay, int fadeout, string json);
+        void OnBossBar(Guid id, int action, string title, float progress, int color, int division, byte flags);
 
         /// <summary>
         /// Called when receiving a connection keep-alive from the server
