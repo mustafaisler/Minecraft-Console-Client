@@ -3905,7 +3905,9 @@ namespace MinecraftClient
                     messageText = message.content;
             }
 
-            Log.Chat(color + messageText);
+            string displayedMessage = color + messageText;
+            RakitBotChatHistory.Append(displayedMessage);
+            Log.Chat(displayedMessage);
 
             if (Config.Main.Advanced.ShowChatLinks)
                 foreach (string link in links)
