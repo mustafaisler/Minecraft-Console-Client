@@ -47,16 +47,8 @@ namespace MinecraftClient
 
         private readonly Queue<string> chatQueue = new();
         private static DateTime nextMessageSendTime = DateTime.MinValue;
+        private readonly RbHudEmitter rakitBotHud = new();
 
-        private const long RakitBotActionBarLifetimeMs = 3500;
-        private const long RakitBotActionBarHeartbeatMs = 30000;
-        private const int RakitBotBossBarEmissionLimit = 256;
-        private readonly Lock rakitBotHudLock = new();
-        private string rakitBotActionBarText = string.Empty;
-        private long rakitBotActionBarLastSeenAt;
-        private long rakitBotActionBarLastEmittedAt;
-        private bool rakitBotActionBarPersistent;
-        private readonly Dictionary<string, (string Fingerprint, long EmittedAt)> rakitBotBossBarEmissions = new();
 
         private readonly Queue<Action> threadTasks = new();
         private readonly Lock threadTasksLock = new();
@@ -693,7 +685,7 @@ namespace MinecraftClient
         /// </summary>
         public void OnUpdate()
         {
-            ExpireRakitBotActionBar();
+            rakitBotHud.ExpireActionBar();
 
             foreach (ChatBot bot in bots.ToArray())
             {
@@ -4750,178 +4742,13 @@ namespace MinecraftClient
         /// <param name="json"> json text</param>
         public void OnTitle(int action, string titletext, string subtitletext, string actionbartext, int fadein, int stay, int fadeout, string json)
         {
-            var type = action switch
-            {
-                0 => "title",
-                1 => "subtitle",
-                2 => "actionbar",
-                3 => "times",
-                4 => "clear",
-                5 => "reset",
-                _ => null,
-            };
-            if (type is not null)
-            {
-                if (action == 2)
-                {
-                    EmitRakitBotActionBar(actionbartext, fadein, stay, fadeout);
-                }
-                else
-                {
-                    EmitRakitBotHud(new
-                    {
-                        v = 1,
-                        type,
-                        text = action switch
-                        {
-                            0 => titletext,
-                            1 => subtitletext,
-                            _ => string.Empty,
-                        },
-                        fadeIn = fadein,
-                        stay,
-                        fadeOut = fadeout,
-                        at = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    });
-                }
-            }
+            rakitBotHud.EmitTitle(action, titletext, subtitletext, actionbartext, fadein, stay, fadeout);
             DispatchBotEvent(bot => bot.OnTitle(action, titletext, subtitletext, actionbartext, fadein, stay, fadeout, json));
         }
 
-        private void EmitRakitBotActionBar(string text, int fadein, int stay, int fadeout)
-        {
-            var now = Environment.TickCount64;
-            var emit = false;
-            var persistent = false;
-            lock (rakitBotHudLock)
-            {
-                var elapsedSinceSeen = now - rakitBotActionBarLastSeenAt;
-                if (!text.Equals(rakitBotActionBarText, StringComparison.Ordinal)
-                    || elapsedSinceSeen > RakitBotActionBarLifetimeMs)
-                {
-                    rakitBotActionBarText = text;
-                    rakitBotActionBarPersistent = false;
-                    emit = true;
-                }
-                else if (!string.IsNullOrEmpty(text) && !rakitBotActionBarPersistent)
-                {
-                    rakitBotActionBarPersistent = true;
-                    emit = true;
-                }
-                else if (rakitBotActionBarPersistent
-                    && now - rakitBotActionBarLastEmittedAt >= RakitBotActionBarHeartbeatMs)
-                {
-                    emit = true;
-                }
-
-                rakitBotActionBarLastSeenAt = now;
-                persistent = rakitBotActionBarPersistent;
-                if (emit)
-                    rakitBotActionBarLastEmittedAt = now;
-            }
-
-            if (emit)
-                EmitRakitBotActionBarPayload(text, fadein, stay, fadeout, persistent);
-        }
-
-        private void ExpireRakitBotActionBar()
-        {
-            var now = Environment.TickCount64;
-            var emitClear = false;
-            lock (rakitBotHudLock)
-            {
-                if (rakitBotActionBarPersistent
-                    && now - rakitBotActionBarLastSeenAt > RakitBotActionBarLifetimeMs)
-                {
-                    rakitBotActionBarText = string.Empty;
-                    rakitBotActionBarPersistent = false;
-                    rakitBotActionBarLastSeenAt = now;
-                    rakitBotActionBarLastEmittedAt = now;
-                    emitClear = true;
-                }
-            }
-
-            if (emitClear)
-                EmitRakitBotActionBarPayload(string.Empty, -1, -1, -1, false);
-        }
-
-        private static void EmitRakitBotActionBarPayload(string text, int fadein, int stay, int fadeout,
-            bool persistent)
-        {
-            EmitRakitBotHud(new
-            {
-                v = 1,
-                type = "actionbar",
-                text,
-                fadeIn = fadein,
-                stay,
-                fadeOut = fadeout,
-                persistent,
-                at = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-            });
-        }
-
-        /// <summary>
-        /// Received a boss bar update from the server.
-        /// </summary>
         public void OnBossBar(Guid id, int action, string title, float progress, int color, int division, byte flags)
         {
-            var actionName = action switch
-            {
-                0 => "add",
-                1 => "remove",
-                2 => "progress",
-                3 => "title",
-                4 => "style",
-                5 => "flags",
-                _ => "unknown",
-            };
-            var progressBucket = action == 2 ? (int)Math.Round(progress * 100F) : progress;
-            var fingerprint = string.Join('\u001f', title, progressBucket, color, division, flags);
-            var emissionKey = id.ToString("D") + ':' + actionName;
-            var now = Environment.TickCount64;
-            lock (rakitBotHudLock)
-            {
-                if (rakitBotBossBarEmissions.TryGetValue(emissionKey, out var previous)
-                    && previous.Fingerprint.Equals(fingerprint, StringComparison.Ordinal)
-                    && now - previous.EmittedAt < RakitBotActionBarHeartbeatMs)
-                {
-                    return;
-                }
-                rakitBotBossBarEmissions[emissionKey] = (fingerprint, now);
-                if (action == 1)
-                {
-                    var prefix = id.ToString("D") + ':';
-                    foreach (var key in rakitBotBossBarEmissions.Keys.Where(key => key.StartsWith(prefix, StringComparison.Ordinal)).ToArray())
-                        rakitBotBossBarEmissions.Remove(key);
-                }
-                while (rakitBotBossBarEmissions.Count > RakitBotBossBarEmissionLimit)
-                {
-                    var oldestKey = rakitBotBossBarEmissions.MinBy(static entry => entry.Value.EmittedAt).Key;
-                    rakitBotBossBarEmissions.Remove(oldestKey);
-                }
-            }
-
-            EmitRakitBotHud(new
-            {
-                v = 1,
-                type = "bossbar",
-                id = id.ToString("D"),
-                action = actionName,
-                title,
-                progress,
-                color,
-                division,
-                flags,
-                at = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-            });
-        }
-
-        private static void EmitRakitBotHud(object payload)
-        {
-            if (!Config.Main.Advanced.ShowXPBarMessages)
-                return;
-            ConsoleIO.WriteLine("[RBHUD]" + JsonSerializer.Serialize(payload));
+            rakitBotHud.EmitBossBar(id, action, title, progress, color, division, flags);
         }
 
         /// <summary>

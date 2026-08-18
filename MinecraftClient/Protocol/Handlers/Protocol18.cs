@@ -135,6 +135,7 @@ namespace MinecraftClient.Protocol.Handlers
         {
             ConsoleIO.SetAutoCompleteEngine(this);
             ChatParser.InitTranslations();
+            RbResourcePackFont.BeginConnection();
             socketWrapper = new SocketWrapper(Client);
             dataTypes = new DataTypes(protocolVersion);
             this.protocolVersion = protocolVersion;
