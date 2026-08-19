@@ -18,17 +18,27 @@ namespace MinecraftClient.Protocol.Message;
 /// </summary>
 internal static class RbResourcePackFont
 {
-    private const int MaxProviderFiles = 128;
+    private const int MaxProviderFiles = 1024;
+    private const int MaxFontDefinitionBytes = 512 * 1024;
     private const int MaxReferenceDepth = 32;
     private const int MaxGlyphs = 20000;
+    private const int MaxGlyphMetric = 4096;
     private const int MaxSheetBytes = 512 * 1024;
     private const int MaxLayerSheetBytes = 8 * 1024 * 1024;
     private const int MaxPublishedSheetBytes = 16 * 1024 * 1024;
     private const int MaxManifestBytes = 512 * 1024;
+    private const string CacheFingerprintVersion = "8";
     private const string OutputDirectory = "RakitBot_Inventory/font";
     private const string ManifestFile = "manifest.json";
     private static readonly object Sync = new();
     private static readonly List<FontLayer> ActiveLayers = [];
+    private static readonly JsonDocumentOptions ResourcePackJsonOptions = new()
+    {
+        AllowTrailingCommas = true,
+        CommentHandling = JsonCommentHandling.Skip,
+        MaxDepth = 64,
+    };
+    public static string LastDiagnostics { get; private set; } = string.Empty;
 
     public static void BeginConnection()
     {
@@ -36,7 +46,9 @@ internal static class RbResourcePackFont
         {
             ActiveLayers.Clear();
             ClearPublishedArtifact();
+            LastDiagnostics = string.Empty;
         }
+        RbResourcePackStatus.Write("connection_reset");
     }
 
     public static bool TryActivateCached(string packIdentifier, Uri resourcePackUri, string hash)
@@ -45,6 +57,9 @@ internal static class RbResourcePackFont
         try
         {
             FontLayer layer = ReadCachedLayer(packIdentifier, source);
+            int sheetCount = layer.Glyphs.Values.Where(IsBitmapGlyph).Select(static glyph => glyph.File)
+                .Distinct(StringComparer.Ordinal).Count();
+            LastDiagnostics = $"cache=1 glyphs={layer.Glyphs.Count} sheets={sheetCount}";
             lock (Sync)
             {
                 ActivateLayer(layer);
@@ -58,7 +73,7 @@ internal static class RbResourcePackFont
         }
     }
 
-    public static void Export(string packIdentifier, ZipArchive archive, Uri resourcePackUri, string hash)
+    public static bool Export(string packIdentifier, ZipArchive archive, Uri resourcePackUri, string hash)
     {
         string source = SourceFingerprint(resourcePackUri, hash);
         try
@@ -70,9 +85,11 @@ internal static class RbResourcePackFont
                 ActivateLayer(layer);
                 PublishActiveLayers();
             }
+            return true;
         }
         catch (Exception exception) when (IsArtifactException(exception))
         {
+            return false;
         }
     }
 
@@ -97,17 +114,36 @@ internal static class RbResourcePackFont
     private static FontLayer BuildLayer(string packIdentifier, string source, ZipArchive archive)
     {
         var definitions = new Dictionary<string, ZipArchiveEntry>(StringComparer.OrdinalIgnoreCase);
+        int fontEntryCount = 0;
         foreach (ZipArchiveEntry entry in archive.Entries.Where(static item => IsFontDefinition(item.FullName)))
         {
+            fontEntryCount++;
             string? id = GetFontId(entry.FullName);
-            if (id is not null && definitions.Count < MaxProviderFiles)
-                definitions.TryAdd(id, entry);
+            if (id is null)
+                continue;
+            if (definitions.ContainsKey(id))
+                definitions[id] = entry;
+            else if (definitions.Count < MaxProviderFiles)
+                definitions.Add(id, entry);
         }
 
         var glyphs = new Dictionary<string, GlyphExport>(StringComparer.Ordinal);
         var sheets = new Dictionary<string, byte[]>(StringComparer.Ordinal);
         var processed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         int totalSheetBytes = 0;
+        int parsedDefinitions = 0;
+        int providerCount = 0;
+        int bitmapProviderCount = 0;
+        int parsedBitmapCount = 0;
+        int spaceProviderCount = 0;
+        int spaceGlyphCount = 0;
+        int offsetProviderCount = 0;
+        int offsetGlyphCount = 0;
+        int candidateCount = 0;
+        int missingTextureCount = 0;
+        int oversizedTextureCount = 0;
+        int invalidPngCount = 0;
+        var parseFailures = new List<string>();
 
         void ProcessDefinition(string fontId, int depth)
         {
@@ -118,8 +154,23 @@ internal static class RbResourcePackFont
             }
 
             string fontNamespace = fontId.Split(':', 2)[0];
-            using JsonDocument document = JsonDocument.Parse(fontEntry.Open());
-            if (!document.RootElement.TryGetProperty("providers", out JsonElement providers)
+            JsonDocument document;
+            byte[] fontBytes = [];
+            try
+            {
+                using Stream fontStream = fontEntry.Open();
+                fontBytes = ReadBounded(fontStream, MaxFontDefinitionBytes);
+                document = JsonDocument.Parse(fontBytes, ResourcePackJsonOptions);
+            }
+            catch (Exception exception) when (exception is IOException or InvalidDataException or JsonException)
+            {
+                if (parseFailures.Count < 6)
+                    parseFailures.Add(FormatParseFailure(fontId, fontEntry, fontBytes, exception));
+                return;
+            }
+            using JsonDocument parsedDocument = document;
+            parsedDefinitions++;
+            if (!parsedDocument.RootElement.TryGetProperty("providers", out JsonElement providers)
                 || providers.ValueKind != JsonValueKind.Array)
             {
                 return;
@@ -127,6 +178,7 @@ internal static class RbResourcePackFont
 
             foreach (JsonElement provider in providers.EnumerateArray())
             {
+                providerCount++;
                 if (glyphs.Count >= MaxGlyphs)
                     break;
                 if (TryReadReference(provider, fontNamespace, out string? reference))
@@ -134,8 +186,38 @@ internal static class RbResourcePackFont
                     ProcessDefinition(reference, depth + 1);
                     continue;
                 }
+                if (HasProviderType(provider, "space"))
+                {
+                    spaceProviderCount++;
+                    if (TryReadSpace(provider, out List<(string CodePoint, double Advance)>? spaces))
+                    {
+                        foreach ((string codePoint, double advance) in spaces)
+                        {
+                            if (glyphs.Count >= MaxGlyphs)
+                                break;
+                            if (glyphs.TryAdd(codePoint, new GlyphExport { Type = "space", Advance = advance }))
+                                spaceGlyphCount++;
+                        }
+                    }
+                    continue;
+                }
+                if (HasProviderType(provider, "bitmap"))
+                    bitmapProviderCount++;
+                if (TryReadBitmapOffset(provider, out List<(string CodePoint, double Advance)>? offsets))
+                {
+                    offsetProviderCount++;
+                    foreach ((string codePoint, double advance) in offsets)
+                    {
+                        if (glyphs.Count >= MaxGlyphs)
+                            break;
+                        if (glyphs.TryAdd(codePoint, new GlyphExport { Type = "space", Advance = advance }))
+                            offsetGlyphCount++;
+                    }
+                    continue;
+                }
                 if (!TryReadBitmap(provider, fontNamespace, source, out ProviderExport? parsed))
                     continue;
+                parsedBitmapCount++;
 
                 var candidates = new List<(string CodePoint, int X, int Y)>();
                 for (int row = 0; row < parsed.Rows.Count && glyphs.Count + candidates.Count < MaxGlyphs; row++)
@@ -158,11 +240,20 @@ internal static class RbResourcePackFont
                 }
                 if (candidates.Count == 0)
                     continue;
+                candidateCount += candidates.Count;
 
-                ZipArchiveEntry? textureEntry = archive.Entries.FirstOrDefault(entry =>
+                ZipArchiveEntry? textureEntry = archive.Entries.LastOrDefault(entry =>
                     entry.FullName.Equals(parsed.TexturePath, StringComparison.OrdinalIgnoreCase));
-                if (textureEntry is null || textureEntry.Length <= 0 || textureEntry.Length > MaxSheetBytes)
+                if (textureEntry is null)
+                {
+                    missingTextureCount++;
                     continue;
+                }
+                if (textureEntry.Length <= 0 || textureEntry.Length > MaxSheetBytes)
+                {
+                    oversizedTextureCount++;
+                    continue;
+                }
                 if (!sheets.ContainsKey(parsed.OutputName))
                 {
                     if (totalSheetBytes + textureEntry.Length > MaxLayerSheetBytes)
@@ -172,7 +263,10 @@ internal static class RbResourcePackFont
                     textureStream.CopyTo(textureBuffer);
                     byte[] bytes = textureBuffer.ToArray();
                     if (!IsPng(bytes))
+                    {
+                        invalidPngCount++;
                         continue;
+                    }
                     sheets[parsed.OutputName] = bytes;
                     totalSheetBytes += bytes.Length;
                 }
@@ -197,24 +291,87 @@ internal static class RbResourcePackFont
         foreach (string fontId in definitions.Keys.OrderBy(static value => value, StringComparer.Ordinal))
             ProcessDefinition(fontId, 0);
 
+        LastDiagnostics = $"font={fontEntryCount}/{definitions.Count} parsed={parsedDefinitions} "
+            + $"providers={providerCount} bitmap={bitmapProviderCount}/{parsedBitmapCount} "
+            + $"space={spaceProviderCount}/{spaceGlyphCount} offset={offsetProviderCount}/{offsetGlyphCount} "
+            + $"candidate={candidateCount} missing={missingTextureCount} large={oversizedTextureCount} "
+            + $"png={invalidPngCount} glyphs={glyphs.Count} sheets={sheets.Count}"
+            + (parseFailures.Count == 0 ? string.Empty : " bad=" + string.Join(',', parseFailures));
         return new FontLayer(packIdentifier, source, LayerDirectory(source), glyphs, sheets);
+    }
+
+    private static byte[] ReadBounded(Stream input, int maximumBytes)
+    {
+        using var output = new MemoryStream();
+        byte[] buffer = new byte[8192];
+        int read;
+        while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+        {
+            if (output.Length + read > maximumBytes)
+                throw new InvalidDataException("Font definition exceeds the bounded size.");
+            output.Write(buffer, 0, read);
+        }
+        return output.ToArray();
+    }
+
+    private static string FormatParseFailure(string fontId, ZipArchiveEntry entry, byte[] bytes,
+        Exception exception)
+    {
+        string kind = exception switch
+        {
+            JsonException => "J",
+            InvalidDataException => "D",
+            _ => "I",
+        };
+        string position = exception is JsonException jsonException
+            ? $"{jsonException.LineNumber ?? -1}:{jsonException.BytePositionInLine ?? -1}"
+            : "-";
+        string signature = Convert.ToHexString(bytes.AsSpan(0, Math.Min(bytes.Length, 8))).ToLowerInvariant();
+        return $"{fontId}:{kind}:{position}:{entry.Length}:{signature}";
     }
 
     private static bool TryReadReference(JsonElement provider, string defaultNamespace,
         [NotNullWhen(true)] out string? fontId)
     {
         fontId = null;
-        return provider.TryGetProperty("type", out JsonElement type) && type.ValueKind == JsonValueKind.String
-            && type.GetString() == "reference" && provider.TryGetProperty("id", out JsonElement id)
+        return HasProviderType(provider, "reference") && provider.TryGetProperty("id", out JsonElement id)
             && id.ValueKind == JsonValueKind.String && TryFontId(id.GetString(), defaultNamespace, out fontId);
+    }
+
+    private static bool TryReadSpace(JsonElement provider,
+        [NotNullWhen(true)] out List<(string CodePoint, double Advance)>? parsed)
+    {
+        parsed = null;
+        if (!HasProviderType(provider, "space")
+            || !provider.TryGetProperty("advances", out JsonElement advances)
+            || advances.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        var spaces = new List<(string CodePoint, double Advance)>();
+        foreach (JsonProperty property in advances.EnumerateObject())
+        {
+            Rune[] runes = property.Name.EnumerateRunes().Take(2).ToArray();
+            if (runes.Length != 1 || runes[0].Value < 0xe000 || runes[0].Value > 0x10ffff
+                || !property.Value.TryGetDouble(out double advance) || !double.IsFinite(advance)
+                || advance < -MaxGlyphMetric || advance > MaxGlyphMetric)
+            {
+                continue;
+            }
+            spaces.Add((runes[0].Value.ToString(CultureInfo.InvariantCulture), advance));
+            if (spaces.Count >= MaxProviderFiles)
+                break;
+        }
+        parsed = spaces;
+        return spaces.Count > 0;
     }
 
     private static bool TryReadBitmap(JsonElement provider, string defaultNamespace, string source,
         [NotNullWhen(true)] out ProviderExport? parsed)
     {
         parsed = null;
-        if (!provider.TryGetProperty("type", out JsonElement type) || type.ValueKind != JsonValueKind.String
-            || type.GetString() != "bitmap" || !provider.TryGetProperty("file", out JsonElement file)
+        if (!HasProviderType(provider, "bitmap") || !provider.TryGetProperty("file", out JsonElement file)
             || file.ValueKind != JsonValueKind.String || !provider.TryGetProperty("chars", out JsonElement chars)
             || chars.ValueKind != JsonValueKind.Array
             || !TryTexturePath(file.GetString(), defaultNamespace, out string? texturePath))
@@ -225,7 +382,8 @@ internal static class RbResourcePackFont
         double height = ReadNumber(provider, "height", 8);
         double ascent = ReadNumber(provider, "ascent", 7);
         if (!double.IsFinite(height) || !double.IsFinite(ascent)
-            || height <= 0 || height > 32 || ascent < -32 || ascent > 32)
+            || height <= 0 || height > MaxGlyphMetric
+            || ascent < -MaxGlyphMetric || ascent > MaxGlyphMetric)
         {
             return false;
         }
@@ -248,6 +406,14 @@ internal static class RbResourcePackFont
 
         parsed = new ProviderExport(texturePath, SheetName(source, texturePath), rows, columns, ascent, height);
         return true;
+    }
+
+    private static bool HasProviderType(JsonElement provider, string expected)
+    {
+        if (!provider.TryGetProperty("type", out JsonElement type) || type.ValueKind != JsonValueKind.String)
+            return false;
+        string? value = type.GetString();
+        return value == expected || value == "minecraft:" + expected;
     }
 
     private static bool TryTexturePath(string? resource, string defaultNamespace,
@@ -321,7 +487,7 @@ internal static class RbResourcePackFont
             throw new InvalidDataException("Resource-pack font cache manifest is missing.");
         FontManifest? manifest = JsonSerializer.Deserialize<FontManifest>(File.ReadAllBytes(info.FullName),
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        if (manifest is null || manifest.Version != 2 || manifest.Source != source
+        if (manifest is null || manifest.Version != 3 || manifest.Source != source
             || manifest.Glyphs.Count > MaxGlyphs)
         {
             throw new InvalidDataException("Resource-pack font cache manifest is invalid.");
@@ -336,7 +502,8 @@ internal static class RbResourcePackFont
                 throw new InvalidDataException("Resource-pack font cache glyph is invalid.");
             }
         }
-        foreach (string file in manifest.Glyphs.Values.Select(static glyph => glyph.File).Distinct(StringComparer.Ordinal))
+        foreach (string file in manifest.Glyphs.Values.Where(IsBitmapGlyph)
+            .Select(static glyph => glyph.File).Distinct(StringComparer.Ordinal))
         {
             var sheet = new FileInfo(Path.Combine(directory, file));
             if (!sheet.Exists || sheet.Length <= 0 || sheet.Length > MaxSheetBytes
@@ -392,13 +559,15 @@ internal static class RbResourcePackFont
         var sources = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (FontLayer layer in ActiveLayers)
         {
-            foreach (string file in layer.Glyphs.Values.Select(static glyph => glyph.File).Distinct(StringComparer.Ordinal))
+            foreach (string file in layer.Glyphs.Values.Where(IsBitmapGlyph)
+                .Select(static glyph => glyph.File).Distinct(StringComparer.Ordinal))
                 sources[file] = Path.Combine(layer.Directory, file);
         }
 
         long totalBytes = 0;
         var current = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (string file in glyphs.Values.Select(static glyph => glyph.File).Distinct(StringComparer.Ordinal))
+        foreach (string file in glyphs.Values.Where(IsBitmapGlyph)
+            .Select(static glyph => glyph.File).Distinct(StringComparer.Ordinal))
         {
             if (!sources.TryGetValue(file, out string? sourcePath))
                 throw new InvalidDataException("Resource-pack font sheet source is missing.");
@@ -445,7 +614,7 @@ internal static class RbResourcePackFont
     {
         byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(new FontManifest
         {
-            Version = 2,
+            Version = 3,
             Source = source,
             Glyphs = glyphs,
         }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
@@ -474,11 +643,16 @@ internal static class RbResourcePackFont
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException) { }
     }
 
-    private static bool IsValidGlyph(GlyphExport glyph) => IsSheetFile(glyph.File)
-        && glyph.Columns is >= 1 and <= 512 && glyph.Rows is >= 1 and <= 512
-        && glyph.X >= 0 && glyph.X < glyph.Columns && glyph.Y >= 0 && glyph.Y < glyph.Rows
-        && double.IsFinite(glyph.Ascent) && glyph.Ascent is >= -32 and <= 32
-        && double.IsFinite(glyph.Height) && glyph.Height is > 0 and <= 32;
+    private static bool IsBitmapGlyph(GlyphExport glyph) => glyph.Type == "bitmap";
+
+    private static bool IsValidGlyph(GlyphExport glyph) => glyph.Type == "space"
+        ? string.IsNullOrEmpty(glyph.File) && double.IsFinite(glyph.Advance)
+            && glyph.Advance is >= -MaxGlyphMetric and <= MaxGlyphMetric
+        : IsBitmapGlyph(glyph) && IsSheetFile(glyph.File)
+            && glyph.Columns is >= 1 and <= 512 && glyph.Rows is >= 1 and <= 512
+            && glyph.X >= 0 && glyph.X < glyph.Columns && glyph.Y >= 0 && glyph.Y < glyph.Rows
+            && double.IsFinite(glyph.Ascent) && glyph.Ascent is >= -MaxGlyphMetric and <= MaxGlyphMetric
+            && double.IsFinite(glyph.Height) && glyph.Height is > 0 and <= MaxGlyphMetric;
 
     private static bool IsSheetFile(string value) => value.Length == 26
         && value.StartsWith("sheet_", StringComparison.Ordinal)
@@ -503,7 +677,8 @@ internal static class RbResourcePackFont
 
     private static string SourceFingerprint(Uri resourcePackUri, string hash)
     {
-        byte[] bytes = Encoding.UTF8.GetBytes(resourcePackUri.AbsoluteUri + "\n" + (hash ?? string.Empty));
+        byte[] bytes = Encoding.UTF8.GetBytes(CacheFingerprintVersion + "\n"
+            + resourcePackUri.AbsoluteUri + "\n" + (hash ?? string.Empty));
         return Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
     }
 
@@ -541,6 +716,7 @@ internal static class RbResourcePackFont
 
     private sealed class GlyphExport
     {
+        public string Type { get; init; } = "bitmap";
         public string File { get; init; } = string.Empty;
         public int X { get; init; }
         public int Y { get; init; }
@@ -548,5 +724,44 @@ internal static class RbResourcePackFont
         public int Rows { get; init; }
         public double Ascent { get; init; }
         public double Height { get; init; }
+        public double Advance { get; init; }
+    }
+
+    private static bool TryReadBitmapOffset(JsonElement provider,
+        [NotNullWhen(true)] out List<(string CodePoint, double Advance)>? parsed)
+    {
+        parsed = null;
+        if (!HasProviderType(provider, "bitmap")
+            || !provider.TryGetProperty("height", out JsonElement heightElement)
+            || !heightElement.TryGetDouble(out double height) || !double.IsFinite(height) || height >= 0
+            || !provider.TryGetProperty("ascent", out JsonElement ascentElement)
+            || !ascentElement.TryGetDouble(out double ascent) || !double.IsFinite(ascent) || ascent >= 0
+            || !provider.TryGetProperty("chars", out JsonElement chars)
+            || chars.ValueKind != JsonValueKind.Array)
+        {
+            return false;
+        }
+
+        double advance = Math.Truncate(height + 0.5) + 1;
+        if (advance < -MaxGlyphMetric || advance > MaxGlyphMetric)
+            return false;
+        var offsets = new List<(string CodePoint, double Advance)>();
+        foreach (JsonElement row in chars.EnumerateArray())
+        {
+            if (row.ValueKind != JsonValueKind.String)
+                return false;
+            foreach (Rune rune in (row.GetString() ?? string.Empty).EnumerateRunes())
+            {
+                if (rune.Value < 0xe000 || rune.Value > 0x10ffff)
+                    continue;
+                offsets.Add((rune.Value.ToString(CultureInfo.InvariantCulture), advance));
+                if (offsets.Count >= MaxProviderFiles)
+                    break;
+            }
+            if (offsets.Count >= MaxProviderFiles)
+                break;
+        }
+        parsed = offsets;
+        return offsets.Count > 0;
     }
 }

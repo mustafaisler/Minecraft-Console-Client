@@ -1,9 +1,12 @@
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
@@ -292,7 +295,7 @@ namespace MinecraftClient.Protocol.Message
 
         private static readonly List<TranslationLayer> ForgeModTranslationLayers = [];
         private static readonly List<TranslationLayer> ResourcePackTranslationLayers = [];
-        private static readonly HttpClient ResourcePackHttpClient = new();
+        private static readonly HttpClient ResourcePackHttpClient = CreateResourcePackHttpClient();
 
         /// <summary>
         /// Initialize translation rules.
@@ -432,42 +435,67 @@ namespace MinecraftClient.Protocol.Message
             ArgumentException.ThrowIfNullOrEmpty(url);
 
             if (!Config.Main.Advanced.LoadResourcePackTranslations)
+            {
+                RbResourcePackStatus.Write("disabled", packIdentifier);
                 return;
+            }
 
             if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? resourcePackUri)
                 || resourcePackUri.Scheme is not "http" and not "https")
             {
+                RbResourcePackStatus.Write("invalid_source", packIdentifier);
                 return;
             }
+
+            RbResourcePackStatus.Write("packet_received", packIdentifier, resourcePackUri);
+            ResourcePackDownloadMetadata? download = null;
+            void WriteStatus(string state, Exception? exception = null, string detail = "") => RbResourcePackStatus.Write(
+                state, packIdentifier, resourcePackUri, exception, download?.ContentType ?? string.Empty,
+                download?.Length, download?.Signature ?? string.Empty, download?.Trailer ?? string.Empty, detail,
+                download?.NormalizedEntries ?? 0);
 
             string cacheFilePath = GetResourcePackTranslationCacheFilePath(resourcePackUri, hash);
             if (TryLoadCachedResourcePackTranslations(cacheFilePath, resourcePackUri, hash, out Dictionary<string, string>? cachedTranslations)
                 && RbResourcePackFont.TryActivateCached(packIdentifier, resourcePackUri, hash))
             {
                 ReplaceResourcePackTranslations(packIdentifier, cachedTranslations);
+                WriteStatus("cache_activated");
                 return;
             }
 
             string temporaryFilePath = Path.GetTempFileName();
+            string phase = "download";
             try
             {
-                DownloadResourcePack(resourcePackUri, hash, temporaryFilePath);
+                WriteStatus("download_started");
+                download = DownloadResourcePack(resourcePackUri, hash, temporaryFilePath);
+                phase = "archive";
+                download = download with { NormalizedEntries = NormalizeSingleDiskResourcePack(temporaryFilePath) };
+                WriteStatus("download_completed");
                 using FileStream resourcePackFile = File.OpenRead(temporaryFilePath);
-                Dictionary<string, string> resourcePackTranslations = ExtractResourcePackTranslations(packIdentifier, resourcePackFile, resourcePackUri, hash);
+                Dictionary<string, string> resourcePackTranslations = ExtractResourcePackTranslations(packIdentifier,
+                    resourcePackFile, resourcePackUri, hash, out bool fontExported);
                 ReplaceResourcePackTranslations(packIdentifier, resourcePackTranslations);
                 SaveCachedResourcePackTranslations(cacheFilePath, resourcePackUri, hash, resourcePackTranslations);
+                WriteStatus(fontExported ? "font_exported" : "font_export_failed",
+                    detail: RbResourcePackFont.LastDiagnostics);
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException exception)
             {
+                WriteStatus("download_failed", exception);
             }
-            catch (IOException)
+            catch (IOException exception)
             {
+                WriteStatus(phase == "download" ? "download_io_failed" : "archive_io_failed", exception);
             }
-            catch (InvalidDataException)
+            catch (InvalidDataException exception)
             {
+                WriteStatus(phase == "download" ? "download_invalid" : "archive_invalid", exception,
+                    phase == "archive" ? exception.Message : string.Empty);
             }
-            catch (JsonException)
+            catch (JsonException exception)
             {
+                WriteStatus("archive_json_failed", exception);
             }
             finally
             {
@@ -486,12 +514,14 @@ namespace MinecraftClient.Protocol.Message
             ResourcePackTranslationLayers.RemoveAll(layer =>
                 layer.Identifier.Equals(packIdentifier, StringComparison.Ordinal));
             RbResourcePackFont.Remove(packIdentifier);
+            RbResourcePackStatus.Write("pack_removed", packIdentifier);
         }
 
         public static void ClearResourcePackTranslations()
         {
             ResourcePackTranslationLayers.Clear();
             RbResourcePackFont.Clear();
+            RbResourcePackStatus.Write("packs_cleared");
         }
 
         public static void LoadForgeModTranslations(IEnumerable<string> modIds)
@@ -621,7 +651,8 @@ namespace MinecraftClient.Protocol.Message
             return TranslationRules.TryGetValue(rulename, out result);
         }
 
-        private static void DownloadResourcePack(Uri resourcePackUri, string hash, string temporaryFilePath)
+        private static ResourcePackDownloadMetadata DownloadResourcePack(Uri resourcePackUri, string hash,
+            string temporaryFilePath)
         {
             using HttpResponseMessage response =
                 ResourcePackHttpClient.GetAsync(resourcePackUri, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult();
@@ -632,6 +663,10 @@ namespace MinecraftClient.Protocol.Message
             using IncrementalHash incrementalHash = IncrementalHash.CreateHash(HashAlgorithmName.SHA1);
 
             byte[] buffer = new byte[ResourcePackDownloadBufferSize];
+            byte[] signature = new byte[16];
+            byte[] trailer = new byte[32];
+            int signatureBytes = 0;
+            int trailerBytes = 0;
             long totalBytes = 0;
 
             while (true)
@@ -643,6 +678,29 @@ namespace MinecraftClient.Protocol.Message
                 totalBytes += bytesRead;
                 if (totalBytes > MaxResourcePackDownloadBytes)
                     throw new InvalidDataException();
+
+                int signatureCopy = Math.Min(bytesRead, signature.Length - signatureBytes);
+                if (signatureCopy > 0)
+                {
+                    Buffer.BlockCopy(buffer, 0, signature, signatureBytes, signatureCopy);
+                    signatureBytes += signatureCopy;
+                }
+
+                if (bytesRead >= trailer.Length)
+                {
+                    Buffer.BlockCopy(buffer, bytesRead - trailer.Length, trailer, 0, trailer.Length);
+                    trailerBytes = trailer.Length;
+                }
+                else
+                {
+                    int retained = Math.Min(trailerBytes, trailer.Length - bytesRead);
+                    if (retained > 0)
+                    {
+                        Buffer.BlockCopy(trailer, trailerBytes - retained, trailer, 0, retained);
+                    }
+                    Buffer.BlockCopy(buffer, 0, trailer, retained, bytesRead);
+                    trailerBytes = retained + bytesRead;
+                }
 
                 temporaryFile.Write(buffer, 0, bytesRead);
 
@@ -656,9 +714,183 @@ namespace MinecraftClient.Protocol.Message
                 if (!downloadedHash.Equals(hash, StringComparison.OrdinalIgnoreCase))
                     throw new InvalidDataException($"Resource pack hash mismatch for {resourcePackUri}. Expected {hash}, got {downloadedHash}.");
             }
+
+            return new ResourcePackDownloadMetadata(
+                response.Content.Headers.ContentType?.MediaType ?? string.Empty,
+                totalBytes,
+                Convert.ToHexString(signature.AsSpan(0, signatureBytes)).ToLowerInvariant(),
+                Convert.ToHexString(trailer.AsSpan(0, trailerBytes)).ToLowerInvariant());
         }
 
-        private static Dictionary<string, string> ExtractResourcePackTranslations(string packIdentifier, Stream resourcePackStream, Uri resourcePackUri, string hash)
+        private static HttpClient CreateResourcePackHttpClient()
+        {
+            var handler = new HttpClientHandler
+            {
+                AllowAutoRedirect = true,
+                AutomaticDecompression = DecompressionMethods.All,
+            };
+            var client = new HttpClient(handler);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Minecraft Java/" + Program.Version);
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/zip"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*", 0.1));
+            return client;
+        }
+
+        private static int NormalizeSingleDiskResourcePack(string filePath)
+        {
+            const int endRecordLength = 22;
+            const int centralHeaderLength = 46;
+            const int localHeaderLength = 30;
+            const int dataDescriptorLength = 16;
+            const uint endRecordSignature = 0x06054b50;
+            const uint centralHeaderSignature = 0x02014b50;
+            const uint localHeaderSignature = 0x04034b50;
+            const uint dataDescriptorSignature = 0x08074b50;
+
+            using FileStream archive = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            if (archive.Length < endRecordLength)
+                return 0;
+
+            int tailLength = (int)Math.Min(archive.Length, ushort.MaxValue + endRecordLength);
+            byte[] tail = new byte[tailLength];
+            archive.Position = archive.Length - tailLength;
+            archive.ReadExactly(tail);
+
+            int endRecordIndex = -1;
+            for (int index = tail.Length - endRecordLength; index >= 0; index--)
+            {
+                if (BinaryPrimitives.ReadUInt32LittleEndian(tail.AsSpan(index, 4)) != endRecordSignature)
+                    continue;
+                ushort commentLength = BinaryPrimitives.ReadUInt16LittleEndian(tail.AsSpan(index + 20, 2));
+                if (index + endRecordLength + commentLength == tail.Length)
+                {
+                    endRecordIndex = index;
+                    break;
+                }
+            }
+            if (endRecordIndex < 0)
+                return 0;
+
+            ReadOnlySpan<byte> endRecord = tail.AsSpan(endRecordIndex, endRecordLength);
+            ushort diskNumber = BinaryPrimitives.ReadUInt16LittleEndian(endRecord[4..6]);
+            ushort centralDisk = BinaryPrimitives.ReadUInt16LittleEndian(endRecord[6..8]);
+            ushort entriesOnDisk = BinaryPrimitives.ReadUInt16LittleEndian(endRecord[8..10]);
+            ushort totalEntries = BinaryPrimitives.ReadUInt16LittleEndian(endRecord[10..12]);
+            uint centralSize = BinaryPrimitives.ReadUInt32LittleEndian(endRecord[12..16]);
+            uint centralOffset = BinaryPrimitives.ReadUInt32LittleEndian(endRecord[16..20]);
+            if (diskNumber != 0 || centralDisk != 0 || entriesOnDisk != totalEntries
+                || totalEntries == ushort.MaxValue || centralSize == uint.MaxValue || centralOffset == uint.MaxValue)
+            {
+                return 0;
+            }
+
+            long centralEnd = (long)centralOffset + centralSize;
+            long endRecordOffset = archive.Length - tailLength + endRecordIndex;
+            if (centralEnd > endRecordOffset || centralEnd > archive.Length)
+                return 0;
+
+            var diskFields = new List<long>();
+            var valueFields = new List<(long Position, uint Value)>();
+            int normalizedEntries = 0;
+            archive.Position = centralOffset;
+            byte[] header = new byte[centralHeaderLength];
+            byte[] localHeader = new byte[localHeaderLength];
+            byte[] descriptor = new byte[dataDescriptorLength];
+            for (int entryIndex = 0; entryIndex < totalEntries; entryIndex++)
+            {
+                long headerOffset = archive.Position;
+                if (headerOffset + centralHeaderLength > centralEnd)
+                    return 0;
+                archive.ReadExactly(header);
+                if (BinaryPrimitives.ReadUInt32LittleEndian(header.AsSpan(0, 4)) != centralHeaderSignature)
+                    return 0;
+
+                ushort nameLength = BinaryPrimitives.ReadUInt16LittleEndian(header.AsSpan(28, 2));
+                ushort extraLength = BinaryPrimitives.ReadUInt16LittleEndian(header.AsSpan(30, 2));
+                ushort commentLength = BinaryPrimitives.ReadUInt16LittleEndian(header.AsSpan(32, 2));
+                bool changed = false;
+                if (BinaryPrimitives.ReadUInt16LittleEndian(header.AsSpan(34, 2)) != 0)
+                {
+                    diskFields.Add(headerOffset + 34);
+                    changed = true;
+                }
+
+                long nextEntry = archive.Position + nameLength + extraLength + commentLength;
+                if (nextEntry > centralEnd)
+                    return 0;
+
+                ushort flags = BinaryPrimitives.ReadUInt16LittleEndian(header.AsSpan(8, 2));
+                ushort method = BinaryPrimitives.ReadUInt16LittleEndian(header.AsSpan(10, 2));
+                uint centralCrc = BinaryPrimitives.ReadUInt32LittleEndian(header.AsSpan(16, 4));
+                uint compressedSize = BinaryPrimitives.ReadUInt32LittleEndian(header.AsSpan(20, 4));
+                uint uncompressedSize = BinaryPrimitives.ReadUInt32LittleEndian(header.AsSpan(24, 4));
+                uint localHeaderOffset = BinaryPrimitives.ReadUInt32LittleEndian(header.AsSpan(42, 4));
+                if ((flags & 0x0008) != 0 && compressedSize != uint.MaxValue
+                    && localHeaderOffset != uint.MaxValue
+                    && (long)localHeaderOffset + localHeaderLength <= centralOffset)
+                {
+                    archive.Position = localHeaderOffset;
+                    archive.ReadExactly(localHeader);
+                    ushort localFlags = BinaryPrimitives.ReadUInt16LittleEndian(localHeader.AsSpan(6, 2));
+                    ushort localMethod = BinaryPrimitives.ReadUInt16LittleEndian(localHeader.AsSpan(8, 2));
+                    ushort localNameLength = BinaryPrimitives.ReadUInt16LittleEndian(localHeader.AsSpan(26, 2));
+                    ushort localExtraLength = BinaryPrimitives.ReadUInt16LittleEndian(localHeader.AsSpan(28, 2));
+                    long dataOffset = (long)localHeaderOffset + localHeaderLength
+                        + localNameLength + localExtraLength;
+                    long descriptorOffset = dataOffset + compressedSize;
+                    if (BinaryPrimitives.ReadUInt32LittleEndian(localHeader.AsSpan(0, 4)) == localHeaderSignature
+                        && localFlags == flags && localMethod == method
+                        && descriptorOffset >= dataOffset
+                        && descriptorOffset + dataDescriptorLength <= centralOffset)
+                    {
+                        archive.Position = descriptorOffset;
+                        archive.ReadExactly(descriptor);
+                        uint descriptorCompressed = BinaryPrimitives.ReadUInt32LittleEndian(descriptor.AsSpan(8, 4));
+                        if (BinaryPrimitives.ReadUInt32LittleEndian(descriptor.AsSpan(0, 4)) == dataDescriptorSignature
+                            && descriptorCompressed == compressedSize)
+                        {
+                            uint descriptorCrc = BinaryPrimitives.ReadUInt32LittleEndian(descriptor.AsSpan(4, 4));
+                            uint descriptorUncompressed = BinaryPrimitives.ReadUInt32LittleEndian(descriptor.AsSpan(12, 4));
+                            if (centralCrc != descriptorCrc)
+                            {
+                                valueFields.Add((headerOffset + 16, descriptorCrc));
+                                changed = true;
+                            }
+                            if (uncompressedSize != descriptorUncompressed)
+                            {
+                                valueFields.Add((headerOffset + 24, descriptorUncompressed));
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+                if (changed)
+                    normalizedEntries++;
+                archive.Position = nextEntry;
+            }
+            if (archive.Position != centralEnd || normalizedEntries == 0)
+                return 0;
+
+            Span<byte> valueBuffer = stackalloc byte[4];
+            foreach ((long position, uint value) in valueFields)
+            {
+                BinaryPrimitives.WriteUInt32LittleEndian(valueBuffer, value);
+                archive.Position = position;
+                archive.Write(valueBuffer);
+            }
+            foreach (long position in diskFields)
+            {
+                archive.Position = position;
+                archive.WriteByte(0);
+                archive.WriteByte(0);
+            }
+            archive.Flush(flushToDisk: true);
+            return normalizedEntries;
+        }
+
+        private static Dictionary<string, string> ExtractResourcePackTranslations(string packIdentifier,
+            Stream resourcePackStream, Uri resourcePackUri, string hash, out bool fontExported)
         {
             var mergedTranslations = new Dictionary<string, string>(StringComparer.Ordinal);
             var selectedLanguageTranslations = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -666,7 +898,7 @@ namespace MinecraftClient.Protocol.Message
 
             using ZipArchive archive = new(resourcePackStream, ZipArchiveMode.Read, leaveOpen: true);
             RbResourcePackGlint.Export(archive);
-            RbResourcePackFont.Export(packIdentifier, archive, resourcePackUri, hash);
+            fontExported = RbResourcePackFont.Export(packIdentifier, archive, resourcePackUri, hash);
 
             foreach (ZipArchiveEntry entry in archive.Entries)
             {
@@ -688,6 +920,9 @@ namespace MinecraftClient.Protocol.Message
 
             return mergedTranslations;
         }
+
+        private sealed record ResourcePackDownloadMetadata(string ContentType, long Length, string Signature,
+            string Trailer, int NormalizedEntries = 0);
 
         private static bool TryGetResourcePackLanguage(string entryPath, [NotNullWhen(true)] out string? language)
         {
@@ -711,15 +946,26 @@ namespace MinecraftClient.Protocol.Message
 
         private static void MergeTranslationsFromZipEntry(ZipArchiveEntry entry, Dictionary<string, string> translations)
         {
-            using Stream entryStream = entry.Open();
-            Dictionary<string, string>? entryTranslations =
-                JsonSerializer.Deserialize<Dictionary<string, string>>(entryStream);
-
-            if (entryTranslations is null)
-                return;
-
-            foreach (var (key, value) in entryTranslations)
-                translations[key] = value;
+            try
+            {
+                using Stream entryStream = entry.Open();
+                using JsonDocument document = JsonDocument.Parse(entryStream, new JsonDocumentOptions
+                {
+                    AllowTrailingCommas = true,
+                    CommentHandling = JsonCommentHandling.Skip,
+                    MaxDepth = 64,
+                });
+                if (document.RootElement.ValueKind != JsonValueKind.Object)
+                    return;
+                foreach (JsonProperty property in document.RootElement.EnumerateObject())
+                {
+                    if (property.Value.ValueKind == JsonValueKind.String)
+                        translations[property.Name] = property.Value.GetString() ?? string.Empty;
+                }
+            }
+            catch (Exception exception) when (exception is IOException or InvalidDataException or JsonException)
+            {
+            }
         }
 
         private static void ReplaceResourcePackTranslations(string packIdentifier, Dictionary<string, string> translations)

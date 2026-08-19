@@ -31,7 +31,7 @@ internal static class RbResourcePackGlint
         try
         {
             ZipArchiveEntry? entry = s_candidates
-                .Select(candidate => archive.Entries.FirstOrDefault(item =>
+                .Select(candidate => archive.Entries.LastOrDefault(item =>
                     item.FullName.Equals(candidate, StringComparison.OrdinalIgnoreCase)))
                 .FirstOrDefault(static item => item is not null);
             if (entry is null || entry.Length <= 0 || entry.Length > MaxGlintBytes)
