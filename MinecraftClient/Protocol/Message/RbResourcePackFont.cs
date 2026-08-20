@@ -1,4 +1,5 @@
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -27,7 +28,7 @@ internal static class RbResourcePackFont
     private const int MaxLayerSheetBytes = 8 * 1024 * 1024;
     private const int MaxPublishedSheetBytes = 16 * 1024 * 1024;
     private const int MaxManifestBytes = 512 * 1024;
-    private const string CacheFingerprintVersion = "8";
+    private const string CacheFingerprintVersion = "9";
     private const string OutputDirectory = "RakitBot_Inventory/font";
     private const string ManifestFile = "manifest.json";
     private static readonly object Sync = new();
@@ -262,7 +263,7 @@ internal static class RbResourcePackFont
                     using MemoryStream textureBuffer = new((int)textureEntry.Length);
                     textureStream.CopyTo(textureBuffer);
                     byte[] bytes = textureBuffer.ToArray();
-                    if (!IsPng(bytes))
+                    if (!TryNormalizePng(bytes))
                     {
                         invalidPngCount++;
                         continue;
@@ -695,6 +696,50 @@ internal static class RbResourcePackFont
     {
         ReadOnlySpan<byte> signature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
         return bytes.Length >= signature.Length && bytes.AsSpan(0, signature.Length).SequenceEqual(signature);
+    }
+
+    private static bool TryNormalizePng(byte[] bytes)
+    {
+        if (!IsPng(bytes))
+            return false;
+
+        int offset = 8;
+        bool foundEnd = false;
+        while (offset <= bytes.Length - 12)
+        {
+            uint length = BinaryPrimitives.ReadUInt32BigEndian(bytes.AsSpan(offset, 4));
+            long crcOffsetValue = (long)offset + 8 + length;
+            if (crcOffsetValue + 4 > bytes.Length)
+                return false;
+
+            int crcOffset = (int)crcOffsetValue;
+            uint crc = ComputePngCrc32(bytes.AsSpan(offset + 4, checked((int)length + 4)));
+            BinaryPrimitives.WriteUInt32BigEndian(bytes.AsSpan(crcOffset, 4), crc);
+
+            bool isEnd = length == 0
+                && bytes[offset + 4] == (byte)'I'
+                && bytes[offset + 5] == (byte)'E'
+                && bytes[offset + 6] == (byte)'N'
+                && bytes[offset + 7] == (byte)'D';
+            offset = crcOffset + 4;
+            if (!isEnd)
+                continue;
+            foundEnd = true;
+            break;
+        }
+        return foundEnd && offset == bytes.Length;
+    }
+
+    private static uint ComputePngCrc32(ReadOnlySpan<byte> bytes)
+    {
+        uint crc = uint.MaxValue;
+        foreach (byte value in bytes)
+        {
+            crc ^= value;
+            for (int bit = 0; bit < 8; bit++)
+                crc = (crc & 1) != 0 ? 0xedb88320U ^ (crc >> 1) : crc >> 1;
+        }
+        return ~crc;
     }
 
     private static bool IsArtifactException(Exception exception) => exception is IOException
