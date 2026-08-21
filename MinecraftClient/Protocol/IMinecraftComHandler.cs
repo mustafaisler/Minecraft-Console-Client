@@ -518,7 +518,12 @@ namespace MinecraftClient.Protocol
         void OnScoreboardObjective(string objectiveName, byte mode, string objectiveValue, int type, int numberFormat);
 
         /// <summary>
-        /// Called when DisplayScoreboard
+        /// Called when a scoreboard display slot changes.
+        /// </summary>
+        void OnDisplayScoreboard(int position, string objectiveName);
+
+        /// <summary>
+        /// Called when a scoreboard score changes.
         /// </summary>
         /// <param name="entityName">The entity whose score this is. For players, this is their username; for other entities, it is their UUID.</param>
         /// <param name="action">0 to create/update an item. 1 to remove an item.</param>
