@@ -4763,11 +4763,21 @@ namespace MinecraftClient
         {
             var json = objectiveValue;
             objectiveValue = ChatParser.ParseText(objectiveValue);
+            rakitBotHud.EmitScoreboardObjective(
+                objectiveName,
+                mode,
+                objectiveValue);
             DispatchBotEvent(bot => bot.OnScoreboardObjective(objectiveName, mode, objectiveValue, type, json, numberFormat));
         }
 
         /// <summary>
-        /// Called when DisplayScoreboard
+        /// Called when a scoreboard display slot changes.
+        /// </summary>
+        public void OnDisplayScoreboard(int position, string objectiveName) =>
+            rakitBotHud.EmitDisplayScoreboard(position, objectiveName);
+
+        /// <summary>
+        /// Called when a scoreboard score changes.
         /// </summary>
         /// <param name="entityName">The entity whose score this is. For players, this is their username; for other entities, it is their UUID.</param>
         /// <param name="action">0 to create/update an item. 1 to remove an item.</param>
@@ -4777,6 +4787,9 @@ namespace MinecraftClient
         /// <param name="numberFormat">Number format: 0 - blank, 1 - styled, 2 - fixed</param>
         public void OnUpdateScore(string entityName, int action, string objectiveName, string objectiveDisplayName, int objectiveValue, int numberFormat)
         {
+            rakitBotHud.EmitScore(entityName, action, objectiveName,
+                string.IsNullOrEmpty(objectiveDisplayName) ? string.Empty : ChatParser.ParseText(objectiveDisplayName),
+                objectiveValue, numberFormat);
             DispatchBotEvent(bot => bot.OnUpdateScore(entityName, action, objectiveName, objectiveDisplayName, objectiveValue, numberFormat));
         }
 
@@ -4787,6 +4800,9 @@ namespace MinecraftClient
             string nameTagVisibility, string collisionRule, int color,
             string prefix, string suffix, List<string> players)
         {
+            string scoreboardPrefix = string.IsNullOrEmpty(prefix) ? string.Empty : ChatParser.ParseText(prefix);
+            string scoreboardSuffix = string.IsNullOrEmpty(suffix) ? string.Empty : ChatParser.ParseText(suffix);
+            rakitBotHud.EmitTeam(teamName, method, scoreboardPrefix, scoreboardSuffix, players);
             lock (teams)
             {
                 switch (method)
