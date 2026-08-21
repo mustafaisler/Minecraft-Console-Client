@@ -2629,10 +2629,11 @@ namespace MinecraftClient.Protocol.Handlers
                     HandleResourcePackPacket(packetData);
                     break;
                 case PacketTypesIn.ResetScore:
-                    dataTypes.ReadNextString(packetData); // Entity Name
-                    if (dataTypes.ReadNextBool(packetData)) // Has Objective Name
-                        dataTypes.ReadNextString(packetData); // Objective Name
-
+                    var resetScoreEntity = dataTypes.ReadNextString(packetData);
+                    var resetScoreObjective = dataTypes.ReadNextBool(packetData)
+                        ? dataTypes.ReadNextString(packetData)
+                        : string.Empty;
+                    handler.OnUpdateScore(resetScoreEntity, 1, resetScoreObjective, string.Empty, -1, 0);
                     break;
                 case PacketTypesIn.SpawnEntity:
                     if (handler.GetEntityHandlingEnabled())
@@ -3230,6 +3231,10 @@ namespace MinecraftClient.Protocol.Handlers
                         : dataTypes.ReadNextByte(packetData);
                     handler.OnHeldItemChange((byte)heldSlot);
                     break;
+                case PacketTypesIn.DisplayScoreboard:
+                    handler.OnDisplayScoreboard(dataTypes.ReadNextVarInt(packetData),
+                        dataTypes.ReadNextString(packetData));
+                    break;
                 case PacketTypesIn.ScoreboardObjective:
                     var objectiveName = dataTypes.ReadNextString(packetData);
                     var mode = dataTypes.ReadNextByte(packetData);
@@ -3270,7 +3275,7 @@ namespace MinecraftClient.Protocol.Handlers
                     var objectiveName3 = string.Empty;
                     var objectiveValue2 = -1;
                     var objectiveDisplayName3 = string.Empty;
-                    var numberFormat2 = 0;
+                    int numberFormat2 = -1;
 
                     if (protocolVersion >= MC_1_20_4_Version)
                     {
