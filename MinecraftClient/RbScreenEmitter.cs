@@ -252,8 +252,8 @@ internal sealed class RbScreenEmitter
                     error = "screen_closed";
                 else if (expectedToken != screenToken || expectedInventoryId != activeInventoryId)
                     error = "screen_replaced";
-                else if (expectedRevision != revision)
-                    error = "screen_stale";
+                // Kapatma içerik değiştirmez; aynı token ve inventory kimliğinde
+                // snapshot revision yarışını güvenle tolere edebiliriz.
             }
             if (error.Length > 0)
             {
@@ -577,7 +577,7 @@ internal sealed class RbScreenEmitter
                     validationError = "screen_closed";
                 else if (expectedToken != screenToken)
                     validationError = "screen_replaced";
-                else if (expectedRevision != revision)
+                else if (operation != "close" && expectedRevision != revision)
                     validationError = "screen_stale";
             }
             if (validationError.Length > 0)
@@ -639,7 +639,7 @@ internal sealed class RbScreenEmitter
         int closedRevision;
         using (sync.EnterScope())
         {
-            if (activeKind != BookKind || screenToken != expectedToken || revision != expectedRevision)
+            if (activeKind != BookKind || screenToken != expectedToken)
                 return;
             closedRevision = ++revision;
             activeKind = string.Empty;
