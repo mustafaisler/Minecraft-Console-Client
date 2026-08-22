@@ -48,7 +48,7 @@ namespace MinecraftClient
         private readonly Queue<string> chatQueue = new();
         private static DateTime nextMessageSendTime = DateTime.MinValue;
         private readonly RbHudEmitter rakitBotHud = new();
-
+        private readonly RbScreenEmitter rakitBotScreen = new();
 
         private readonly Queue<Action> threadTasks = new();
         private readonly Lock threadTasksLock = new();
@@ -686,7 +686,7 @@ namespace MinecraftClient
         public void OnUpdate()
         {
             rakitBotHud.ExpireActionBar();
-
+            rakitBotScreen.Flush(this);
             foreach (ChatBot bot in bots.ToArray())
             {
                 try
@@ -1501,6 +1501,8 @@ namespace MinecraftClient
         {
             return inventories;
         }
+
+        internal RbScreenEmitter GetRakitBotScreen() => rakitBotScreen;
 
         /// <summary>
         /// Get all Entities
@@ -3926,6 +3928,7 @@ namespace MinecraftClient
         {
             inventoriesWithFullContents.Remove(inventoryID);
             inventories[inventoryID] = inventory;
+            rakitBotScreen.Open(inventoryID);
 
             if (inventoryID != 0)
             {
@@ -3948,6 +3951,7 @@ namespace MinecraftClient
         /// <param name="inventoryID">Inventory ID</param>
         public void OnInventoryClose(int inventoryID)
         {
+            rakitBotScreen.Close(inventoryID);
             if (inventories.ContainsKey(inventoryID))
             {
                 if (inventoryID == 0)
@@ -3990,6 +3994,7 @@ namespace MinecraftClient
                 inventory.Properties.Remove(propertyId);
 
             inventory.Properties.Add(propertyId, propertyValue);
+            rakitBotScreen.Update(inventoryID);
 
             DispatchBotEvent(bot => bot.OnInventoryProperties(inventoryID, propertyId, propertyValue));
 
@@ -4092,6 +4097,7 @@ namespace MinecraftClient
                 inventories[inventoryID].Items = itemList;
                 inventories[inventoryID].StateID = stateId;
                 inventoriesWithFullContents.Add(inventoryID);
+                rakitBotScreen.Update(inventoryID);
                 bool playerInventoryChanged = SyncPlayerInventorySlotsFromWindow(inventories[inventoryID]);
                 if (playerInventoryChanged)
                     DispatchBotEvent(bot => bot.OnInventoryUpdate(0));
@@ -4140,6 +4146,7 @@ namespace MinecraftClient
                         DispatchBotEvent(bot => bot.OnInventoryUpdate(0));
                 }
             }
+            rakitBotScreen.Update(inventoryID);
             DispatchBotEvent(bot => bot.OnInventoryUpdate(inventoryID));
         }
 

@@ -499,7 +499,7 @@ class RbInventory : Command
         File.Move(temporaryPath, outputPath, overwrite: true);
     }
 
-    private static object[] SnapshotEnchantments(Item item)
+    internal static object[] SnapshotEnchantments(Item item)
     {
         List<object> output = new();
         var componentEnchantments = item.EnchantmentList;
@@ -543,7 +543,7 @@ class RbInventory : Command
         return output.ToArray();
     }
 
-    private static object SnapshotTooltip(Item item)
+    internal static object SnapshotTooltip(Item item)
     {
         string displayName = string.Empty;
         string[] lore = [];
@@ -574,7 +574,7 @@ class RbInventory : Command
         };
     }
 
-    private static bool SnapshotHasGlint(Item item)
+    internal static bool SnapshotHasGlint(Item item)
     {
         var overrideComponent = item.Components?
             .OfType<EnchantmentGlintOverrideComponent>()
@@ -1027,7 +1027,7 @@ class RbInventory : Command
             .ToArray());
     }
 
-    private static string CleanText(string? value, int maxLength)
+    internal static string CleanText(string? value, int maxLength)
     {
         string clean = new((value ?? string.Empty)
             .Select(static character => char.IsControl(character) ? ' ' : character)
