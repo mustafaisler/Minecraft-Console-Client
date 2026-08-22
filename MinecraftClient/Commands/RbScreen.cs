@@ -9,7 +9,7 @@ namespace MinecraftClient.Commands;
 class RbScreen : Command
 {
     public override string CmdName => "rbscreen";
-    public override string CmdUsage => "/rbscreen <snapshot|click <token> <revision> <inventoryId> <slot> <left|right|shift|shiftright> <actionId>>";
+    public override string CmdUsage => "/rbscreen <snapshot|click ...|dialog ...>";
     public override string CmdDesc => CmdName;
 
     public override void RegisterCommand(CommandDispatcher<CmdResult> dispatcher)
@@ -55,6 +55,57 @@ class RbScreen : Command
                                             Arguments.GetInteger(result, "slot"),
                                             Arguments.GetInteger(result, "actionId"))))))))))
         );
+        dispatcher.Register(l => l.Literal(CmdName)
+            .Then(l => l.Literal("dialog")
+                .Then(l => l.Argument("dialogToken", Arguments.Integer(1, int.MaxValue))
+                    .Then(l => l.Argument("dialogRevision", Arguments.Integer(1, int.MaxValue))
+                        .Then(l => l.Literal("set")
+                            .Then(l => l.Argument("inputIndex", Arguments.Integer(0, 31))
+                                .Then(l => l.Argument("inputValue", Arguments.String())
+                                    .Then(l => l.Argument("dialogActionId", Arguments.Integer(1, int.MaxValue))
+                                        .Executes(result => DialogAction(result.Source, "set",
+                                            Arguments.GetInteger(result, "dialogToken"),
+                                            Arguments.GetInteger(result, "dialogRevision"),
+                                            Arguments.GetInteger(result, "inputIndex"),
+                                            Arguments.GetString(result, "inputValue"),
+                                            Arguments.GetInteger(result, "dialogActionId")))))))))));
+        dispatcher.Register(l => l.Literal(CmdName)
+            .Then(l => l.Literal("dialog")
+                .Then(l => l.Argument("dialogToken", Arguments.Integer(1, int.MaxValue))
+                    .Then(l => l.Argument("dialogRevision", Arguments.Integer(1, int.MaxValue))
+                        .Then(l => l.Literal("click")
+                            .Then(l => l.Argument("buttonIndex", Arguments.Integer(0, 1024))
+                                .Then(l => l.Argument("dialogActionId", Arguments.Integer(1, int.MaxValue))
+                                    .Executes(result => DialogAction(result.Source, "click",
+                                        Arguments.GetInteger(result, "dialogToken"),
+                                        Arguments.GetInteger(result, "dialogRevision"),
+                                        Arguments.GetInteger(result, "buttonIndex"),
+                                        string.Empty,
+                                        Arguments.GetInteger(result, "dialogActionId"))))))))));
+        dispatcher.Register(l => l.Literal(CmdName)
+            .Then(l => l.Literal("dialog")
+                .Then(l => l.Argument("dialogToken", Arguments.Integer(1, int.MaxValue))
+                    .Then(l => l.Argument("dialogRevision", Arguments.Integer(1, int.MaxValue))
+                        .Then(l => l.Literal("cancel")
+                            .Then(l => l.Argument("dialogActionId", Arguments.Integer(1, int.MaxValue))
+                                .Executes(result => DialogAction(result.Source, "cancel",
+                                    Arguments.GetInteger(result, "dialogToken"),
+                                    Arguments.GetInteger(result, "dialogRevision"),
+                                    0,
+                                    string.Empty,
+                                    Arguments.GetInteger(result, "dialogActionId")))))))));
+        dispatcher.Register(l => l.Literal(CmdName)
+            .Then(l => l.Literal("dialog")
+                .Then(l => l.Argument("dialogToken", Arguments.Integer(1, int.MaxValue))
+                    .Then(l => l.Argument("dialogRevision", Arguments.Integer(1, int.MaxValue))
+                        .Then(l => l.Literal("dismiss")
+                            .Then(l => l.Argument("dialogActionId", Arguments.Integer(1, int.MaxValue))
+                                .Executes(result => DialogAction(result.Source, "dismiss",
+                                    Arguments.GetInteger(result, "dialogToken"),
+                                    Arguments.GetInteger(result, "dialogRevision"),
+                                    0,
+                                    string.Empty,
+                                    Arguments.GetInteger(result, "dialogActionId")))))))));
     }
 
     private static int Snapshot(CmdResult result)
@@ -80,6 +131,21 @@ class RbScreen : Command
             return result.SetAndReturn(CmdResult.Status.FailNeedInventory);
         var outcome = client.GetRakitBotScreen().Click(
             client, token, revision, inventoryId, slot, action, actionId);
+        return result.SetAndReturn(outcome.Ok ? CmdResult.Status.Done : CmdResult.Status.Fail);
+    }
+
+    private static int DialogAction(
+        CmdResult result,
+        string operation,
+        int token,
+        int revision,
+        int index,
+        string value,
+        int actionId)
+    {
+        McClient client = CmdResult.currentHandler!;
+        var outcome = client.GetRakitBotScreen().DialogAction(
+            client, token, revision, operation, index, value, actionId);
         return result.SetAndReturn(outcome.Ok ? CmdResult.Status.Done : CmdResult.Status.Fail);
     }
 }
