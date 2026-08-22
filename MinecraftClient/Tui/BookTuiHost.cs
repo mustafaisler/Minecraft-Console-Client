@@ -18,10 +18,10 @@ public static class BookTuiHost
 
     public static bool TryOpen(McClient handler, BookHand hand, bool editable)
     {
-        if (ConsoleIO.Backend is not TuiConsoleBackend)
-            return false;
-
-        Open(handler, hand, editable);
+        // Web konsolu TUI olmayan production botlarda da ayni kitabi acabilsin.
+        handler.GetRakitBotScreen().OpenBook(handler, hand);
+        if (ConsoleIO.Backend is TuiConsoleBackend)
+            Open(handler, hand, editable);
         return true;
     }
 
