@@ -1127,6 +1127,7 @@ internal sealed class RbScreenEmitter
             ["count"] = item.Count,
             ["enchantments"] = enchantments,
             ["glint"] = RbInventory.SnapshotHasGlint(item),
+            ["model"] = RbInventory.SnapshotModel(item),
             ["tooltip"] = RbInventory.SnapshotTooltip(item),
         };
         if (slot.HasValue)

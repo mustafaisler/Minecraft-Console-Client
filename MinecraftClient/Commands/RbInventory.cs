@@ -467,6 +467,7 @@ class RbInventory : Command
                     count = pair.Value.Count,
                     enchantments,
                     glint = SnapshotHasGlint(pair.Value),
+                    model = SnapshotModel(pair.Value),
                     tooltip = SnapshotTooltip(pair.Value),
                 };
             })
@@ -582,6 +583,27 @@ class RbInventory : Command
         return overrideComponent?.HasGlint
             ?? (SnapshotHasAnyEnchantments(item)
                 || item.Type is ItemType.EnchantedBook or ItemType.EnchantedGoldenApple);
+    }
+
+    internal static object SnapshotModel(Item item)
+    {
+        string itemId = "minecraft:" + item.Type.ToString().ToUnderscoreCase();
+        string itemModel = CleanText(
+            item.Components?.OfType<ItemModelComponent>().FirstOrDefault()?.Identifier ?? string.Empty,
+            160);
+        var current = item.Components?.OfType<CustomModelDataComponent>().FirstOrDefault();
+        var legacy = item.Components?.OfType<CustomModelDataComponent1206>().FirstOrDefault();
+        int? legacyNbt = NbtInt(SnapshotNbt(item), "CustomModelData");
+        float[] floats = current?.Floats.Where(float.IsFinite).Take(32).ToArray()
+            ?? (legacy is not null ? [(float)legacy.Value]
+                : legacyNbt.HasValue ? [(float)legacyNbt.Value] : []);
+        bool[] flags = current?.Flags.Take(32).ToArray() ?? [];
+        string[] strings = current?.Strings
+            .Select(value => CleanText(value, 160))
+            .Take(32)
+            .ToArray() ?? [];
+        int[] colors = current?.Colors.Take(32).ToArray() ?? [];
+        return new { id = itemId, itemModel, floats, flags, strings, colors };
     }
 
     private static bool SnapshotHasAnyEnchantments(Item item)
