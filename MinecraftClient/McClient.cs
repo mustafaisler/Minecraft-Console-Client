@@ -49,6 +49,7 @@ namespace MinecraftClient
         private static DateTime nextMessageSendTime = DateTime.MinValue;
         private readonly RbHudEmitter rakitBotHud = new();
         private readonly RbScreenEmitter rakitBotScreen = new();
+        private readonly RbChatMenuEmitter rakitBotChatMenu = new();
 
         private readonly Queue<Action> threadTasks = new();
         private readonly Lock threadTasksLock = new();
@@ -3907,6 +3908,7 @@ namespace MinecraftClient
             string displayedMessage = color + messageText;
             RakitBotChatHistory.Append(displayedMessage);
             Log.Chat(displayedMessage);
+            rakitBotChatMenu.Emit(message, displayedMessage);
 
             if (Config.Main.Advanced.ShowChatLinks)
                 foreach (string link in links)
