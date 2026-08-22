@@ -3487,7 +3487,8 @@ namespace MinecraftClient.Protocol.Handlers
                     if (protocolVersion >= MC_1_20_Version)
                         isFrontText = dataTypes.ReadNextBool(packetData);
 
-                    // TODO: Use
+                    if (handler is McClient client)
+                        client.GetRakitBotScreen().OpenSignEditor(signLocation, isFrontText);
                     break;
                 case PacketTypesIn.BlockEntityData:
                     if (handler.GetTerrainEnabled() && protocolVersion >= MC_1_17_Version)

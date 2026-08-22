@@ -3286,7 +3286,12 @@ namespace MinecraftClient
         public bool UpdateSign(Location location, string line1, string line2, string line3, string line4)
         {
             // TODO Open sign editor first https://wiki.vg/Protocol#Open_Sign_Editor
-            return InvokeOnMainThread(() => handler.SendUpdateSign(location, line1, line2, line3, line4));
+            return UpdateSign(location, line1, line2, line3, line4, true);
+        }
+
+        internal bool UpdateSign(Location location, string line1, string line2, string line3, string line4, bool isFrontText)
+        {
+            return InvokeOnMainThread(() => handler.SendUpdateSign(location, line1, line2, line3, line4, isFrontText));
         }
 
         /// <summary>

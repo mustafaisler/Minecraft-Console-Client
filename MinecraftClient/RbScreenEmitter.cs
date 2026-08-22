@@ -9,6 +9,7 @@ using System.Threading;
 using MinecraftClient.Commands;
 using MinecraftClient.Dialogs;
 using MinecraftClient.Inventory;
+using MinecraftClient.Mapping;
 
 namespace MinecraftClient;
 
@@ -24,6 +25,7 @@ internal sealed class RbScreenEmitter
     private const string ContainerKind = "container";
     private const string DialogKind = "dialog";
     private const string BookKind = "book";
+    private const string SignKind = "sign";
     private const long FlushDelayMs = 50;
     private readonly Lock sync = new();
     private DialogManager? attachedDialogManager;
@@ -31,6 +33,10 @@ internal sealed class RbScreenEmitter
     private int activeInventoryId;
     private int activeDialogRevision;
     private BookHand activeBookHand;
+    private Location activeSignLocation;
+    private bool activeSignFront;
+    private string[] activeSignLines = [string.Empty, string.Empty, string.Empty, string.Empty];
+    private string activeAnvilText = string.Empty;
     private int screenToken;
     private int revision;
     private bool dirty;
@@ -53,6 +59,7 @@ internal sealed class RbScreenEmitter
             activeKind = ContainerKind;
             activeInventoryId = inventoryId;
             activeDialogRevision = 0;
+            activeAnvilText = string.Empty;
             screenToken = RandomNumberGenerator.GetInt32(1, int.MaxValue);
             revision = 0;
             actionId = 0;
@@ -126,6 +133,14 @@ internal sealed class RbScreenEmitter
             if (bookActive)
             {
                 RefreshBook(client, bookHand, 0, true, string.Empty);
+                return;
+            }
+            bool signActive;
+            using (sync.EnterScope())
+                signActive = activeKind == SignKind;
+            if (signActive)
+            {
+                RefreshSign(0, true, string.Empty);
                 return;
             }
             int foregroundId = client.GetInventories().Keys.Where(static id => id > 0).DefaultIfEmpty(0).Max();
@@ -208,6 +223,7 @@ internal sealed class RbScreenEmitter
         int currentActionId;
         bool currentActionOk;
         string currentActionError;
+        string currentAnvilText;
         using (sync.EnterScope())
         {
             if (activeKind != ContainerKind
@@ -221,6 +237,7 @@ internal sealed class RbScreenEmitter
             currentActionId = actionId;
             currentActionOk = actionOk;
             currentActionError = actionError;
+            currentAnvilText = activeAnvilText;
         }
 
         Container? inventory = client.GetInventory(inventoryId);
@@ -233,7 +250,7 @@ internal sealed class RbScreenEmitter
         try
         {
             WriteOpen(client, inventory, token, nextRevision,
-                currentActionId, currentActionOk, currentActionError);
+                currentActionId, currentActionOk, currentActionError, currentAnvilText);
         }
         catch (Exception exception) when (
             exception is IOException
@@ -680,6 +697,268 @@ internal sealed class RbScreenEmitter
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException) { }
     }
 
+    public void OpenSignEditor(Location location, bool front)
+    {
+        int token;
+        string[] lines = [string.Empty, string.Empty, string.Empty, string.Empty];
+        using (sync.EnterScope())
+        {
+            activeKind = SignKind;
+            activeInventoryId = 0;
+            activeDialogRevision = 0;
+            activeSignLocation = location;
+            activeSignFront = front;
+            activeSignLines = lines;
+            screenToken = RandomNumberGenerator.GetInt32(1, int.MaxValue);
+            revision = 1;
+            actionId = 0;
+            actionOk = true;
+            actionError = string.Empty;
+            dirty = false;
+            token = screenToken;
+        }
+        TryWriteSign(location, front, lines, token, 1, 0, true, string.Empty);
+        TryEmit("open", token, 1, 0, SignKind);
+    }
+
+    public (bool Ok, string Error) AnvilAction(
+        McClient client,
+        int expectedToken,
+        int expectedRevision,
+        int expectedInventoryId,
+        string operation,
+        int requestedActionId)
+    {
+        return client.InvokeOnMainThread(() =>
+        {
+            Container? inventory = client.GetInventory(expectedInventoryId);
+            string validationError = string.Empty;
+            using (sync.EnterScope())
+            {
+                if (activeKind != ContainerKind || inventory is null || inventory.Type != ContainerType.Anvil)
+                    validationError = "screen_closed";
+                else if (expectedToken != screenToken || expectedInventoryId != activeInventoryId)
+                    validationError = "screen_replaced";
+                else if (expectedRevision != revision)
+                    validationError = "screen_stale";
+            }
+            if (validationError.Length > 0)
+            {
+                RecordAction(requestedActionId, false, validationError);
+                Flush(client, force: true);
+                return (false, validationError);
+            }
+
+            try
+            {
+                var (value, _) = ReadTextAction(
+                    expectedToken, expectedRevision, requestedActionId, "anvil", operation);
+                bool sent = operation == "rename" && client.SendRenameItem(value);
+                if (sent)
+                {
+                    using (sync.EnterScope())
+                        activeAnvilText = value;
+                }
+                RecordAction(requestedActionId, sent, sent ? string.Empty : "text_rejected");
+                Update(expectedInventoryId);
+                Flush(client, force: true);
+                return sent ? (true, string.Empty) : (false, "text_rejected");
+            }
+            catch (Exception exception) when (
+                exception is IOException
+                or UnauthorizedAccessException
+                or JsonException
+                or InvalidOperationException
+                or FormatException
+                or ArgumentException)
+            {
+                RecordAction(requestedActionId, false, "text_rejected");
+                Flush(client, force: true);
+                return (false, "text_rejected");
+            }
+            finally
+            {
+                TryDeleteTextAction();
+            }
+        });
+    }
+
+    public (bool Ok, string Error) SignAction(
+        McClient client,
+        int expectedToken,
+        int expectedRevision,
+        string operation,
+        int requestedActionId)
+    {
+        return client.InvokeOnMainThread(() =>
+        {
+            Location location;
+            bool front;
+            string validationError = string.Empty;
+            using (sync.EnterScope())
+            {
+                location = activeSignLocation;
+                front = activeSignFront;
+                if (activeKind != SignKind)
+                    validationError = "screen_closed";
+                else if (expectedToken != screenToken)
+                    validationError = "screen_replaced";
+                else if (expectedRevision != revision)
+                    validationError = "screen_stale";
+            }
+            if (validationError.Length > 0)
+                return (false, validationError);
+            if (operation == "close")
+            {
+                CloseSign(expectedToken, expectedRevision);
+                return (true, string.Empty);
+            }
+
+            try
+            {
+                var (_, lines) = ReadTextAction(
+                    expectedToken, expectedRevision, requestedActionId, "sign", operation);
+                bool sent = operation == "submit" && client.UpdateSign(
+                    location, lines[0], lines[1], lines[2], lines[3], front);
+                if (!sent)
+                {
+                    using (sync.EnterScope())
+                        activeSignLines = lines;
+                    RefreshSign(requestedActionId, false, "text_rejected");
+                    return (false, "text_rejected");
+                }
+                using (sync.EnterScope())
+                    activeSignLines = lines;
+                CloseSign(expectedToken, expectedRevision);
+                return (true, string.Empty);
+            }
+            catch (Exception exception) when (
+                exception is IOException
+                or UnauthorizedAccessException
+                or JsonException
+                or InvalidOperationException
+                or FormatException
+                or ArgumentException)
+            {
+                RefreshSign(requestedActionId, false, "text_rejected");
+                return (false, "text_rejected");
+            }
+            finally
+            {
+                TryDeleteTextAction();
+            }
+        });
+    }
+
+    private void CloseSign(int expectedToken, int expectedRevision)
+    {
+        int closedRevision;
+        using (sync.EnterScope())
+        {
+            if (activeKind != SignKind || screenToken != expectedToken || revision != expectedRevision)
+                return;
+            closedRevision = ++revision;
+            activeKind = string.Empty;
+            actionId = 0;
+            actionOk = true;
+            actionError = string.Empty;
+        }
+        TryWriteClosed(expectedToken, closedRevision);
+        TryEmit("close", expectedToken, closedRevision, 0, SignKind);
+    }
+
+    private void RefreshSign(int requestedActionId, bool ok, string error)
+    {
+        Location location;
+        bool front;
+        string[] lines;
+        int token;
+        int nextRevision;
+        using (sync.EnterScope())
+        {
+            if (activeKind != SignKind)
+                return;
+            location = activeSignLocation;
+            front = activeSignFront;
+            lines = activeSignLines.ToArray();
+            token = screenToken;
+            nextRevision = revision + 1;
+        }
+        if (!TryWriteSign(location, front, lines, token, nextRevision, requestedActionId, ok, error))
+            return;
+        using (sync.EnterScope())
+        {
+            if (activeKind != SignKind || screenToken != token)
+                return;
+            revision = nextRevision;
+            actionId = requestedActionId;
+            actionOk = ok;
+            actionError = error;
+        }
+        TryEmit("update", token, nextRevision, 0, SignKind);
+    }
+
+    private static (string Value, string[] Lines) ReadTextAction(
+        int expectedToken,
+        int expectedRevision,
+        int expectedActionId,
+        string expectedKind,
+        string expectedOperation)
+    {
+        string path = Path.Combine(AppContext.BaseDirectory, OutputDirectory, "text-action.json");
+        var info = new FileInfo(path);
+        if (!info.Exists || info.Length <= 0 || info.Length > 16 * 1024)
+            throw new InvalidOperationException();
+        using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(path));
+        JsonElement root = document.RootElement;
+        if (root.GetProperty("version").GetInt32() != 1
+            || root.GetProperty("token").GetInt32() != expectedToken
+            || root.GetProperty("revision").GetInt32() != expectedRevision
+            || root.GetProperty("actionId").GetInt32() != expectedActionId
+            || root.GetProperty("kind").GetString() != expectedKind
+            || root.GetProperty("operation").GetString() != expectedOperation)
+            throw new InvalidOperationException();
+        DateTimeOffset generatedAt = DateTimeOffset.Parse(root.GetProperty("generatedAt").GetString() ?? string.Empty);
+        if (generatedAt > DateTimeOffset.UtcNow.AddSeconds(5)
+            || generatedAt < DateTimeOffset.UtcNow.AddSeconds(-30))
+            throw new InvalidOperationException();
+        if (expectedKind == "anvil")
+        {
+            if (expectedOperation != "rename")
+                throw new InvalidOperationException();
+            string value = CleanTextActionValue(root.GetProperty("value").GetString(), 50);
+            return (value, []);
+        }
+        if (expectedKind != "sign" || expectedOperation != "submit")
+            throw new InvalidOperationException();
+        string[] lines = root.GetProperty("lines").EnumerateArray()
+            .Select(line => CleanTextActionValue(line.GetString(), 23))
+            .Take(5)
+            .ToArray();
+        if (lines.Length != 4)
+            throw new InvalidOperationException();
+        return (string.Empty, lines);
+    }
+
+    private static string CleanTextActionValue(string? value, int maxLength)
+    {
+        string text = value ?? string.Empty;
+        if (text.Length > maxLength || text.Any(character => char.IsControl(character)))
+            throw new InvalidOperationException();
+        return text;
+    }
+
+    private static void TryDeleteTextAction()
+    {
+        try
+        {
+            string path = Path.Combine(AppContext.BaseDirectory, OutputDirectory, "text-action.json");
+            if (File.Exists(path))
+                File.Delete(path);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException) { }
+    }
+
     private void RecordAction(int requestedActionId, bool ok, string error)
     {
         using (sync.EnterScope())
@@ -715,7 +994,8 @@ internal sealed class RbScreenEmitter
         int revision,
         int actionId,
         bool actionOk,
-        string actionError)
+        string actionError,
+        string anvilText)
     {
         int slotCount = inventory.Type.SlotCount();
         var slots = inventory.Items
@@ -746,6 +1026,12 @@ internal sealed class RbScreenEmitter
             containerSlotCount = Math.Max(0, slotCount - 36),
             stateId = inventory.StateID,
             properties,
+            textInput = inventory.Type == ContainerType.Anvil ? new
+            {
+                kind = "anvil",
+                value = RbInventory.CleanText(anvilText, 50),
+                maxLength = 50,
+            } : null,
             actionId,
             actionOk,
             actionError = RbInventory.CleanText(actionError, 48),
@@ -896,6 +1182,50 @@ internal sealed class RbScreenEmitter
                 maxPageLength = limits.MaxPageLength,
                 maxTitleLength = limits.MaxTitleLength,
                 pages,
+                actionId,
+                actionOk,
+                actionError = RbInventory.CleanText(actionError, 48),
+            });
+            return true;
+        }
+        catch (Exception exception) when (
+            exception is IOException
+            or UnauthorizedAccessException
+            or JsonException
+            or InvalidOperationException)
+        {
+            return false;
+        }
+    }
+
+    private static bool TryWriteSign(
+        Location location,
+        bool front,
+        IReadOnlyList<string> lines,
+        int token,
+        int revision,
+        int actionId,
+        bool actionOk,
+        string actionError)
+    {
+        try
+        {
+            Write(new
+            {
+                version = 1,
+                generatedAt = DateTimeOffset.UtcNow.ToString("O"),
+                open = true,
+                kind = SignKind,
+                token,
+                revision,
+                location = new
+                {
+                    x = (int)location.X,
+                    y = (int)location.Y,
+                    z = (int)location.Z,
+                },
+                front,
+                lines = lines.Take(4).Select(line => CleanTextActionValue(line, 23)).ToArray(),
                 actionId,
                 actionOk,
                 actionError = RbInventory.CleanText(actionError, 48),

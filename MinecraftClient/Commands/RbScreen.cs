@@ -9,7 +9,7 @@ namespace MinecraftClient.Commands;
 class RbScreen : Command
 {
     public override string CmdName => "rbscreen";
-    public override string CmdUsage => "/rbscreen <snapshot|click ...|dialog ...>";
+    public override string CmdUsage => "/rbscreen <snapshot|click ...|dialog ...|book ...|anvil ...|sign ...>";
     public override string CmdDesc => CmdName;
 
     public override void RegisterCommand(CommandDispatcher<CmdResult> dispatcher)
@@ -109,6 +109,21 @@ class RbScreen : Command
         RegisterBookAction(dispatcher, "save");
         RegisterBookAction(dispatcher, "sign");
         RegisterBookAction(dispatcher, "close");
+        dispatcher.Register(l => l.Literal(CmdName)
+            .Then(l => l.Literal("anvil")
+                .Then(l => l.Argument("anvilToken", Arguments.Integer(1, int.MaxValue))
+                    .Then(l => l.Argument("anvilRevision", Arguments.Integer(1, int.MaxValue))
+                        .Then(l => l.Argument("anvilInventoryId", Arguments.Integer(1, 255))
+                            .Then(l => l.Literal("rename")
+                                .Then(l => l.Argument("anvilActionId", Arguments.Integer(1, int.MaxValue))
+                                    .Executes(result => AnvilAction(
+                                        result.Source,
+                                        Arguments.GetInteger(result, "anvilToken"),
+                                        Arguments.GetInteger(result, "anvilRevision"),
+                                        Arguments.GetInteger(result, "anvilInventoryId"),
+                                        Arguments.GetInteger(result, "anvilActionId"))))))))));
+        RegisterSignAction(dispatcher, "submit");
+        RegisterSignAction(dispatcher, "close");
     }
 
     private static void RegisterBookAction(CommandDispatcher<CmdResult> dispatcher, string operation)
@@ -125,6 +140,22 @@ class RbScreen : Command
                                     Arguments.GetInteger(result, "bookToken"),
                                     Arguments.GetInteger(result, "bookRevision"),
                                     Arguments.GetInteger(result, "bookActionId")))))))));
+    }
+
+    private static void RegisterSignAction(CommandDispatcher<CmdResult> dispatcher, string operation)
+    {
+        dispatcher.Register(l => l.Literal("rbscreen")
+            .Then(l => l.Literal("sign")
+                .Then(l => l.Argument("signToken", Arguments.Integer(1, int.MaxValue))
+                    .Then(l => l.Argument("signRevision", Arguments.Integer(1, int.MaxValue))
+                        .Then(l => l.Literal(operation)
+                            .Then(l => l.Argument("signActionId", Arguments.Integer(1, int.MaxValue))
+                                .Executes(result => SignAction(
+                                    result.Source,
+                                    operation,
+                                    Arguments.GetInteger(result, "signToken"),
+                                    Arguments.GetInteger(result, "signRevision"),
+                                    Arguments.GetInteger(result, "signActionId")))))))));
     }
 
     private static int Snapshot(CmdResult result)
@@ -177,6 +208,34 @@ class RbScreen : Command
     {
         McClient client = CmdResult.currentHandler!;
         var outcome = client.GetRakitBotScreen().BookAction(
+            client, token, revision, operation, actionId);
+        return result.SetAndReturn(outcome.Ok ? CmdResult.Status.Done : CmdResult.Status.Fail);
+    }
+
+    private static int AnvilAction(
+        CmdResult result,
+        int token,
+        int revision,
+        int inventoryId,
+        int actionId)
+    {
+        McClient client = CmdResult.currentHandler!;
+        if (!client.GetInventoryEnabled())
+            return result.SetAndReturn(CmdResult.Status.FailNeedInventory);
+        var outcome = client.GetRakitBotScreen().AnvilAction(
+            client, token, revision, inventoryId, "rename", actionId);
+        return result.SetAndReturn(outcome.Ok ? CmdResult.Status.Done : CmdResult.Status.Fail);
+    }
+
+    private static int SignAction(
+        CmdResult result,
+        string operation,
+        int token,
+        int revision,
+        int actionId)
+    {
+        McClient client = CmdResult.currentHandler!;
+        var outcome = client.GetRakitBotScreen().SignAction(
             client, token, revision, operation, actionId);
         return result.SetAndReturn(outcome.Ok ? CmdResult.Status.Done : CmdResult.Status.Fail);
     }
