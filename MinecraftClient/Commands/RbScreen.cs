@@ -106,6 +106,25 @@ class RbScreen : Command
                                     0,
                                     string.Empty,
                                     Arguments.GetInteger(result, "dialogActionId")))))))));
+        RegisterBookAction(dispatcher, "save");
+        RegisterBookAction(dispatcher, "sign");
+        RegisterBookAction(dispatcher, "close");
+    }
+
+    private static void RegisterBookAction(CommandDispatcher<CmdResult> dispatcher, string operation)
+    {
+        dispatcher.Register(l => l.Literal("rbscreen")
+            .Then(l => l.Literal("book")
+                .Then(l => l.Argument("bookToken", Arguments.Integer(1, int.MaxValue))
+                    .Then(l => l.Argument("bookRevision", Arguments.Integer(1, int.MaxValue))
+                        .Then(l => l.Literal(operation)
+                            .Then(l => l.Argument("bookActionId", Arguments.Integer(1, int.MaxValue))
+                                .Executes(result => BookAction(
+                                    result.Source,
+                                    operation,
+                                    Arguments.GetInteger(result, "bookToken"),
+                                    Arguments.GetInteger(result, "bookRevision"),
+                                    Arguments.GetInteger(result, "bookActionId")))))))));
     }
 
     private static int Snapshot(CmdResult result)
@@ -146,6 +165,19 @@ class RbScreen : Command
         McClient client = CmdResult.currentHandler!;
         var outcome = client.GetRakitBotScreen().DialogAction(
             client, token, revision, operation, index, value, actionId);
+        return result.SetAndReturn(outcome.Ok ? CmdResult.Status.Done : CmdResult.Status.Fail);
+    }
+
+    private static int BookAction(
+        CmdResult result,
+        string operation,
+        int token,
+        int revision,
+        int actionId)
+    {
+        McClient client = CmdResult.currentHandler!;
+        var outcome = client.GetRakitBotScreen().BookAction(
+            client, token, revision, operation, actionId);
         return result.SetAndReturn(outcome.Ok ? CmdResult.Status.Done : CmdResult.Status.Fail);
     }
 }

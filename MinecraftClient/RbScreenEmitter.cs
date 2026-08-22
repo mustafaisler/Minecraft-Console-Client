@@ -23,12 +23,14 @@ internal sealed class RbScreenEmitter
     private const string OutputFile = "snapshot.json";
     private const string ContainerKind = "container";
     private const string DialogKind = "dialog";
+    private const string BookKind = "book";
     private const long FlushDelayMs = 50;
     private readonly Lock sync = new();
     private DialogManager? attachedDialogManager;
     private string activeKind = string.Empty;
     private int activeInventoryId;
     private int activeDialogRevision;
+    private BookHand activeBookHand;
     private int screenToken;
     private int revision;
     private bool dirty;
@@ -112,6 +114,18 @@ internal sealed class RbScreenEmitter
                     RefreshDialog(dialog, 0, true, string.Empty);
                 else
                     OpenDialog(dialog);
+                return;
+            }
+            bool bookActive;
+            BookHand bookHand;
+            using (sync.EnterScope())
+            {
+                bookActive = activeKind == BookKind;
+                bookHand = activeBookHand;
+            }
+            if (bookActive)
+            {
+                RefreshBook(client, bookHand, 0, true, string.Empty);
                 return;
             }
             int foregroundId = client.GetInventories().Keys.Where(static id => id > 0).DefaultIfEmpty(0).Max();
@@ -433,6 +447,239 @@ internal sealed class RbScreenEmitter
         TryEmit("update", token, nextRevision, 0, DialogKind);
     }
 
+    public void OpenBook(McClient client, BookHand hand)
+    {
+        client.InvokeOnMainThread(() =>
+        {
+            if (!client.TryGetHeldBookContent(out BookContent content, hand))
+                return;
+            int token;
+            using (sync.EnterScope())
+            {
+                activeKind = BookKind;
+                activeInventoryId = 0;
+                activeDialogRevision = 0;
+                activeBookHand = hand;
+                screenToken = RandomNumberGenerator.GetInt32(1, int.MaxValue);
+                revision = 1;
+                actionId = 0;
+                actionOk = true;
+                actionError = string.Empty;
+                dirty = false;
+                token = screenToken;
+            }
+            TryWriteBook(client, content, hand, token, 1, 0, true, string.Empty);
+            TryEmit("open", token, 1, 0, BookKind);
+        });
+    }
+
+    public (bool Ok, string Error) BookAction(
+        McClient client,
+        int expectedToken,
+        int expectedRevision,
+        string operation,
+        int requestedActionId)
+    {
+        return client.InvokeOnMainThread(() =>
+        {
+            BookHand hand;
+            string validationError = string.Empty;
+            using (sync.EnterScope())
+            {
+                hand = activeBookHand;
+                if (activeKind != BookKind)
+                    validationError = "screen_closed";
+                else if (expectedToken != screenToken)
+                    validationError = "screen_replaced";
+                else if (expectedRevision != revision)
+                    validationError = "screen_stale";
+            }
+            if (validationError.Length > 0)
+                return (false, validationError);
+
+            if (operation == "close")
+            {
+                CloseBook(expectedToken, expectedRevision);
+                return (true, string.Empty);
+            }
+            if (hand != BookHand.Main
+                || !client.TryGetHeldBookContent(out BookContent current, hand)
+                || current.IsSigned)
+            {
+                RefreshBook(client, hand, requestedActionId, false, "book_rejected");
+                return (false, "book_rejected");
+            }
+
+            try
+            {
+                BookLimits limits = SafeBookLimits(client);
+                (IReadOnlyList<string> pages, string? title) = ReadBookAction(
+                    expectedToken, expectedRevision, requestedActionId, operation, limits);
+                bool sent = client.SendBookEdit(pages, operation == "sign" ? title : null);
+                if (!sent)
+                {
+                    RefreshBook(client, hand, requestedActionId, false, "book_rejected");
+                    return (false, "book_rejected");
+                }
+                var updated = new BookContent(
+                    pages,
+                    operation == "sign" ? title : null,
+                    operation == "sign" ? current.Author : null,
+                    current.Generation,
+                    IsSigned: operation == "sign");
+                RefreshBookContent(client, updated, hand, requestedActionId, true, string.Empty);
+                return (true, string.Empty);
+            }
+            catch (Exception exception) when (
+                exception is IOException
+                or UnauthorizedAccessException
+                or JsonException
+                or InvalidOperationException
+                or FormatException
+                or ArgumentException)
+            {
+                RefreshBook(client, hand, requestedActionId, false, "book_rejected");
+                return (false, "book_rejected");
+            }
+            finally
+            {
+                TryDeleteBookAction();
+            }
+        });
+    }
+
+    private void CloseBook(int expectedToken, int expectedRevision)
+    {
+        int closedRevision;
+        using (sync.EnterScope())
+        {
+            if (activeKind != BookKind || screenToken != expectedToken || revision != expectedRevision)
+                return;
+            closedRevision = ++revision;
+            activeKind = string.Empty;
+            actionId = 0;
+            actionOk = true;
+            actionError = string.Empty;
+        }
+        TryWriteClosed(expectedToken, closedRevision);
+        TryEmit("close", expectedToken, closedRevision, 0, BookKind);
+    }
+
+    private void RefreshBook(
+        McClient client,
+        BookHand hand,
+        int requestedActionId,
+        bool ok,
+        string error)
+    {
+        if (!client.TryGetHeldBookContent(out BookContent content, hand))
+        {
+            int token;
+            int currentRevision;
+            using (sync.EnterScope())
+            {
+                if (activeKind != BookKind)
+                    return;
+                token = screenToken;
+                currentRevision = revision;
+            }
+            CloseBook(token, currentRevision);
+            return;
+        }
+        RefreshBookContent(client, content, hand, requestedActionId, ok, error);
+    }
+
+    private void RefreshBookContent(
+        McClient client,
+        BookContent content,
+        BookHand hand,
+        int requestedActionId,
+        bool ok,
+        string error)
+    {
+        int token;
+        int nextRevision;
+        using (sync.EnterScope())
+        {
+            if (activeKind != BookKind || activeBookHand != hand)
+                return;
+            token = screenToken;
+            nextRevision = revision + 1;
+        }
+        if (!TryWriteBook(client, content, hand, token, nextRevision, requestedActionId, ok, error))
+            return;
+        using (sync.EnterScope())
+        {
+            if (activeKind != BookKind || activeBookHand != hand || screenToken != token)
+                return;
+            revision = nextRevision;
+            actionId = requestedActionId;
+            actionOk = ok;
+            actionError = error;
+        }
+        TryEmit("update", token, nextRevision, 0, BookKind);
+    }
+
+    private static BookLimits SafeBookLimits(McClient client)
+    {
+        BookLimits limits = BookLimits.ForProtocol(client.GetProtocolVersion());
+        return new BookLimits(
+            Math.Clamp(limits.MaxPages, 1, 100),
+            Math.Clamp(limits.MaxPageLength, 1, 4096),
+            Math.Clamp(limits.MaxTitleLength, 1, 128));
+    }
+
+    private static (IReadOnlyList<string> Pages, string? Title) ReadBookAction(
+        int expectedToken,
+        int expectedRevision,
+        int expectedActionId,
+        string expectedOperation,
+        BookLimits limits)
+    {
+        string path = Path.Combine(AppContext.BaseDirectory, OutputDirectory, "book-action.json");
+        var info = new FileInfo(path);
+        if (!info.Exists || info.Length <= 0 || info.Length > 512 * 1024)
+            throw new InvalidOperationException();
+        using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(path));
+        JsonElement root = document.RootElement;
+        if (root.GetProperty("version").GetInt32() != 1
+            || root.GetProperty("token").GetInt32() != expectedToken
+            || root.GetProperty("revision").GetInt32() != expectedRevision
+            || root.GetProperty("actionId").GetInt32() != expectedActionId
+            || root.GetProperty("operation").GetString() != expectedOperation)
+            throw new InvalidOperationException();
+        DateTimeOffset generatedAt = DateTimeOffset.Parse(root.GetProperty("generatedAt").GetString() ?? string.Empty);
+        if (generatedAt > DateTimeOffset.UtcNow.AddSeconds(5)
+            || generatedAt < DateTimeOffset.UtcNow.AddSeconds(-30))
+            throw new InvalidOperationException();
+        var pages = root.GetProperty("pages").EnumerateArray()
+            .Select(page => CleanDialogValue(page.GetString(), limits.MaxPageLength))
+            .Take(limits.MaxPages + 1)
+            .ToArray();
+        if (pages.Length < 1 || pages.Length > limits.MaxPages)
+            throw new InvalidOperationException();
+        string? title = root.TryGetProperty("title", out JsonElement titleElement)
+            && titleElement.ValueKind == JsonValueKind.String
+                ? RbInventory.CleanText(titleElement.GetString(), limits.MaxTitleLength)
+                : null;
+        if (expectedOperation == "sign" && string.IsNullOrWhiteSpace(title))
+            throw new InvalidOperationException();
+        if (expectedOperation is not "save" and not "sign")
+            throw new InvalidOperationException();
+        return (pages, title);
+    }
+
+    private static void TryDeleteBookAction()
+    {
+        try
+        {
+            string path = Path.Combine(AppContext.BaseDirectory, OutputDirectory, "book-action.json");
+            if (File.Exists(path))
+                File.Delete(path);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException) { }
+    }
+
     private void RecordAction(int requestedActionId, bool ok, string error)
     {
         using (sync.EnterScope())
@@ -611,6 +858,58 @@ internal sealed class RbScreenEmitter
                 ? ' ' : character)
             .ToArray());
         return clean.Length <= maxLength ? clean : clean[..maxLength];
+    }
+
+    private static bool TryWriteBook(
+        McClient client,
+        BookContent content,
+        BookHand hand,
+        int token,
+        int revision,
+        int actionId,
+        bool actionOk,
+        string actionError)
+    {
+        try
+        {
+            BookLimits limits = SafeBookLimits(client);
+            string[] pages = content.Pages
+                .Take(limits.MaxPages)
+                .Select(page => CleanDialogValue(page, limits.MaxPageLength))
+                .DefaultIfEmpty(string.Empty)
+                .ToArray();
+            Write(new
+            {
+                version = 1,
+                generatedAt = DateTimeOffset.UtcNow.ToString("O"),
+                open = true,
+                kind = BookKind,
+                token,
+                revision,
+                hand = hand.ToString(),
+                title = content.Title is null ? null : RbInventory.CleanText(content.Title, limits.MaxTitleLength),
+                author = content.Author is null ? null : RbInventory.CleanText(content.Author, 128),
+                generation = Math.Clamp(content.Generation, 0, 3),
+                signed = content.IsSigned,
+                editable = hand == BookHand.Main && !content.IsSigned,
+                maxPages = limits.MaxPages,
+                maxPageLength = limits.MaxPageLength,
+                maxTitleLength = limits.MaxTitleLength,
+                pages,
+                actionId,
+                actionOk,
+                actionError = RbInventory.CleanText(actionError, 48),
+            });
+            return true;
+        }
+        catch (Exception exception) when (
+            exception is IOException
+            or UnauthorizedAccessException
+            or JsonException
+            or InvalidOperationException)
+        {
+            return false;
+        }
     }
 
     private static void WriteClosed(int token, int revision) => Write(new

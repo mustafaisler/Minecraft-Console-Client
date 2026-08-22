@@ -4258,7 +4258,9 @@ namespace MinecraftClient
                 return;
             }
 
-            Tui.BookTuiHost.OpenFromServer(this, hand == (int)BookHand.Off ? BookHand.Off : BookHand.Main);
+            BookHand bookHand = hand == (int)BookHand.Off ? BookHand.Off : BookHand.Main;
+            rakitBotScreen.OpenBook(this, bookHand);
+            Tui.BookTuiHost.OpenFromServer(this, bookHand);
         }
 
         /// <summary>
