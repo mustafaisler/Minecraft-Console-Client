@@ -9,7 +9,7 @@ namespace MinecraftClient.Commands;
 class RbScreen : Command
 {
     public override string CmdName => "rbscreen";
-    public override string CmdUsage => "/rbscreen <snapshot|click ...|dialog ...|book ...|anvil ...|sign ...>";
+    public override string CmdUsage => "/rbscreen <snapshot|click ...|close ...|dialog ...|book ...|anvil ...|sign ...|special ...>";
     public override string CmdDesc => CmdName;
 
     public override void RegisterCommand(CommandDispatcher<CmdResult> dispatcher)
@@ -17,6 +17,17 @@ class RbScreen : Command
         dispatcher.Register(l => l.Literal(CmdName)
             .Then(l => l.Literal("snapshot")
                 .Executes(result => Snapshot(result.Source)))
+            .Then(l => l.Literal("close")
+                .Then(l => l.Argument("closeToken", Arguments.Integer(1, int.MaxValue))
+                    .Then(l => l.Argument("closeRevision", Arguments.Integer(1, int.MaxValue))
+                        .Then(l => l.Argument("closeInventoryId", Arguments.Integer(1, 255))
+                            .Then(l => l.Argument("closeActionId", Arguments.Integer(1, int.MaxValue))
+                                .Executes(result => Close(
+                                    result.Source,
+                                    Arguments.GetInteger(result, "closeToken"),
+                                    Arguments.GetInteger(result, "closeRevision"),
+                                    Arguments.GetInteger(result, "closeInventoryId"),
+                                    Arguments.GetInteger(result, "closeActionId"))))))))
             .Then(l => l.Literal("click")
                 .Then(l => l.Argument("token", Arguments.Integer(1, int.MaxValue))
                     .Then(l => l.Argument("revision", Arguments.Integer(1, int.MaxValue))
@@ -226,6 +237,21 @@ class RbScreen : Command
             return result.SetAndReturn(CmdResult.Status.FailNeedInventory);
         var outcome = client.GetRakitBotScreen().Click(
             client, token, revision, inventoryId, slot, action, actionId);
+        return result.SetAndReturn(outcome.Ok ? CmdResult.Status.Done : CmdResult.Status.Fail);
+    }
+
+    private static int Close(
+        CmdResult result,
+        int token,
+        int revision,
+        int inventoryId,
+        int actionId)
+    {
+        McClient client = CmdResult.currentHandler!;
+        if (!client.GetInventoryEnabled())
+            return result.SetAndReturn(CmdResult.Status.FailNeedInventory);
+        var outcome = client.GetRakitBotScreen().CloseScreen(
+            client, token, revision, inventoryId, actionId);
         return result.SetAndReturn(outcome.Ok ? CmdResult.Status.Done : CmdResult.Status.Fail);
     }
 

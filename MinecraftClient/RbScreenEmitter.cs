@@ -236,6 +236,46 @@ internal sealed class RbScreenEmitter
         });
     }
 
+    public (bool Ok, string Error) CloseScreen(
+        McClient client,
+        int expectedToken,
+        int expectedRevision,
+        int expectedInventoryId,
+        int requestedActionId)
+    {
+        return client.InvokeOnMainThread(() =>
+        {
+            string error = string.Empty;
+            using (sync.EnterScope())
+            {
+                if (activeKind != ContainerKind || activeInventoryId <= 0)
+                    error = "screen_closed";
+                else if (expectedToken != screenToken || expectedInventoryId != activeInventoryId)
+                    error = "screen_replaced";
+                else if (expectedRevision != revision)
+                    error = "screen_stale";
+            }
+            if (error.Length > 0)
+            {
+                RecordAction(requestedActionId, false, error);
+                Flush(client, force: true);
+                return (false, error);
+            }
+
+            bool closed;
+            try { closed = client.CloseInventory(expectedInventoryId); }
+            catch { closed = false; }
+            if (!closed)
+            {
+                RecordAction(requestedActionId, false, "close_rejected");
+                Flush(client, force: true);
+                return (false, "close_rejected");
+            }
+            Close(expectedInventoryId);
+            return (true, string.Empty);
+        });
+    }
+
     public void Flush(McClient client, bool force = false)
     {
         EnsureDialogHooks(client);
