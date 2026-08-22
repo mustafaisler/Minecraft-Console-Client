@@ -6662,6 +6662,37 @@ namespace MinecraftClient.Protocol.Handlers
             }
         }
 
+        internal bool SendSetBeaconEffects(int primaryEffect, int secondaryEffect)
+        {
+            try
+            {
+                List<byte> packet = new();
+                if (protocolVersion >= MC_1_19_Version)
+                {
+                    packet.AddRange(dataTypes.GetBool(primaryEffect >= 0));
+                    if (primaryEffect >= 0)
+                        packet.AddRange(DataTypes.GetVarInt(primaryEffect));
+                    packet.AddRange(dataTypes.GetBool(secondaryEffect >= 0));
+                    if (secondaryEffect >= 0)
+                        packet.AddRange(DataTypes.GetVarInt(secondaryEffect));
+                }
+                else
+                {
+                    packet.AddRange(DataTypes.GetVarInt(primaryEffect));
+                    packet.AddRange(DataTypes.GetVarInt(Math.Max(0, secondaryEffect)));
+                }
+                SendPacket(PacketTypesOut.SetBeaconEffect, packet);
+                return true;
+            }
+            catch (Exception exception) when (
+                exception is SocketException
+                or System.IO.IOException
+                or ObjectDisposedException)
+            {
+                return false;
+            }
+        }
+
         public bool SelectTrade(int selectedSlot)
         {
             // MC 1.13 or greater

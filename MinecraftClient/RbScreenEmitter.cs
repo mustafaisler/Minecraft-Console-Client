@@ -37,6 +37,9 @@ internal sealed class RbScreenEmitter
     private bool activeSignFront;
     private string[] activeSignLines = [string.Empty, string.Empty, string.Empty, string.Empty];
     private string activeAnvilText = string.Empty;
+    private List<VillagerTrade> activeTrades = [];
+    private VillagerInfo? activeVillagerInfo;
+    private int activeMerchantSelection;
     private int screenToken;
     private int revision;
     private bool dirty;
@@ -60,6 +63,9 @@ internal sealed class RbScreenEmitter
             activeInventoryId = inventoryId;
             activeDialogRevision = 0;
             activeAnvilText = string.Empty;
+            activeTrades = [];
+            activeVillagerInfo = null;
+            activeMerchantSelection = 0;
             screenToken = RandomNumberGenerator.GetInt32(1, int.MaxValue);
             revision = 0;
             actionId = 0;
@@ -80,6 +86,22 @@ internal sealed class RbScreenEmitter
                 return;
             dirty = true;
             flushAfter = Math.Min(flushAfter, Environment.TickCount64 + FlushDelayMs);
+        }
+    }
+
+    public void UpdateTrades(int inventoryId, List<VillagerTrade> trades, VillagerInfo villagerInfo)
+    {
+        if (inventoryId <= 0)
+            return;
+        using (sync.EnterScope())
+        {
+            if (activeKind != ContainerKind || inventoryId != activeInventoryId)
+                return;
+            activeTrades = trades.Take(256).ToList();
+            activeVillagerInfo = villagerInfo;
+            activeMerchantSelection = Math.Clamp(activeMerchantSelection, 0, Math.Max(0, activeTrades.Count - 1));
+            dirty = true;
+            flushAfter = 0;
         }
     }
 
@@ -224,6 +246,9 @@ internal sealed class RbScreenEmitter
         bool currentActionOk;
         string currentActionError;
         string currentAnvilText;
+        List<VillagerTrade> currentTrades;
+        VillagerInfo? currentVillagerInfo;
+        int currentMerchantSelection;
         using (sync.EnterScope())
         {
             if (activeKind != ContainerKind
@@ -238,6 +263,9 @@ internal sealed class RbScreenEmitter
             currentActionOk = actionOk;
             currentActionError = actionError;
             currentAnvilText = activeAnvilText;
+            currentTrades = activeTrades.ToList();
+            currentVillagerInfo = activeVillagerInfo;
+            currentMerchantSelection = activeMerchantSelection;
         }
 
         Container? inventory = client.GetInventory(inventoryId);
@@ -250,7 +278,8 @@ internal sealed class RbScreenEmitter
         try
         {
             WriteOpen(client, inventory, token, nextRevision,
-                currentActionId, currentActionOk, currentActionError, currentAnvilText);
+                currentActionId, currentActionOk, currentActionError, currentAnvilText,
+                currentTrades, currentVillagerInfo, currentMerchantSelection);
         }
         catch (Exception exception) when (
             exception is IOException
@@ -783,6 +812,84 @@ internal sealed class RbScreenEmitter
         });
     }
 
+    public (bool Ok, string Error) SpecialAction(
+        McClient client,
+        int expectedToken,
+        int expectedRevision,
+        int expectedInventoryId,
+        string kind,
+        string operation,
+        int firstValue,
+        int secondValue,
+        int requestedActionId)
+    {
+        return client.InvokeOnMainThread(() =>
+        {
+            Container? inventory = client.GetInventory(expectedInventoryId);
+            string validationError = string.Empty;
+            using (sync.EnterScope())
+            {
+                if (activeKind != ContainerKind || inventory is null)
+                    validationError = "screen_closed";
+                else if (expectedToken != screenToken || expectedInventoryId != activeInventoryId)
+                    validationError = "screen_replaced";
+                else if (expectedRevision != revision)
+                    validationError = "screen_stale";
+                else if ((kind == "merchant" && inventory.Type != ContainerType.Merchant)
+                    || (kind == "beacon" && inventory.Type != ContainerType.Beacon)
+                    || (kind == "loom" && inventory.Type != ContainerType.Loom))
+                    validationError = "special_rejected";
+            }
+            if (validationError.Length > 0)
+            {
+                RecordAction(requestedActionId, false, validationError);
+                Flush(client, force: true);
+                return (false, validationError);
+            }
+
+            bool sent = false;
+            if (kind == "merchant" && operation == "select")
+            {
+                bool validTrade;
+                using (sync.EnterScope())
+                    validTrade = firstValue >= 0 && firstValue < activeTrades.Count
+                        && !activeTrades[firstValue].TradeDisabled;
+                if (validTrade)
+                {
+                    sent = client.SelectTrade(firstValue);
+                    if (sent)
+                    {
+                        using (sync.EnterScope())
+                            activeMerchantSelection = firstValue;
+                    }
+                }
+            }
+            else if (kind == "beacon" && operation == "apply")
+            {
+                int level = inventory!.Properties.TryGetValue(0, out short levelValue)
+                    ? Math.Clamp((int)levelValue, 0, 4) : 0;
+                bool primaryAllowed = level >= 1 && (
+                    firstValue is 1 or 3
+                    || (level >= 2 && (firstValue is 8 or 11))
+                    || (level >= 3 && firstValue == 5));
+                bool secondaryAllowed = secondValue == -1
+                    || (level >= 4 && (secondValue == 10 || secondValue == firstValue));
+                if (primaryAllowed && secondaryAllowed)
+                    sent = client.SetBeaconEffects(firstValue, secondValue);
+            }
+            else if (kind == "loom" && operation == "select"
+                && firstValue >= 0 && firstValue <= 255)
+            {
+                sent = client.ClickContainerButton(expectedInventoryId, firstValue);
+            }
+
+            RecordAction(requestedActionId, sent, sent ? string.Empty : "special_rejected");
+            Update(expectedInventoryId);
+            Flush(client, force: true);
+            return sent ? (true, string.Empty) : (false, "special_rejected");
+        });
+    }
+
     public (bool Ok, string Error) SignAction(
         McClient client,
         int expectedToken,
@@ -987,6 +1094,68 @@ internal sealed class RbScreenEmitter
         return value;
     }
 
+    private static object? SnapshotSpecial(
+        Container inventory,
+        IReadOnlyList<VillagerTrade> trades,
+        VillagerInfo? villagerInfo,
+        int merchantSelection)
+    {
+        if (inventory.Type == ContainerType.Merchant)
+        {
+            VillagerInfo info = villagerInfo ?? new VillagerInfo();
+            return new
+            {
+                kind = "merchant",
+                selectedTrade = Math.Clamp(merchantSelection, 0, 255),
+                villager = new
+                {
+                    level = Math.Clamp(info.Level, 0, 255),
+                    experience = Math.Max(0, info.Experience),
+                    regular = info.IsRegularVillager,
+                    canRestock = info.CanRestock,
+                },
+                trades = trades.Take(256).Select((trade, index) => new
+                {
+                    index,
+                    input1 = SnapshotItem(trade.InputItem1),
+                    input2 = trade.InputItem2 is null ? null : SnapshotItem(trade.InputItem2),
+                    output = SnapshotItem(trade.OutputItem),
+                    disabled = trade.TradeDisabled,
+                    uses = Math.Max(0, trade.NumberOfTradeUses),
+                    maxUses = Math.Max(Math.Max(0, trade.NumberOfTradeUses), trade.MaximumNumberOfTradeUses),
+                    xp = Math.Max(0, trade.Xp),
+                    specialPrice = trade.SpecialPrice,
+                    priceMultiplier = float.IsFinite(trade.PriceMultiplier)
+                        ? Math.Clamp(trade.PriceMultiplier, 0F, 100F) : 0F,
+                    demand = trade.Demand,
+                }).ToArray(),
+            };
+        }
+        if (inventory.Type == ContainerType.Beacon)
+        {
+            inventory.Properties.TryGetValue(0, out short level);
+            short primary = inventory.Properties.TryGetValue(1, out short primaryValue) ? primaryValue : (short)-1;
+            short secondary = inventory.Properties.TryGetValue(2, out short secondaryValue) ? secondaryValue : (short)-1;
+            return new
+            {
+                kind = "beacon",
+                level = Math.Clamp((int)level, 0, 4),
+                primary = Math.Clamp((int)primary, -1, 255),
+                secondary = Math.Clamp((int)secondary, -1, 255),
+            };
+        }
+        if (inventory.Type == ContainerType.Loom)
+        {
+            short pattern = inventory.Properties.TryGetValue(0, out short patternValue) ? patternValue : (short)-1;
+            return new
+            {
+                kind = "loom",
+                selectedPattern = Math.Clamp((int)pattern, -1, 255),
+            };
+        }
+        return null;
+    }
+
     private static void WriteOpen(
         McClient client,
         Container inventory,
@@ -995,7 +1164,10 @@ internal sealed class RbScreenEmitter
         int actionId,
         bool actionOk,
         string actionError,
-        string anvilText)
+        string anvilText,
+        IReadOnlyList<VillagerTrade> trades,
+        VillagerInfo? villagerInfo,
+        int merchantSelection)
     {
         int slotCount = inventory.Type.SlotCount();
         var slots = inventory.Items
@@ -1032,6 +1204,7 @@ internal sealed class RbScreenEmitter
                 value = RbInventory.CleanText(anvilText, 50),
                 maxLength = 50,
             } : null,
+            special = SnapshotSpecial(inventory, trades, villagerInfo, merchantSelection),
             actionId,
             actionOk,
             actionError = RbInventory.CleanText(actionError, 48),

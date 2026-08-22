@@ -124,6 +124,28 @@ class RbScreen : Command
                                         Arguments.GetInteger(result, "anvilActionId"))))))))));
         RegisterSignAction(dispatcher, "submit");
         RegisterSignAction(dispatcher, "close");
+        RegisterSelectionSpecial(dispatcher, "merchant");
+        RegisterSelectionSpecial(dispatcher, "loom");
+        dispatcher.Register(l => l.Literal(CmdName)
+            .Then(l => l.Literal("special")
+                .Then(l => l.Argument("specialToken", Arguments.Integer(1, int.MaxValue))
+                    .Then(l => l.Argument("specialRevision", Arguments.Integer(1, int.MaxValue))
+                        .Then(l => l.Argument("specialInventoryId", Arguments.Integer(1, 255))
+                            .Then(l => l.Literal("beacon")
+                                .Then(l => l.Literal("apply")
+                                    .Then(l => l.Argument("beaconPrimary", Arguments.Integer(0, 255))
+                                        .Then(l => l.Argument("beaconSecondary", Arguments.Integer(-1, 255))
+                                            .Then(l => l.Argument("specialActionId", Arguments.Integer(1, int.MaxValue))
+                                                .Executes(result => SpecialAction(
+                                                    result.Source,
+                                                    "beacon",
+                                                    "apply",
+                                                    Arguments.GetInteger(result, "specialToken"),
+                                                    Arguments.GetInteger(result, "specialRevision"),
+                                                    Arguments.GetInteger(result, "specialInventoryId"),
+                                                    Arguments.GetInteger(result, "beaconPrimary"),
+                                                    Arguments.GetInteger(result, "beaconSecondary"),
+                                                    Arguments.GetInteger(result, "specialActionId")))))))))))));
     }
 
     private static void RegisterBookAction(CommandDispatcher<CmdResult> dispatcher, string operation)
@@ -156,6 +178,29 @@ class RbScreen : Command
                                     Arguments.GetInteger(result, "signToken"),
                                     Arguments.GetInteger(result, "signRevision"),
                                     Arguments.GetInteger(result, "signActionId")))))))));
+    }
+
+    private static void RegisterSelectionSpecial(CommandDispatcher<CmdResult> dispatcher, string kind)
+    {
+        dispatcher.Register(l => l.Literal("rbscreen")
+            .Then(l => l.Literal("special")
+                .Then(l => l.Argument("specialToken", Arguments.Integer(1, int.MaxValue))
+                    .Then(l => l.Argument("specialRevision", Arguments.Integer(1, int.MaxValue))
+                        .Then(l => l.Argument("specialInventoryId", Arguments.Integer(1, 255))
+                            .Then(l => l.Literal(kind)
+                                .Then(l => l.Literal("select")
+                                    .Then(l => l.Argument("specialIndex", Arguments.Integer(0, 255))
+                                        .Then(l => l.Argument("specialActionId", Arguments.Integer(1, int.MaxValue))
+                                            .Executes(result => SpecialAction(
+                                                result.Source,
+                                                kind,
+                                                "select",
+                                                Arguments.GetInteger(result, "specialToken"),
+                                                Arguments.GetInteger(result, "specialRevision"),
+                                                Arguments.GetInteger(result, "specialInventoryId"),
+                                                Arguments.GetInteger(result, "specialIndex"),
+                                                -1,
+                                                Arguments.GetInteger(result, "specialActionId"))))))))))));
     }
 
     private static int Snapshot(CmdResult result)
@@ -237,6 +282,25 @@ class RbScreen : Command
         McClient client = CmdResult.currentHandler!;
         var outcome = client.GetRakitBotScreen().SignAction(
             client, token, revision, operation, actionId);
+        return result.SetAndReturn(outcome.Ok ? CmdResult.Status.Done : CmdResult.Status.Fail);
+    }
+
+    private static int SpecialAction(
+        CmdResult result,
+        string kind,
+        string operation,
+        int token,
+        int revision,
+        int inventoryId,
+        int firstValue,
+        int secondValue,
+        int actionId)
+    {
+        McClient client = CmdResult.currentHandler!;
+        if (!client.GetInventoryEnabled())
+            return result.SetAndReturn(CmdResult.Status.FailNeedInventory);
+        var outcome = client.GetRakitBotScreen().SpecialAction(
+            client, token, revision, inventoryId, kind, operation, firstValue, secondValue, actionId);
         return result.SetAndReturn(outcome.Ok ? CmdResult.Status.Done : CmdResult.Status.Fail);
     }
 }

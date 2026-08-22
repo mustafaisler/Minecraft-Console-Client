@@ -4956,6 +4956,7 @@ namespace MinecraftClient
         /// <param name="villagerInfo">Contains Level, Experience, IsRegularVillager and CanRestock .</param>
         public void OnTradeList(int windowID, List<VillagerTrade> trades, VillagerInfo villagerInfo)
         {
+            rakitBotScreen.UpdateTrades(windowID, trades, villagerInfo);
             DispatchBotEvent(bot => bot.OnTradeList(windowID, trades, villagerInfo));
         }
 
@@ -5176,6 +5177,12 @@ namespace MinecraftClient
                     return false;
             }
             return true;
+        }
+
+        internal bool SetBeaconEffects(int primaryEffect, int secondaryEffect)
+        {
+            return InvokeOnMainThread(() => handler is Protocol18Handler protocol
+                && protocol.SendSetBeaconEffects(primaryEffect, secondaryEffect));
         }
 
         /// <summary>
