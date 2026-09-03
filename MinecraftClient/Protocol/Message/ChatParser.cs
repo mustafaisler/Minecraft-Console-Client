@@ -456,7 +456,8 @@ namespace MinecraftClient.Protocol.Message
 
             string cacheFilePath = GetResourcePackTranslationCacheFilePath(resourcePackUri, hash);
             if (TryLoadCachedResourcePackTranslations(cacheFilePath, resourcePackUri, hash, out Dictionary<string, string>? cachedTranslations)
-                && RbResourcePackFont.TryActivateCached(packIdentifier, resourcePackUri, hash))
+                && RbResourcePackFont.TryActivateCached(packIdentifier, resourcePackUri, hash)
+                && RbResourcePackItem.TryActivateCached(packIdentifier, resourcePackUri, hash))
             {
                 ReplaceResourcePackTranslations(packIdentifier, cachedTranslations);
                 WriteStatus("cache_activated");
@@ -514,6 +515,7 @@ namespace MinecraftClient.Protocol.Message
             ResourcePackTranslationLayers.RemoveAll(layer =>
                 layer.Identifier.Equals(packIdentifier, StringComparison.Ordinal));
             RbResourcePackFont.Remove(packIdentifier);
+            RbResourcePackItem.Remove(packIdentifier);
             RbResourcePackStatus.Write("pack_removed", packIdentifier);
         }
 
@@ -521,6 +523,7 @@ namespace MinecraftClient.Protocol.Message
         {
             ResourcePackTranslationLayers.Clear();
             RbResourcePackFont.Clear();
+            RbResourcePackItem.Clear();
             RbResourcePackStatus.Write("packs_cleared");
         }
 
@@ -899,6 +902,7 @@ namespace MinecraftClient.Protocol.Message
             using ZipArchive archive = new(resourcePackStream, ZipArchiveMode.Read, leaveOpen: true);
             RbResourcePackGlint.Export(archive);
             fontExported = RbResourcePackFont.Export(packIdentifier, archive, resourcePackUri, hash);
+            RbResourcePackItem.Export(packIdentifier, archive, resourcePackUri, hash);
 
             foreach (ZipArchiveEntry entry in archive.Entries)
             {
