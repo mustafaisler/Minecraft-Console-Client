@@ -25,7 +25,7 @@ namespace MinecraftClient.Commands;
 class RbInventory : Command
 {
     public override string CmdName => "rbinventory";
-    public override string CmdUsage => "/rbinventory <snapshot|move <source:5-45> <target:5-45> [actionId]|transfer <source:5-45> <target:5-45> <one|half> [actionId]|drop <source:5-45> <one|stack> [actionId]>";
+    public override string CmdUsage => "/rbinventory <snapshot|move ...|transfer ...|quick ...|distribute ...|collect ...|drop ...>";
     public override string CmdDesc => Translations.cmd_inventory_desc;
 
     private const int InventoryId = 0;
@@ -121,6 +121,44 @@ class RbInventory : Command
                                 Arguments.GetInteger(r, "source"),
                                 entireStack: true,
                                 actionId: Arguments.GetInteger(r, "actionId")))))))
+            .Then(l => l.Literal("quick")
+                .Then(l => l.Argument("source", Arguments.Integer(FirstActionSlot, LastActionSlot))
+                    .Executes(r => QuickMoveItem(
+                        r.Source,
+                        Arguments.GetInteger(r, "source"),
+                        actionId: 0))
+                    .Then(l => l.Argument("actionId", Arguments.Integer(1, int.MaxValue))
+                        .Executes(r => QuickMoveItem(
+                            r.Source,
+                            Arguments.GetInteger(r, "source"),
+                            Arguments.GetInteger(r, "actionId"))))))
+            .Then(l => l.Literal("distribute")
+                .Then(l => l.Argument("source", Arguments.Integer(FirstActionSlot, LastActionSlot))
+                    .Then(l => l.Literal("even")
+                        .Then(l => l.Argument("targets", Arguments.String())
+                            .Then(l => l.Argument("actionId", Arguments.Integer(1, int.MaxValue))
+                                .Executes(r => DistributeItem(
+                                    r.Source,
+                                    Arguments.GetInteger(r, "source"),
+                                    Arguments.GetString(r, "targets"),
+                                    oneEach: false,
+                                    actionId: Arguments.GetInteger(r, "actionId"))))))
+                    .Then(l => l.Literal("one")
+                        .Then(l => l.Argument("targets", Arguments.String())
+                            .Then(l => l.Argument("actionId", Arguments.Integer(1, int.MaxValue))
+                                .Executes(r => DistributeItem(
+                                    r.Source,
+                                    Arguments.GetInteger(r, "source"),
+                                    Arguments.GetString(r, "targets"),
+                                    oneEach: true,
+                                    actionId: Arguments.GetInteger(r, "actionId"))))))))
+            .Then(l => l.Literal("collect")
+                .Then(l => l.Argument("target", Arguments.Integer(FirstActionSlot, LastActionSlot))
+                    .Then(l => l.Argument("actionId", Arguments.Integer(1, int.MaxValue))
+                        .Executes(r => CollectItem(
+                            r.Source,
+                            Arguments.GetInteger(r, "target"),
+                            Arguments.GetInteger(r, "actionId"))))))
         );
     }
 
@@ -253,7 +291,7 @@ class RbInventory : Command
             int targetBefore = 0;
             if (inventory.Items.TryGetValue(target, out Item? beforeTarget))
             {
-                if (beforeTarget.Type != sourceType)
+                if (beforeTarget.Type != sourceType || StackIdentity(beforeTarget) != StackIdentity(beforeSource))
                     return FinishFailure(result, client, actionId, "target_different_item");
                 targetBefore = beforeTarget.Count;
             }
@@ -303,6 +341,252 @@ class RbInventory : Command
         {
             return FinishFailure(result, client, actionId, "exception");
         }
+    }
+
+    private static int QuickMoveItem(CmdResult result, int source, int actionId)
+    {
+        McClient client = CmdResult.currentHandler!;
+        if (!client.GetInventoryEnabled())
+            return result.SetAndReturn(CmdResult.Status.FailNeedInventory);
+
+        try
+        {
+            if (!CloseForegroundInventories(client))
+                return FinishFailure(result, client, actionId, "inventory_close_failed");
+
+            Container? inventory = client.GetInventory(InventoryId);
+            if (
+                inventory is null
+                || HasCursorItem(inventory)
+                || !inventory.Items.TryGetValue(source, out Item? beforeSource)
+                || beforeSource.Count <= 0
+            )
+                return FinishFailure(result, client, actionId, "source_empty");
+
+            ItemType sourceType = beforeSource.Type;
+            int sourceCount = beforeSource.Count;
+            Dictionary<ItemType, int> before = CountActionItems(inventory);
+            if (!ClickAndWait(client, source, WindowActionType.ShiftClick))
+                return FinishFailure(result, client, actionId, "quick_move_rejected");
+
+            Thread.Sleep(ServerCorrectionDelayMs);
+            inventory = client.GetInventory(InventoryId);
+            if (inventory is null || HasCursorItem(inventory))
+                return FinishFailure(result, client, actionId, "cursor_not_empty");
+            if (!SameCounts(before, CountActionItems(inventory)))
+                return FinishFailure(result, client, actionId, "item_counts_changed");
+
+            int sourceAfter = inventory.Items.TryGetValue(source, out Item? afterSource)
+                && afterSource.Type == sourceType
+                ? afterSource.Count
+                : 0;
+            int moved = sourceCount - sourceAfter;
+            if (moved <= 0)
+                return FinishFailure(result, client, actionId, "quick_move_rejected");
+
+            WriteSnapshot(client, actionId, actionOk: true, actionMoved: moved);
+            return result.SetAndReturn(CmdResult.Status.Done);
+        }
+        catch (Exception exception) when (
+            exception is IOException
+            or UnauthorizedAccessException
+            or JsonException
+            or InvalidOperationException)
+        {
+            return FinishFailure(result, client, actionId, "exception");
+        }
+    }
+
+    private static int DistributeItem(
+        CmdResult result,
+        int source,
+        string targetsValue,
+        bool oneEach,
+        int actionId)
+    {
+        McClient client = CmdResult.currentHandler!;
+        if (!client.GetInventoryEnabled())
+            return result.SetAndReturn(CmdResult.Status.FailNeedInventory);
+
+        int[] targets = ParseTargets(targetsValue, source);
+        if (targets.Length < 2)
+            return FinishFailure(result, client, actionId, "invalid_targets");
+
+        try
+        {
+            if (!CloseForegroundInventories(client))
+                return FinishFailure(result, client, actionId, "inventory_close_failed");
+
+            Container? inventory = client.GetInventory(InventoryId);
+            if (
+                inventory is null
+                || HasCursorItem(inventory)
+                || !inventory.Items.TryGetValue(source, out Item? beforeSource)
+                || beforeSource.Count <= 0
+            )
+                return FinishFailure(result, client, actionId, "source_empty");
+            if (!beforeSource.Type.IsStackable())
+                return FinishFailure(result, client, actionId, "source_not_stackable");
+            string sourceIdentity = StackIdentity(beforeSource);
+            if (targets.Any(slot => inventory.Items.TryGetValue(slot, out Item? targetItem)
+                && StackIdentity(targetItem) != sourceIdentity))
+                return FinishFailure(result, client, actionId, "invalid_targets");
+
+            ItemType sourceType = beforeSource.Type;
+            int sourceCount = beforeSource.Count;
+            Dictionary<ItemType, int> before = CountActionItems(inventory);
+            var moving = new ItemMovingHelper(inventory, client);
+            WindowActionType dragAction = oneEach
+                ? WindowActionType.StartDragRight
+                : WindowActionType.StartDragLeft;
+            if (!moving.DragOverSlots(source, targets, dragAction))
+                return FinishFailure(result, client, actionId, "distribute_rejected");
+
+            Thread.Sleep(ServerCorrectionDelayMs);
+            inventory = client.GetInventory(InventoryId);
+            if (inventory is null || HasCursorItem(inventory))
+                return FinishFailure(result, client, actionId, "cursor_not_empty");
+            if (!SameCounts(before, CountActionItems(inventory)))
+                return FinishFailure(result, client, actionId, "item_counts_changed");
+
+            int sourceAfter = inventory.Items.TryGetValue(source, out Item? afterSource)
+                && afterSource.Type == sourceType
+                ? afterSource.Count
+                : 0;
+            int moved = sourceCount - sourceAfter;
+            if (moved <= 0)
+                return FinishFailure(result, client, actionId, "distribute_rejected");
+
+            WriteSnapshot(client, actionId, actionOk: true, actionMoved: moved);
+            return result.SetAndReturn(CmdResult.Status.Done);
+        }
+        catch (Exception exception) when (
+            exception is IOException
+            or UnauthorizedAccessException
+            or JsonException
+            or InvalidOperationException)
+        {
+            return FinishFailure(result, client, actionId, "exception");
+        }
+    }
+
+    private static int CollectItem(CmdResult result, int target, int actionId)
+    {
+        McClient client = CmdResult.currentHandler!;
+        if (!client.GetInventoryEnabled())
+            return result.SetAndReturn(CmdResult.Status.FailNeedInventory);
+
+        try
+        {
+            if (!CloseForegroundInventories(client))
+                return FinishFailure(result, client, actionId, "inventory_close_failed");
+
+            Container? inventory = client.GetInventory(InventoryId);
+            if (
+                inventory is null
+                || HasCursorItem(inventory)
+                || !inventory.Items.TryGetValue(target, out Item? beforeTarget)
+                || beforeTarget.Count <= 0
+            )
+                return FinishFailure(result, client, actionId, "source_empty");
+            int maxCount = beforeTarget.Type.StackCount();
+            if (!beforeTarget.Type.IsStackable() || beforeTarget.Count >= maxCount)
+                return FinishFailure(result, client, actionId, "target_full");
+
+            ItemType targetType = beforeTarget.Type;
+            int targetBefore = beforeTarget.Count;
+            string identity = StackIdentity(beforeTarget);
+            int[] donors = inventory.Items
+                .Where(pair => pair.Key >= FirstActionSlot && pair.Key <= LastActionSlot
+                    && pair.Key != target && pair.Value.Count > 0
+                    && StackIdentity(pair.Value) == identity)
+                .OrderBy(pair => pair.Key)
+                .Select(pair => pair.Key)
+                .ToArray();
+            if (donors.Length == 0)
+                return FinishFailure(result, client, actionId, "no_matching_items");
+
+            Dictionary<ItemType, int> before = CountActionItems(inventory);
+            foreach (int donor in donors)
+            {
+                inventory = client.GetInventory(InventoryId);
+                if (inventory is null
+                    || !inventory.Items.TryGetValue(target, out Item? currentTarget)
+                    || currentTarget.Count >= maxCount)
+                    break;
+                if (!inventory.Items.TryGetValue(donor, out Item? currentDonor)
+                    || StackIdentity(currentDonor) != identity)
+                    continue;
+
+                if (!ClickAndWait(client, donor))
+                    return FinishFailure(result, client, actionId, "source_click_failed");
+                if (!ClickAndWait(client, target))
+                {
+                    ClickAndWait(client, donor);
+                    return FinishFailure(result, client, actionId, "target_click_failed");
+                }
+                inventory = client.GetInventory(InventoryId);
+                if (inventory is not null && HasCursorItem(inventory)
+                    && !ClickAndWait(client, donor))
+                    return FinishFailure(result, client, actionId, "source_restore_failed");
+            }
+
+            Thread.Sleep(ServerCorrectionDelayMs);
+            inventory = client.GetInventory(InventoryId);
+            if (inventory is null || HasCursorItem(inventory))
+                return FinishFailure(result, client, actionId, "cursor_not_empty");
+            if (!SameCounts(before, CountActionItems(inventory)))
+                return FinishFailure(result, client, actionId, "item_counts_changed");
+
+            int targetAfter = inventory.Items.TryGetValue(target, out Item? afterTarget)
+                && afterTarget.Type == targetType
+                ? afterTarget.Count
+                : 0;
+            int moved = targetAfter - targetBefore;
+            if (moved <= 0)
+                return FinishFailure(result, client, actionId, "collect_rejected");
+
+            WriteSnapshot(client, actionId, actionOk: true, actionMoved: moved);
+            return result.SetAndReturn(CmdResult.Status.Done);
+        }
+        catch (Exception exception) when (
+            exception is IOException
+            or UnauthorizedAccessException
+            or JsonException
+            or InvalidOperationException)
+        {
+            return FinishFailure(result, client, actionId, "exception");
+        }
+    }
+
+    private static int[] ParseTargets(string value, int source)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length > 160)
+            return [];
+        var targets = new List<int>();
+        foreach (string part in value.Split(',', StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (targets.Count >= LastActionSlot - FirstActionSlot)
+                return [];
+            if (!int.TryParse(part, out int slot)
+                || slot < FirstActionSlot || slot > LastActionSlot || slot == source)
+                return [];
+            if (!targets.Contains(slot))
+                targets.Add(slot);
+        }
+        return targets.ToArray();
+    }
+
+    private static string StackIdentity(Item item)
+    {
+        return JsonSerializer.Serialize(new
+        {
+            type = item.Type.ToString(),
+            item.Data,
+            model = SnapshotModel(item),
+            tooltip = SnapshotTooltip(item),
+            enchantments = SnapshotEnchantments(item),
+        }, s_jsonOptions);
     }
 
     private static bool CloseForegroundInventories(McClient client)
