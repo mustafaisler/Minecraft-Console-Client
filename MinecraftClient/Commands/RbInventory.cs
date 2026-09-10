@@ -19,13 +19,13 @@ namespace MinecraftClient.Commands;
 
 /// <summary>
 /// Produces a bounded player-inventory snapshot and performs safe main-inventory
-/// slot moves, bounded stack splitting and explicit ground drops for the
+/// slot moves, bounded stack splitting, held-item use and explicit ground drops for the
 /// RakitBot web console.
 /// </summary>
 class RbInventory : Command
 {
     public override string CmdName => "rbinventory";
-    public override string CmdUsage => "/rbinventory <snapshot|move ...|transfer ...|quick ...|distribute ...|collect ...|drop ...>";
+    public override string CmdUsage => "/rbinventory <snapshot|move ...|transfer ...|quick ...|distribute ...|collect ...|use ...|drop ...>";
     public override string CmdDesc => Translations.cmd_inventory_desc;
 
     private const int InventoryId = 0;
@@ -158,6 +158,13 @@ class RbInventory : Command
                         .Executes(r => CollectItem(
                             r.Source,
                             Arguments.GetInteger(r, "target"),
+                            Arguments.GetInteger(r, "actionId"))))))
+            .Then(l => l.Literal("use")
+                .Then(l => l.Argument("source", Arguments.Integer(36, 45))
+                    .Then(l => l.Argument("actionId", Arguments.Integer(1, int.MaxValue))
+                        .Executes(r => UseHeldItem(
+                            r.Source,
+                            Arguments.GetInteger(r, "source"),
                             Arguments.GetInteger(r, "actionId"))))))
         );
     }
@@ -575,6 +582,56 @@ class RbInventory : Command
                 targets.Add(slot);
         }
         return targets.ToArray();
+    }
+
+    private static int UseHeldItem(CmdResult result, int source, int actionId)
+    {
+        McClient client = CmdResult.currentHandler!;
+        if (!client.GetInventoryEnabled())
+            return result.SetAndReturn(CmdResult.Status.FailNeedInventory);
+
+        try
+        {
+            if (!CloseForegroundInventories(client))
+                return FinishFailure(result, client, actionId, "inventory_close_failed");
+
+            Container? inventory = client.GetInventory(InventoryId);
+            if (
+                inventory is null
+                || HasCursorItem(inventory)
+                || !inventory.Items.TryGetValue(source, out Item? sourceItem)
+                || sourceItem.Count <= 0
+            )
+                return FinishFailure(result, client, actionId, "source_empty");
+
+            bool used;
+            if (source == 45)
+            {
+                used = client.UseItemOnLeftHand();
+            }
+            else
+            {
+                short hotbar = (short)(source - 36);
+                if (client.GetCurrentSlot() != hotbar && !client.ChangeSlot(hotbar))
+                    return FinishFailure(result, client, actionId, "hotbar_select_failed");
+                used = client.UseItemOnHand();
+            }
+
+            if (!used)
+                return FinishFailure(result, client, actionId, "use_item_rejected");
+
+            Thread.Sleep(ServerCorrectionDelayMs);
+            WriteSnapshot(client, actionId, actionOk: true, actionMoved: 0);
+            return result.SetAndReturn(CmdResult.Status.Done);
+        }
+        catch (Exception exception) when (
+            exception is IOException
+            or UnauthorizedAccessException
+            or JsonException
+            or InvalidOperationException)
+        {
+            return FinishFailure(result, client, actionId, "exception");
+        }
     }
 
     private static string StackIdentity(Item item)
